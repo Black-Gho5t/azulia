@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Icons&display=swap");
+
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    z-index: 1;
+    background-color: #023E73;
+    overflow-x: hidden;
+    padding-top: 10px;
+    transition: 0.6s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar ul {
+    position: relative;
+    height: 97vh;
+}
+
+.sidebar ul li {
+    list-style: none;
+    margin: 5px 0;
+}
+
+.sidebar ul li:hover {
+    background: #1a81db;
+    transition: 0.3s ease;
+}
+
+.sidebar ul li a {
+    position: relative;
+    display: flex;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #fff;
+}
+
+.sidebar ul li a .logo {
+    margin-bottom: 80px;
+}
+
+.sidebar ul li a .logo .text {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.sidebar ul li:last-child {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.sidebar ul li a .icon {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 75px;
+    height: 60px;
+    font-size: 22px;
+}
+
+.sidebar ul li a .text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    font-size: 16px;
+    text-transform: capitalize;
+}
