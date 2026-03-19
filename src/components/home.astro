@@ -1,6 +1,7 @@
 ---
 import Search from "./search.astro";
 import Sidebar from "./sidebar.astro";
+import MainPage from "./mainPage.astro";
 import "../assets/styles/home.css";
 ---
 
@@ -44,3 +45,20 @@ import "../assets/styles/home.css";
 </div>
 
 <Sidebar />
+
+<MainPage />
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.querySelector(".left-menu");
+        const sidebarEl = document.querySelector(".sidebar");
+
+        if (!toggleBtn || !sidebarEl) {
+            return;
+        }
+
+        toggleBtn.addEventListener("click", function () {
+            sidebarEl.classList.toggle("open");
+        });
+    });
+</script>

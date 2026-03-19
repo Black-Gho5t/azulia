@@ -11,6 +11,11 @@
     display: flex;
     align-items: center;
     background-color: #2675a5;
+    /* cambio de ia */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 .left-buttons {
