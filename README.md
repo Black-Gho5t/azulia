@@ -44,3 +44,49 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+
+Ni se si lo que estoy haciendo es exactamente asi
+
+
+## **Gerarquia de contenido:**
+
+```text
+/
+├── Home:
+│   ├── Tours
+│   │   ├── Nauticos
+│   │   │   ├── Pontom
+│   │   │   ├── Velero
+│   │   │   ├── Lancha
+│   │   │   └── Moto acuatica
+│   │   ├── Ruinas
+│   │   │   ├── Ychkabal
+│   │   │   ├── Iconhuluch
+│   │   │   ├── Kmichna
+│   │   │   ├── Calakmul(Con guia)
+│   │   │   ├── Oxtenkah
+│   │   │   └── Bzibanahche
+│   │   ├── Mahahual
+│   │   │   ├── Ruinas Chacchoben
+│   │   │   └── Snorkel
+│   │   ├── Guatemala
+│   │   ├── Honduras
+│   │   └── Belize
+│   ├── Hoteles
+│   │   └── [Listado de hoteles]
+│   └── Transportacion
+│       ├── Nacional
+│       │   └── [Destinos nacionales]
+│       └── Internacional
+│           ├── Guatemala
+│           ├── Honduras
+│           └── Belize
+│   
+│   
+│   
+└── Admin
+     ├── Registro
+     └── Contacto
+
+```
