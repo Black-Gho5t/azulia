@@ -47,3 +47,15 @@
         grid-template-columns: 1fr;
     }
 }
+
+.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo-img-upscale {
+    width: 40dvh;
+    height: 30dvh;
+}
