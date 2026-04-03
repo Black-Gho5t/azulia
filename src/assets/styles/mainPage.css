@@ -39,26 +39,6 @@
     }
 }
 
-.colors-rotate-one {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    top: 20px;
-    left: 400px;
-    background-color: #162553;
-    transform: rotate(65deg);
-}
-
-.colors-rotate-two {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    top: 20px;
-    left: 400px;
-    background-color: #2675a5;
-    transform: rotate(65deg);
-}
-
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -95,6 +75,42 @@
 @media (max-width: 480px) {
     .logo-img-upscale {
         width: clamp(160px, 75vw, 400px);
-        max-height: 400px;
+        max-height: 500px;
+    }
+}
+
+.background-image {
+    width: 100%;
+    height: 55vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Zoom en tablets — recorta más los bordes */
+@media (max-width: 768px) {
+    .background-image {
+        background-size: 110%;
+        background-position: center;
+    }
+}
+
+/* Zoom en móviles */
+@media (max-width: 480px) {
+    .background-image {
+        background-size: 120%;
+        background-position: center;
+    }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 360px) {
+    .background-image {
+        background-size: 130%;
+        background-position: center;
     }
 }

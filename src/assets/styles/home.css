@@ -1,29 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Allura:wght@400&display=swap');
 
-.search-container {
-    display: flex;
-    width: 100%;
-    padding: 10px;
-    align-items: center;
-    justify-content: center;
-}
-
 .header-container {
     width: 100%;
     display: flex;
     align-items: center;
     background-color: #2675a5;
-    /* cambio de ia */
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1000;
+    padding: 6px 0;
 }
 
+/* Oculto en desktop */
 .left-buttons {
-    display: flex;
+    display: none;
     align-items: center;
-    justify-content: first baseline;
+    flex-shrink: 0;
 }
 
 .left-menu {
@@ -31,13 +24,95 @@
     border: none;
     cursor: pointer;
     display: flex;
+    align-items: center;
     padding-left: 2vh;
+    color: white;
 }
 
-.contact {
+.session {
     background-color: transparent;
     border: none;
     cursor: pointer;
     display: flex;
     padding-right: 2vh;
+    color: white;
+
+}
+
+/* Desktop — todo en una fila, search a la derecha */
+.right-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    padding-right: 12px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px;
+}
+
+/* Móviles — todo en UNA sola fila sin wrap */
+@media (max-width: 768px) {
+    .header-container {
+        position: fixed;
+        /* ya lo tienes, asegurarse */
+        flex-wrap: nowrap;
+    }
+
+    .left-buttons {
+        display: flex;
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    .right-buttons {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Centra el search en toda la fila */
+        pointer-events: none;
+        /* Evita bloquear clics del hamburguesa */
+    }
+
+    .search-container {
+        pointer-events: all;
+        /* Reactiva clics solo en el search y login */
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        /* Centra el search pero deja el login al final */
+        width: 70%;
+        /* Ajusta según el ancho de tu input */
+        justify-content: center;
+        position: relative;
+    }
+
+    /* Login anclado a la derecha sin afectar el centrado del search */
+    .search-container .left-menu:last-child {
+        position: absolute;
+        right: -60px;
+        /* Ajusta según distancia al borde */
+    }
+}
+
+.pages-nav {
+    display: flex;
+    gap: 40px;
+    margin-left: 20px;
+}
+
+h3 a {
+    color: #fff;
+    /* text-decoration: none; */
+    font-size: 18px;
+    font-weight: 600;
+    font-family: Arial, Helvetica, sans-serif;
 }
