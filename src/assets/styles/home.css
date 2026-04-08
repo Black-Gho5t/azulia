@@ -39,7 +39,7 @@
 
 }
 
-/* Desktop — todo en una fila, search a la derecha */
+/* Desktop — search a la derecha */
 .right-buttons {
     display: flex;
     align-items: center;
@@ -59,7 +59,6 @@
 @media (max-width: 768px) {
     .header-container {
         position: fixed;
-        /* ya lo tienes, asegurarse */
         flex-wrap: nowrap;
     }
 
@@ -103,11 +102,11 @@
     }
 }
 
-.pages-nav {
+/* .pages-nav {
     display: flex;
     gap: 40px;
     margin-left: 20px;
-}
+} */
 
 h3 a {
     color: #fff;
@@ -115,4 +114,78 @@ h3 a {
     font-size: 18px;
     font-weight: 600;
     font-family: Arial, Helvetica, sans-serif;
+}
+
+/* menu de navegacion con listas desplegables */
+
+.menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+}
+
+/* items */
+
+.item {
+    background-color: #2e518b;
+}
+
+.menu a {
+    background-color: transparent;
+}
+
+/* links de menus */
+.menu ul a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 16px;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: capitalize;
+    letter-spacing: 1.5px;
+}
+
+/* items del menu */
+.menu ul li {
+    position: relative;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+/* efecto */
+.menu ul li:hover {
+    background-color: #1e3a6b;
+}
+
+.menu ul ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #eee;
+    padding: 0;
+}
+
+.menu ul ul li {
+    float: none;
+    width: 150px;
+}
+
+.menu ul ul a {
+    line-height: 120%;
+    padding: 10px 15px;
+}
+
+.menu ul li:hover>ul {
+    display: block;
+}
+
+#icon-menu {
+    display: flex;
 }
