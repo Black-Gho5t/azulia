@@ -301,3 +301,57 @@ h3 a {
     top: 28px;
     left: 5px;
 }
+
+.drawer {
+    position: fixed;
+    top: 52px;
+    /* altura del navbar */
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 52px);
+    background-color: #2675a5;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+    overflow-y: auto;
+}
+
+.drawer.open {
+    transform: translateX(0);
+}
+
+.drawer-overlay {
+    display: none;
+    position: fixed;
+    top: 52px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 52px);
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+}
+
+.drawer-overlay.open {
+    display: block;
+}
+
+.drawer-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.drawer-nav ul li a {
+    display: block;
+    padding: 16px 24px;
+    color: white;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drawer-nav ul li a:hover {
+    background-color: #2785c0;
+}

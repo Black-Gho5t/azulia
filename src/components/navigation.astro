@@ -74,7 +74,9 @@ no acumular tantos menus desplegables en el mismo.
                     Hoteles</span
                 >
                 <ul class="item">
-                    <li class="item"><a href="/#">"lista de hoteles"</a></li>
+                    <li class="item">
+                        <a href="/hotels/hotels">"lista de hoteles"</a>
+                    </li>
                 </ul>
             </li>
             <li>
@@ -96,8 +98,13 @@ no acumular tantos menus desplegables en el mismo.
                     Transportacion</span
                 >
                 <ul class="item">
-                    <li class="item"><a href="/#">Nacional</a></li>
-                    <li class="item"><a href="/#">Internacional</a></li>
+                    <li class="item">
+                        <a href="/transportation/nacional">Nacional</a>
+                    </li>
+                    <li class="item">
+                        <a href="/transportation/international">Internacional</a
+                        >
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -127,32 +134,46 @@ no acumular tantos menus desplegables en el mismo.
     </div>
 </nav>
 
+<!-- Drawer de navegación móvil -->
+<div id="menu-drawer" class="drawer">
+    <nav class="drawer-nav">
+        <ul>
+            <li><a href="/tours/nauticos">Nauticos</a></li>
+            <li><a href="/tours/ruinas">Ruinas</a></li>
+            <li><a href="/tours/mahahual">Mahahual</a></li>
+            <li><a href="/tours/guatemala">Guatemala</a></li>
+            <li><a href="/tours/honduras">Honduras</a></li>
+            <li><a href="/tours/belice">Belice</a></li>
+            <li><a href="/hotels/hotels">Hoteles</a></li>
+            <li><a href="/transportation/nacional">Nacional</a></li>
+            <li><a href="/transportation/international">Internacional</a></li>
+        </ul>
+    </nav>
+</div>
+<div id="drawer-overlay" class="drawer-overlay"></div>
 <!-- llamada al sidebar COMPONENTE -->
 <!-- script para mover el sidebar NECESARIO -->
 <script>
     const burger = document.getElementById("burger") as HTMLInputElement;
-    if (burger) {
-        if (sessionStorage.getItem("menuOpen") === "false") {
-            sessionStorage.removeItem("menuOpen");
-            burger.checked = true;
+    const drawer = document.getElementById("menu-drawer");
+    const overlay = document.getElementById("drawer-overlay");
 
-            setTimeout(() => {
-                burger.checked = false;
-            }, 50);
-        } else if (sessionStorage.getItem("menuOpen") === "true") {
-            burger.checked = true;
-        }
-
+    if (burger && drawer && overlay) {
         burger.addEventListener("change", () => {
             if (burger.checked) {
-                sessionStorage.setItem("menuOpen", "true");
-                sessionStorage.setItem("menuOrigin", window.location.pathname);
-                window.location.href = "/menu";
+                drawer.classList.add("open");
+                overlay.classList.add("open");
             } else {
-                sessionStorage.setItem("menuOpen", "false");
-                const origin = sessionStorage.getItem("menuOrigin") || "/";
-                window.location.href = origin;
+                drawer.classList.remove("open");
+                overlay.classList.remove("open");
             }
+        });
+
+        // Cerrar al hacer click en el overlay
+        overlay.addEventListener("click", () => {
+            burger.checked = false;
+            drawer.classList.remove("open");
+            overlay.classList.remove("open");
         });
     }
 </script>
