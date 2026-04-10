@@ -10,6 +10,7 @@
     left: 0;
     z-index: 1000;
     padding: 6px 0;
+    min-height: 40px;
 }
 
 /* Oculto en desktop */
@@ -57,6 +58,29 @@
 
 /* Móviles — todo en UNA sola fila sin wrap */
 @media (max-width: 768px) {
+    .left-buttons {
+        display: flex;
+        flex-shrink: 0;
+        z-index: 1;
+        padding-left: 12px;
+        /* pequeño ajuste para que no quede pegado al borde */
+    }
+
+    .header-container {
+        position: fixed;
+        flex-wrap: nowrap;
+    }
+
+    .left-buttons {
+        display: flex;
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    .pages-nav {
+        display: none;
+    }
+
     .header-container {
         position: fixed;
         flex-wrap: nowrap;
@@ -215,4 +239,65 @@ h3 a {
     text-transform: capitalize;
     letter-spacing: 1.5px;
     cursor: default;
+}
+
+/* menu hamburguesa */
+.burger {
+    position: relative;
+    width: 40px;
+    height: 30px;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+}
+
+.burger input {
+    display: none;
+}
+
+.burger span {
+    display: block;
+    position: absolute;
+    height: 4px;
+    width: 100%;
+    background: rgb(255, 255, 255);
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+}
+
+.burger span:nth-of-type(1) {
+    top: 0px;
+    transform-origin: left center;
+}
+
+.burger span:nth-of-type(2) {
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: left center;
+}
+
+.burger span:nth-of-type(3) {
+    top: 100%;
+    transform-origin: left center;
+    transform: translateY(-100%);
+}
+
+.burger input:checked~span:nth-of-type(1) {
+    transform: rotate(45deg);
+    top: 0px;
+    left: 5px;
+}
+
+.burger input:checked~span:nth-of-type(2) {
+    width: 0%;
+    opacity: 0;
+}
+
+.burger input:checked~span:nth-of-type(3) {
+    transform: rotate(-45deg);
+    top: 28px;
+    left: 5px;
 }

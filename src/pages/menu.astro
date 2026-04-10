@@ -1,6 +1,5 @@
 ---
 import Navbar from "../components/navigation.astro";
-import Welcome from "../components/mainPage.astro";
 
 import Layout from "../layouts/Layout.astro";
 
@@ -9,6 +8,15 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-	<Navbar />
-	<Welcome />
+    <Navbar />
 </Layout>
+
+<script>
+    // Si el usuario navega fuera del menu por otra vía (link, etc), limpiar estado
+    window.addEventListener("pagehide", () => {
+        const burger = document.getElementById("burger") as HTMLInputElement;
+        if (burger && !burger.checked) {
+            sessionStorage.setItem("menuOpen", "false");
+        }
+    });
+</script>

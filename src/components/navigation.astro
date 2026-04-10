@@ -1,6 +1,5 @@
 ---
 import Search from "./search.astro";
-import MainPage from "./mainPage.astro";
 import "../assets/styles/home.css";
 ---
 
@@ -11,21 +10,12 @@ no acumular tantos menus desplegables en el mismo.
 --><!--* REGRESAR UN COMMIT ==== git reset --hard HEAD -->
 <nav class="header-container">
     <div class="left-buttons">
-        <button class="left-menu">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="37"
-                height="37"
-                fill="white"
-                class="bi bi-list"
-                viewBox="0 0 16 16"
-            >
-                <path
-                    fill-rule="evenodd"
-                    d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
-                ></path>
-            </svg>
-        </button>
+        <label class="burger" for="burger">
+            <input type="checkbox" id="burger" />
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
     </div>
     <div class="pages-nav menu">
         <!-- menus principales -->
@@ -52,12 +42,14 @@ no acumular tantos menus desplegables en el mismo.
                 >
                 <!-- menu desplegable de tours -->
                 <ul class="item">
-                    <li class="item"><a href="/#">Nauticos</a></li>
-                    <li class="item"><a href="/#">Ruinas</a></li>
-                    <li class="item"><a href="/#">Mahahual</a></li>
-                    <li class="item"><a href="/#">Guatemala</a></li>
-                    <li class="item"><a href="/#">Honduras</a></li>
-                    <li class="item"><a href="/#">Belice</a></li>
+                    <li class="item"><a href="/tours/nauticos">Nauticos</a></li>
+                    <li class="item"><a href="/tours/ruinas">Ruinas</a></li>
+                    <li class="item"><a href="/tours/mahahual">Mahahual</a></li>
+                    <li class="item">
+                        <a href="/tours/guatemala">Guatemala</a>
+                    </li>
+                    <li class="item"><a href="/tours/honduras">Honduras</a></li>
+                    <li class="item"><a href="/tours/belice">Belice</a></li>
                 </ul>
             </li>
             <li>
@@ -136,7 +128,31 @@ no acumular tantos menus desplegables en el mismo.
 </nav>
 
 <!-- llamada al sidebar COMPONENTE -->
-
-<MainPage />
-
 <!-- script para mover el sidebar NECESARIO -->
+<script>
+    const burger = document.getElementById("burger") as HTMLInputElement;
+    if (burger) {
+        if (sessionStorage.getItem("menuOpen") === "false") {
+            sessionStorage.removeItem("menuOpen");
+            burger.checked = true;
+
+            setTimeout(() => {
+                burger.checked = false;
+            }, 50);
+        } else if (sessionStorage.getItem("menuOpen") === "true") {
+            burger.checked = true;
+        }
+
+        burger.addEventListener("change", () => {
+            if (burger.checked) {
+                sessionStorage.setItem("menuOpen", "true");
+                sessionStorage.setItem("menuOrigin", window.location.pathname);
+                window.location.href = "/menu";
+            } else {
+                sessionStorage.setItem("menuOpen", "false");
+                const origin = sessionStorage.getItem("menuOrigin") || "/";
+                window.location.href = origin;
+            }
+        });
+    }
+</script>
