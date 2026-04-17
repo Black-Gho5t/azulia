@@ -1,0 +1,176 @@
+---
+import "../assets/styles/destinations.css";
+
+interface Props {
+    title?: string;
+    destinations?: Array<{
+        id: string;
+        name: string;
+        description: string;
+        price: string;
+        image: ImageMetadata;
+    }>;
+}
+
+import type { ImageMetadata } from "astro";
+import card1 from "../assets/cards_img/card_1_pontom.webp";
+import card2 from "../assets/cards_img/card_2_paddle.jpg";
+import card3 from "../assets/cards_img/card_3_transportacion.jpg";
+
+const {
+    title = "Destinos Populares",
+    destinations = [
+        {
+            id: "ponton",
+            name: "Pontón",
+            description:
+                "Descubre la magia del mar Caribe, explora costas vírgenes y vive experiencias inolvidables en el agua.",
+            price: "$60 USD",
+            image: card1,
+        },
+        {
+            id: "paddle",
+            name: "Paddle",
+            description:
+                "Descubre la magia del mar Caribe, explora costas vírgenes y vive experiencias inolvidables en el agua.",
+            price: "$80 USD",
+            image: card2,
+        },
+        {
+            id: "transporte",
+            name: "Transportación",
+            description:
+                "Descubre la magia del mar Caribe, explora costas vírgenes y vive experiencias inolvidables en el agua.",
+            price: "$75 USD",
+            image: card3,
+        },
+        {
+            id: "snorkel",
+            name: "Snorkel",
+            description:
+                "Descubre la magia del mar Caribe, explora costas vírgenes y vive experiencias inolvidables en el agua.",
+            price: "$70 USD",
+            image: card1,
+        },
+    ],
+} = Astro.props;
+---
+
+<section class="destinations-section">
+    <div class="destinations-container">
+        <h2 class="destinations-title">{title}</h2>
+
+        <div class="carousel-wrapper">
+            <button
+                class="carousel-nav carousel-nav-prev"
+                aria-label="Anterior"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    {
+                        destinations.map((destination, index) => (
+                            <div class="carousel-card" data-index={index}>
+                                <div class="card-image">
+                                    <img
+                                        src={destination.image.src}
+                                        alt={destination.name}
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">
+                                        {destination.name}
+                                    </h3>
+                                    <p class="card-description">
+                                        {destination.description}
+                                    </p>
+                                    <p class="card-price">
+                                        {destination.price}
+                                    </p>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <button
+                class="carousel-nav carousel-nav-next"
+                aria-label="Siguiente"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+    const prevBtn = document.querySelector(".carousel-nav-prev");
+    const nextBtn = document.querySelector(".carousel-nav-next");
+    const track = document.querySelector(".carousel-track");
+    const cards = document.querySelectorAll(".carousel-card");
+
+    let currentIndex = 0;
+    const totalCards = cards.length;
+
+    function updateCarousel() {
+        if (track) {
+            const offset = (currentIndex % totalCards) * -100;
+            (track as HTMLElement).style.transform = `translateX(${offset}%)`;
+        }
+
+        // Actualizar escala de cards
+        cards.forEach((card, index) => {
+            const cardElement = card as HTMLElement;
+            const distance = Math.abs(index - (currentIndex % totalCards));
+
+            if (distance === 0) {
+                cardElement.classList.add("active");
+                cardElement.classList.remove("neighbor");
+            } else if (distance === 1 || distance === totalCards - 1) {
+                cardElement.classList.add("neighbor");
+                cardElement.classList.remove("active");
+            } else {
+                cardElement.classList.remove("active", "neighbor");
+            }
+        });
+    }
+
+    prevBtn?.addEventListener("click", () => {
+        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+        updateCarousel();
+    });
+
+    nextBtn?.addEventListener("click", () => {
+        currentIndex = (currentIndex + 1) % totalCards;
+        updateCarousel();
+    });
+
+    // Inicializar
+    updateCarousel();
+</script>

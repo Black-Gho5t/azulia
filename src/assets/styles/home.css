@@ -355,3 +355,16 @@ h3 a {
 .drawer-nav ul li a:hover {
     background-color: #2785c0;
 }
+
+.title-nav {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    padding: 20px 20px 30px 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.spacer {
+    height: 30px;
+    /* altura del navbar para evitar solapamiento */
+}

@@ -1,0 +1,14 @@
+---
+const { title, background } = Astro.props;
+import "../../assets/styles/tours_styles/welcome.css";
+---
+
+<main>
+    <div class="backgroun-img hero-wrapper">
+        <img src={background} alt="playa-background" class="background-image" />
+    </div>
+    <div class="name-page"><span>Tours</span></div>
+    <div class="logo">
+        <span>{title}</span>
+    </div>
+</main>
