@@ -41,9 +41,15 @@
     z-index: 10;
 }
 
-.carousel-nav:hover {
+.carousel-nav:hover:not(.disabled) {
     background-color: #1d4ed8;
     transform: scale(1.1);
+}
+
+.carousel-nav.disabled {
+    background-color: #a5b4fc;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .carousel-nav svg {
@@ -75,27 +81,14 @@
     border-radius: 1rem;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.5s ease;
+    transition: box-shadow 0.3s ease;
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    transform: scale(0.85) translateY(20px);
-    opacity: 0.7;
-}
-
-.carousel-card.neighbor {
-    transform: scale(0.92) translateY(10px);
-    opacity: 0.85;
-}
-
-.carousel-card.active {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .carousel-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .card-image {
@@ -239,4 +232,53 @@
     .carousel-track {
         gap: 0.75rem;
     }
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    z-index: 10;
+}
+
+.modal-close svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.modal-close:hover {
+    color: #1a2854;
+}
+
+.modal-body {
+    padding: 2rem;
 }

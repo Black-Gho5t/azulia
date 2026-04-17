@@ -1,5 +1,10 @@
 ---
 import "../assets/styles/destinations.css";
+import DestinationModal from "../components/destination_modal.astro";
+import type { ImageMetadata } from "astro";
+import card1 from "../assets/cards_img/card_1_pontom.webp";
+import card2 from "../assets/cards_img/card_2_paddle.jpg";
+import card3 from "../assets/cards_img/card_3_transportacion.jpg";
 
 interface Props {
     title?: string;
@@ -11,11 +16,6 @@ interface Props {
         image: ImageMetadata;
     }>;
 }
-
-import type { ImageMetadata } from "astro";
-import card1 from "../assets/cards_img/card_1_pontom.webp";
-import card2 from "../assets/cards_img/card_2_paddle.jpg";
-import card3 from "../assets/cards_img/card_3_transportacion.jpg";
 
 const {
     title = "Destinos Populares",
@@ -54,12 +54,59 @@ const {
         },
     ],
 } = Astro.props;
+
+const modalData = [
+    {
+        id: "ponton",
+        title: "Pontón",
+        images: [card1.src, card2.src],
+        schedule: "Lunes a Viernes 9am - 5pm",
+        price: "$60 USD",
+        text: "Descripción larga del tour de pontón...",
+    },
+    {
+        id: "paddle",
+        title: "Paddle",
+        images: [card2.src, card1.src],
+        schedule: "Lunes a Viernes 9am - 5pm",
+        price: "$80 USD",
+        text: "Descripción larga del tour de paddle...",
+    },
+    {
+        id: "transporte",
+        title: "Transportación",
+        images: [card3.src, card1.src],
+        schedule: "Lunes a Viernes 9am - 5pm",
+        price: "$75 USD",
+        text: "Descripción larga del tour de transportación...",
+    },
+    {
+        id: "snorkel",
+        title: "Snorkel",
+        images: [card1.src, card2.src],
+        schedule: "Lunes a Viernes 9am - 5pm",
+        price: "$70 USD",
+        text: "Descripción larga del tour de snorkel...",
+    },
+];
 ---
+
+{
+    modalData.map((m) => (
+        <DestinationModal
+            id={m.id}
+            title={m.title}
+            images={m.images}
+            text={m.text}
+            schedule={m.schedule}
+            price={m.price}
+        />
+    ))
+}
 
 <section class="destinations-section">
     <div class="destinations-container">
         <h2 class="destinations-title">{title}</h2>
-
         <div class="carousel-wrapper">
             <button
                 class="carousel-nav carousel-nav-prev"
@@ -83,7 +130,11 @@ const {
                 <div class="carousel-track">
                     {
                         destinations.map((destination, index) => (
-                            <div class="carousel-card" data-index={index}>
+                            <div
+                                class="carousel-card"
+                                data-index={index}
+                                data-id={destination.id}
+                            >
                                 <div class="card-image">
                                     <img
                                         src={destination.image.src}
@@ -130,47 +181,61 @@ const {
 </section>
 
 <script>
-    const prevBtn = document.querySelector(".carousel-nav-prev");
-    const nextBtn = document.querySelector(".carousel-nav-next");
-    const track = document.querySelector(".carousel-track");
+    const prevBtn = document.querySelector(
+        ".carousel-nav-prev",
+    ) as HTMLButtonElement;
+    const nextBtn = document.querySelector(
+        ".carousel-nav-next",
+    ) as HTMLButtonElement;
+    const track = document.querySelector(".carousel-track") as HTMLElement;
     const cards = document.querySelectorAll(".carousel-card");
 
     let currentIndex = 0;
-    const totalCards = cards.length;
+
+    function getCardWidthPercent(): number {
+        if (!cards.length || !track) return 0;
+        const card = cards[0] as HTMLElement;
+        const trackWidth = track.parentElement?.offsetWidth || 0;
+        const gap = parseInt(window.getComputedStyle(track).gap) || 0;
+        return ((card.offsetWidth + gap) / trackWidth) * 100;
+    }
 
     function updateCarousel() {
-        if (track) {
-            const offset = (currentIndex % totalCards) * -100;
-            (track as HTMLElement).style.transform = `translateX(${offset}%)`;
+        if (track)
+            track.style.transform = `translateX(${currentIndex * -getCardWidthPercent()}%)`;
+        const canPrev = currentIndex > 0;
+        const canNext = currentIndex < cards.length - 1;
+        if (prevBtn) {
+            prevBtn.classList.toggle("disabled", !canPrev);
+            prevBtn.disabled = !canPrev;
         }
-
-        // Actualizar escala de cards
-        cards.forEach((card, index) => {
-            const cardElement = card as HTMLElement;
-            const distance = Math.abs(index - (currentIndex % totalCards));
-
-            if (distance === 0) {
-                cardElement.classList.add("active");
-                cardElement.classList.remove("neighbor");
-            } else if (distance === 1 || distance === totalCards - 1) {
-                cardElement.classList.add("neighbor");
-                cardElement.classList.remove("active");
-            } else {
-                cardElement.classList.remove("active", "neighbor");
-            }
-        });
+        if (nextBtn) {
+            nextBtn.classList.toggle("disabled", !canNext);
+            nextBtn.disabled = !canNext;
+        }
     }
 
     prevBtn?.addEventListener("click", () => {
-        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-        updateCarousel();
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
     });
-
     nextBtn?.addEventListener("click", () => {
-        currentIndex = (currentIndex + 1) % totalCards;
-        updateCarousel();
+        if (currentIndex < cards.length - 1) {
+            currentIndex++;
+            updateCarousel();
+        }
     });
 
-    // Inicializar
     updateCarousel();
+    window.addEventListener("resize", updateCarousel);
+
+    // Abrir modal al hacer click en una card
+    cards.forEach((card) => {
+        card.addEventListener("click", () => {
+            const id = card.getAttribute("data-id");
+            document.getElementById(`modal-${id}`)?.classList.add("open");
+        });
+    });
 </script>

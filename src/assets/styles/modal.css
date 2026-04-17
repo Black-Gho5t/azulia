@@ -1,0 +1,200 @@
+.dmodal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.dmodal-overlay.open {
+    display: flex;
+}
+
+.dmodal-content {
+    background: white;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 860px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+/* Botón cerrar */
+.dmodal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.35);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+}
+
+.dmodal-close:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.dmodal-close svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* Imágenes */
+.dmodal-images {
+    position: relative;
+    border-radius: 1rem 0 0 1rem;
+    overflow: hidden;
+    min-height: 320px;
+    background: #111;
+}
+
+.dmodal-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.dmodal-img.active {
+    opacity: 1;
+    position: relative;
+    height: 100%;
+}
+
+.dmodal-img-nav {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 5;
+}
+
+.dmodal-img-prev,
+.dmodal-img-next {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.dmodal-img-prev:hover,
+.dmodal-img-next:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.dmodal-img-counter {
+    color: white;
+    font-size: 0.85rem;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 8px;
+    border-radius: 1rem;
+}
+
+/* Contenido derecho */
+.dmodal-info {
+    padding: 2.5rem 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.dmodal-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a2854;
+    margin: 0;
+}
+
+.dmodal-text {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.7;
+    text-align: justify;
+    margin: 0;
+    flex: 1;
+}
+
+.dmodal-footer {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: auto;
+}
+
+.dmodal-schedule {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.dmodal-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d4a017;
+}
+
+/* Móvil — vertical */
+@media (max-width: 640px) {
+    .dmodal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .dmodal-content {
+        grid-template-columns: 1fr;
+        max-height: 95vh;
+        border-radius: 1rem 1rem 0 0;
+        max-width: 100%;
+    }
+
+    .dmodal-images {
+        border-radius: 1rem 1rem 0 0;
+        min-height: 220px;
+        height: 220px;
+    }
+
+    .dmodal-img.active {
+        position: absolute;
+        height: 100%;
+    }
+
+    .dmodal-info {
+        padding: 1.5rem 1.25rem;
+        order: 1;
+    }
+
+    .dmodal-title {
+        font-size: 1.3rem;
+    }
+}

@@ -1,0 +1,117 @@
+---
+import "../assets/styles/modal.css";
+interface Props {
+    id: string;
+    title: string;
+    images: string[];
+    text: string;
+    schedule: string;
+    price: string;
+    variant?: string;
+}
+
+const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
+---
+
+<div id={`modal-${id}`} class={`dmodal-overlay ${variant}`}>
+    <div class="dmodal-content">
+        <button class="dmodal-close" aria-label="Cerrar">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Izquierda: imágenes -->
+        <div class="dmodal-images">
+            {
+                images.map((src, i) => (
+                    <img
+                        src={src}
+                        alt={`${title} ${i + 1}`}
+                        class={`dmodal-img ${i === 0 ? "active" : ""}`}
+                        data-img-index={i}
+                        loading="lazy"
+                    />
+                ))
+            }
+            {
+                images.length > 1 && (
+                    <div class="dmodal-img-nav">
+                        <button class="dmodal-img-prev" aria-label="Anterior">
+                            &#8592;
+                        </button>
+                        <span class="dmodal-img-counter">
+                            1 / {images.length}
+                        </span>
+                        <button class="dmodal-img-next" aria-label="Siguiente">
+                            &#8594;
+                        </button>
+                    </div>
+                )
+            }
+        </div>
+
+        <!-- Derecha: contenido -->
+        <div class="dmodal-info">
+            <h2 class="dmodal-title">{title}</h2>
+            <p class="dmodal-text">{text}</p>
+            <div class="dmodal-footer">
+                <span class="dmodal-schedule">{schedule}</span>
+                <span class="dmodal-price">{price}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inicializar todos los modales presentes en la página
+    document.querySelectorAll(".dmodal-overlay").forEach((overlay) => {
+        const closeBtn = overlay.querySelector(".dmodal-close");
+        const imgs = overlay.querySelectorAll(".dmodal-img");
+        const prevBtn = overlay.querySelector(".dmodal-img-prev");
+        const nextBtn = overlay.querySelector(".dmodal-img-next");
+        const counter = overlay.querySelector(".dmodal-img-counter");
+
+        let current = 0;
+
+        function showImg(index: number) {
+            imgs.forEach((img, i) => {
+                img.classList.toggle("active", i === index);
+            });
+            if (counter) counter.textContent = `${index + 1} / ${imgs.length}`;
+        }
+
+        prevBtn?.addEventListener("click", () => {
+            current = current > 0 ? current - 1 : imgs.length - 1;
+            showImg(current);
+        });
+
+        nextBtn?.addEventListener("click", () => {
+            current = current < imgs.length - 1 ? current + 1 : 0;
+            showImg(current);
+        });
+
+        closeBtn?.addEventListener("click", () => {
+            overlay.classList.remove("open");
+            current = 0;
+            showImg(0);
+        });
+
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove("open");
+                current = 0;
+                showImg(0);
+            }
+        });
+    });
+</script>
