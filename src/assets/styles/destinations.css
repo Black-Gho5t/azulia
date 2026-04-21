@@ -1,3 +1,7 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .destinations-section {
     padding: 4rem 1rem;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -13,8 +17,10 @@
     font-weight: 700;
     color: #1a2854;
     margin-bottom: 3rem;
+    padding-left: 20px;
     text-transform: uppercase;
     letter-spacing: 0.15em;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .carousel-wrapper {

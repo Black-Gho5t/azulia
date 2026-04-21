@@ -1,0 +1,336 @@
+/* Footer Styles - Escala de Azules */
+
+.footer-container {
+    background: linear-gradient(135deg, #0f3460 0%, #16588e 50%, #217ba9 100%);
+    color: #fff;
+    padding: 60px 20px 0;
+    margin-top: 80px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+}
+
+/* Sección de Footer */
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-logo {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+}
+
+.footer-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #e0f2ff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #4db8ff, transparent);
+}
+
+.footer-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #d0e8ff;
+    margin: 0;
+}
+
+.footer-small {
+    font-size: 13px;
+    color: #b3d9ff;
+    margin: 0 0 15px 0;
+}
+
+/* Enlaces de Footer */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links li {
+    margin: 0;
+}
+
+.footer-links a {
+    color: #d0e8ff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    position: relative;
+}
+
+.footer-links a::before {
+    content: '▸ ';
+    color: #4db8ff;
+    margin-right: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #80d4ff;
+    padding-left: 12px;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+}
+
+/* Información de Contacto */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-info p {
+    font-size: 14px;
+    color: #d0e8ff;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.contact-info strong {
+    color: #4db8ff;
+    font-weight: 600;
+}
+
+/* Redes Sociales */
+.social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(77, 184, 255, 0.2);
+    color: #4db8ff;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(77, 184, 255, 0.4);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background: #4db8ff;
+    color: #0f3460;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(77, 184, 255, 0.4);
+}
+
+.social-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Newsletter Form */
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.newsletter-form input {
+    padding: 12px 15px;
+    border: none;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(77, 184, 255, 0.3);
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.newsletter-form input:focus {
+    outline: none;
+    background: rgba(77, 184, 255, 0.15);
+    border-color: #4db8ff;
+    box-shadow: 0 0 8px rgba(77, 184, 255, 0.3);
+}
+
+.newsletter-form button {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #4db8ff 0%, #0099ff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.newsletter-form button:hover {
+    background: linear-gradient(135deg, #80d4ff 0%, #4db8ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(77, 184, 255, 0.4);
+}
+
+.newsletter-form button:active {
+    transform: translateY(0);
+}
+
+/* Divisor */
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(77, 184, 255, 0.4), transparent);
+    margin: 0 auto 30px;
+    max-width: 1200px;
+    width: 90%;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    text-align: center;
+    padding: 30px 20px;
+    border-top: 1px solid rgba(77, 184, 255, 0.2);
+    background: rgba(15, 52, 96, 0.5);
+    color: #b3d9ff;
+    font-size: 14px;
+}
+
+.footer-bottom p {
+    margin: 0 0 15px 0;
+}
+
+.footer-links-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.footer-links-bottom a {
+    color: #80d4ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 13px;
+}
+
+.footer-links-bottom a:hover {
+    color: #4db8ff;
+    text-decoration: underline;
+}
+
+.footer-links-bottom span {
+    color: rgba(77, 184, 255, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 40px 15px 0;
+        margin-top: 60px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .footer-title {
+        font-size: 24px;
+    }
+
+    .footer-section-title {
+        font-size: 16px;
+    }
+
+    .footer-bottom {
+        padding: 20px 15px;
+    }
+
+    .footer-links-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .social-links {
+        gap: 12px;
+    }
+
+    .social-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .social-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 30px 10px 0;
+    }
+
+    .footer-title {
+        font-size: 20px;
+    }
+
+    .footer-section-title {
+        font-size: 14px;
+    }
+
+    .footer-description,
+    .contact-info p {
+        font-size: 13px;
+    }
+
+    .social-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .newsletter-form input,
+    .newsletter-form button {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,118 @@
+---
+import "../assets/styles/carousel.css";
+---
+
+<div class="main-carousel-container">
+    <button class="main-carousel-nav main-carousel-prev" aria-label="Anterior">
+        ❮
+    </button>
+
+    <div class="main-carousel-wrapper">
+        <!-- Tours Card -->
+        <div class="main-carousel-card active" data-slide="0">
+            <div class="main-card-image">
+                <img
+                    src="src/assets/photos_azulia_webp/velero/velero_2.webp"
+                    alt="Tours"
+                />
+            </div>
+            <div class="main-card-content">
+                <h2>Tours</h2>
+                <p>
+                    Explora las maravillas naturales y culturales de Bacalar y
+                    el sur de México. Visita ruinas antiguas, playas
+                    paradisíacas y paisajes de ensueño.
+                </p>
+                <button class="main-card-button">
+                    Ver más
+                    <span class="main-arrow">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hoteles Card -->
+        <div class="main-carousel-card" data-slide="1">
+            <div class="main-card-image">
+                <img src="src/assets/generic/hotel-ejemplo.jpg" alt="Hoteles" />
+            </div>
+            <div class="main-card-content">
+                <h2>Hoteles</h2>
+                <p>
+                    Disfruta de alojamientos de lujo y confortables en los
+                    mejores destinos.
+                </p>
+                <div class="main-hotel-examples">
+                    <span>Resort Paradise</span>
+                    <span>Beachfront Luxury</span>
+                    <span>Eco Lodge</span>
+                </div>
+                <button class="main-card-button">
+                    Ver más
+                    <span class="main-arrow">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Transportación Card -->
+        <div class="main-carousel-card" data-slide="2">
+            <div class="main-card-image">
+                <img
+                    src="src/assets/cards_img/card_3_transportacion.jpg"
+                    alt="Transportación"
+                />
+            </div>
+            <div class="main-card-content">
+                <h2>Transportación</h2>
+                <p>
+                    Traslados seguros y cómodos para todos tus viajes. Contamos
+                    con vehículos modernos y conductores profesionales.
+                </p>
+                <button class="main-card-button">
+                    Ver más
+                    <span class="main-arrow">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button class="main-carousel-nav main-carousel-next" aria-label="Siguiente">
+        ❯
+    </button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll(".main-carousel-card");
+    const prevBtn = document.querySelector(".main-carousel-prev");
+    const nextBtn = document.querySelector(".main-carousel-next");
+    const totalSlides = slides.length;
+
+    function showSlide(n: number): void {
+        slides.forEach((slide) => slide.classList.remove("active"));
+
+        slides[n].classList.add("active");
+    }
+
+    function prevSlide(): void {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+    }
+
+    function nextSlide(): void {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+    }
+
+    setInterval(nextSlide, 15000);
+
+    prevBtn?.addEventListener("click", prevSlide);
+    nextBtn?.addEventListener("click", nextSlide);
+
+    const cardButtons = document.querySelectorAll(".main-card-button");
+    cardButtons.forEach((button, index) => {
+        button.addEventListener("click", () => {
+            const routes = ["/tours", "/hotels", "/transportation"];
+            window.location.href = routes[index];
+        });
+    });
+</script>

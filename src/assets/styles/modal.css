@@ -197,4 +197,8 @@
     .dmodal-title {
         font-size: 1.3rem;
     }
+
+    .dmodal-footer {
+        padding-bottom: 10vh;
+    }
 }
