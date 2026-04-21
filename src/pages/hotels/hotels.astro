@@ -1,0 +1,87 @@
+---
+import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <Navbar />
+    <main>
+        <section class="hotels-section">
+            <div class="container">
+                <h1>Hoteles</h1>
+                <p>
+                    Disfruta de alojamientos de lujo y confortables en los
+                    mejores destinos.
+                </p>
+
+                <div class="hotels-grid">
+                    <div class="hotel-card">
+                        <h3>Resort Paradise</h3>
+                        <p>
+                            Experiencia de 5 estrellas con vistas al mar y
+                            servicios premium.
+                        </p>
+                    </div>
+                    <div class="hotel-card">
+                        <h3>Beachfront Luxury</h3>
+                        <p>
+                            Alojamiento lujoso directamente en la playa con
+                            acceso privado.
+                        </p>
+                    </div>
+                    <div class="hotel-card">
+                        <h3>Eco Lodge</h3>
+                        <p>
+                            Hospedaje sostenible en armonía con la naturaleza.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <Footer />
+</Layout>
+
+<style>
+    .hotels-section {
+        padding: 4rem 2rem;
+        background: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .hotels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .hotel-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .hotel-card h3 {
+        color: #217b96;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .hotel-card p {
+        color: #555;
+        line-height: 1.6;
+    }
+</style>

@@ -2,7 +2,7 @@
 .main-carousel-container {
     width: 100%;
     padding: 2rem 1rem;
-    background: radial-gradient(ellipse 90% 100% at 0% 0%,
+    background: linear-gradient(180deg,
             rgb(33, 123, 150) 0%,
             rgb(33, 123, 150) 25%,
             rgba(33, 123, 150, 0.75) 45%,

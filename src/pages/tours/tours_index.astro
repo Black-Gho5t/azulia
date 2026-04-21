@@ -1,0 +1,87 @@
+---
+import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+    <Navbar />
+    <main>
+        <section class="tours-section">
+            <div class="container">
+                <h1>Tours</h1>
+                <p>
+                    Explora las maravillas naturales y culturales de Bacalar y
+                    el sur de México.
+                </p>
+
+                <div class="tours-grid">
+                    <div class="tour-card">
+                        <h3>Tours Nauticos</h3>
+                        <p>
+                            Vive la aventura en el agua con nuestros tours
+                            marítimos exclusivos.
+                        </p>
+                    </div>
+                    <div class="tour-card">
+                        <h3>Tours Culturales</h3>
+                        <p>
+                            Descubre la riqueza histórica y cultural de la
+                            región.
+                        </p>
+                    </div>
+                    <div class="tour-card">
+                        <h3>Tours de Naturaleza</h3>
+                        <p>
+                            Conecta con la naturaleza en sus formas más puras.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <Footer />
+</Layout>
+
+<style>
+    .tours-section {
+        padding: 4rem 2rem;
+        background: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 3rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .tours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .tour-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .tour-card h3 {
+        color: #217b96;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tour-card p {
+        color: #555;
+        line-height: 1.6;
+    }
+</style>

@@ -109,10 +109,14 @@ import "../assets/styles/carousel.css";
     nextBtn?.addEventListener("click", nextSlide);
 
     const cardButtons = document.querySelectorAll(".main-card-button");
-    cardButtons.forEach((button, index) => {
+    cardButtons.forEach((button) => {
         button.addEventListener("click", () => {
-            const routes = ["/tours", "/hotels", "/transportation"];
-            window.location.href = routes[index];
+            const routes = [
+                "/tours/tours_index/",
+                "/hotels/hotels/",
+                "/transportation/transportacion_index/",
+            ];
+            window.location.href = routes[currentSlide];
         });
     });
 </script>
