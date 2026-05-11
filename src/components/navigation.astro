@@ -20,8 +20,25 @@ no acumular tantos menus desplegables en el mismo.
     <div class="pages-nav menu">
         <!-- menus principales -->
         <ul>
+            <li id="home-button" class="home-button-hidden">
+                <a href="/" class="home-link">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-house"
+                        viewBox="0 0 16 16"
+                    >
+                        <path
+                            d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"
+                        ></path>
+                    </svg>
+                    Home
+                </a>
+            </li>
             <li>
-                <span>
+                <a href="/tours/tours_index">
                     <svg
                         id="icon-menu"
                         xmlns="http://www.w3.org/2000/svg"
@@ -38,8 +55,8 @@ no acumular tantos menus desplegables en el mismo.
                             d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"
                         ></path>
                     </svg>
-                    Tours</span
-                >
+                    Tours
+                </a>
                 <!-- menu desplegable de tours -->
                 <ul class="item">
                     <li class="item"><a href="/tours/nauticos">Nauticos</a></li>
@@ -54,7 +71,7 @@ no acumular tantos menus desplegables en el mismo.
             </li>
             <li>
                 <!-- menu desplegable de hoteles (aun no nos dan la lista) -->
-                <span>
+                <a href="/hotels/hotels">
                     <svg
                         id="icon-menu"
                         xmlns="http://www.w3.org/2000/svg"
@@ -71,8 +88,8 @@ no acumular tantos menus desplegables en el mismo.
                             d="M2 11h1v1H2zm2 0h1v1H4zm-2 2h1v1H2zm2 0h1v1H4zm4-4h1v1H8zm2 0h1v1h-1zm-2 2h1v1H8zm2 0h1v1h-1zm2-2h1v1h-1zm0 2h1v1h-1zM8 7h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zM8 5h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm0-2h1v1h-1z"
                         ></path>
                     </svg>
-                    Hoteles</span
-                >
+                    Hoteles
+                </a>
                 <ul class="item">
                     <li class="item">
                         <a href="/hotels/hotels">"lista de hoteles"</a>
@@ -81,7 +98,7 @@ no acumular tantos menus desplegables en el mismo.
             </li>
             <li>
                 <!-- menu desplegable de transportacion -->
-                <span>
+                <a href="/transportation/transportacion_index">
                     <svg
                         id="icon-menu"
                         xmlns="http://www.w3.org/2000/svg"
@@ -95,8 +112,8 @@ no acumular tantos menus desplegables en el mismo.
                             d="M16 7a1 1 0 0 1-1 1v3.5c0 .818-.393 1.544-1 2v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V14H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a2.5 2.5 0 0 1-1-2V8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1V2.64C1 1.452 1.845.408 3.064.268A44 44 0 0 1 8 0c2.1 0 3.792.136 4.936.268C14.155.408 15 1.452 15 2.64V4a1 1 0 0 1 1 1zM3.552 3.22A43 43 0 0 1 8 3c1.837 0 3.353.107 4.448.22a.5.5 0 0 0 .104-.994A44 44 0 0 0 8 2c-1.876 0-3.426.109-4.552.226a.5.5 0 1 0 .104.994M8 4c-1.876 0-3.426.109-4.552.226A.5.5 0 0 0 3 4.723v3.554a.5.5 0 0 0 .448.497C4.574 8.891 6.124 9 8 9s3.426-.109 4.552-.226A.5.5 0 0 0 13 8.277V4.723a.5.5 0 0 0-.448-.497A44 44 0 0 0 8 4m-3 7a1 1 0 1 0-2 0 1 1 0 0 0 2 0m8 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m-7 0a1 1 0 0 0 1 1h2a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1"
                         ></path>
                     </svg>
-                    Transportacion</span
-                >
+                    Transportacion
+                </a>
                 <ul class="item">
                     <li class="item">
                         <a href="/transportation/nacional">Nacional</a>
@@ -138,6 +155,24 @@ no acumular tantos menus desplegables en el mismo.
 <div id="menu-drawer" class="drawer">
     <nav class="drawer-nav">
         <ul>
+            <div class="spacer"></div>
+            <li id="home-drawer-button" class="home-button-hidden">
+                <a href="/">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-house-fill"
+                        viewBox="0 0 16 16"
+                    >
+                        <path
+                            d="M8.707.5a.5.5 0 0 0-.414 0l-7 3.5a.5.5 0 0 0-.293.604l.647 4.094-.856 5.143A.5.5 0 0 0 1 13.5h14a.5.5 0 0 0 .5-.5l-.856-5.143.647-4.094a.5.5 0 0 0-.293-.604l-7-3.5z"
+                        ></path>
+                    </svg>
+                    <span style="color: white;">Home</span>
+                </a>
+            </li>
             <div class="spacer"></div>
             <li><span class="title-nav">Tours</span></li>
             <li><a href="/tours/nauticos">Nauticos</a></li>
@@ -182,4 +217,105 @@ no acumular tantos menus desplegables en el mismo.
             overlay.classList.remove("open");
         });
     }
+
+    // Detectar si estamos en la página de home
+    function checkIfHomePage() {
+        const currentPath = window.location.pathname;
+        const homeButton = document.getElementById("home-button");
+        const homeDrawerButton = document.getElementById("home-drawer-button");
+
+        const isHomePage =
+            currentPath === "/" ||
+            currentPath === "/index.astro" ||
+            currentPath === "";
+
+        // Actualizar botón en navegación principal
+        if (homeButton) {
+            if (isHomePage) {
+                homeButton.classList.add("home-button-hidden");
+                homeButton.classList.remove("home-button-visible");
+            } else {
+                homeButton.classList.remove("home-button-hidden");
+                homeButton.classList.add("home-button-visible");
+            }
+        }
+
+        // Actualizar botón en drawer móvil
+        if (homeDrawerButton) {
+            if (isHomePage) {
+                homeDrawerButton.classList.add("home-button-hidden");
+                homeDrawerButton.classList.remove("home-button-visible");
+            } else {
+                homeDrawerButton.classList.remove("home-button-hidden");
+                homeDrawerButton.classList.add("home-button-visible");
+            }
+        }
+    }
+
+    // Ejecutar al cargar
+    checkIfHomePage();
+
+    // Ejecutar cuando cambia la URL (para navegación del cliente)
+    window.addEventListener("popstate", checkIfHomePage);
 </script>
+
+<style>
+    #home-button {
+        display: none;
+    }
+
+    #home-button.home-button-visible {
+        display: flex;
+        align-items: center;
+    }
+
+    #home-button.home-button-hidden {
+        display: none;
+    }
+
+    #home-button .home-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    #home-button .home-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #home-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Estilos para el botón home en el drawer móvil */
+    #home-drawer-button {
+        display: none;
+    }
+
+    #home-drawer-button.home-button-visible {
+        display: block;
+    }
+
+    #home-drawer-button.home-button-hidden {
+        display: none;
+    }
+
+    #home-drawer-button a {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    #home-drawer-button svg {
+        width: 16px;
+        height: 16px;
+    }
+</style>

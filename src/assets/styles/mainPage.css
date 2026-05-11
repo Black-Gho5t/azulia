@@ -1,22 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Allura:wght@400&display=swap');
 
-.background-image {
-    width: 100%;
-    height: 55vh;
-    background-color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 .hero-wrapper {
     position: relative;
     width: 100%;
-    height: 55vh;
+    height: clamp(45vh, 60vh, 90vh);
     overflow: hidden;
 }
 
@@ -43,56 +30,21 @@
     display: block;
 }
 
-.background-image::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: inherit;
-    background-size: inherit;
-    background-position: inherit;
-    background-repeat: inherit;
-    filter: blur(2px);
-    z-index: 0;
-}
-
-.background-image::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: radial-gradient(ellipse 80% 100% at 0% 100%,
-            rgb(33, 123, 150) 0%,
-            rgb(33, 123, 150) 25%,
-            rgba(33, 123, 150, 0.75) 45%,
-            rgba(33, 123, 150, 0.35) 65%,
-            transparent 80%);
-    pointer-events: none;
-}
-
 @media (max-width: 768px) {
-    .background-image {
-        height: 55vh;
-        transform: scale(1.08);
-        transform-origin: top center;
-        background-size: 110%;
+    .hero-wrapper {
+        height: clamp(50vh, 65vh, 85vh);
     }
 }
 
 @media (max-width: 480px) {
-    .background-image {
-        height: 55vh;
-        transform: scale(1.15);
-        transform-origin: top center;
-        background-size: 120%;
+    .hero-wrapper {
+        height: clamp(55vh, 70vh, 80vh);
     }
 }
 
 @media (max-width: 360px) {
-    .background-image {
-        height: 55vh;
-        transform: scale(1.2);
-        transform-origin: top center;
-        background-size: 130%;
+    .hero-wrapper {
+        height: clamp(60vh, 75vh, 80vh);
     }
 }
 
@@ -116,23 +68,29 @@
 
 .logo {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 80%;
+    max-width: 90%;
+    padding: 20px;
 }
 
 .logo-img-upscale {
-    width: clamp(180px, 60vw, 800px);
+    width: clamp(220px, 70vw, 1200px);
     height: auto;
-    max-height: 700px;
+    max-height: 40vh;
     object-fit: contain;
     object-position: center;
 }
 
 @media (max-width: 480px) {
     .logo-img-upscale {
-        width: clamp(160px, 75vw, 400px);
-        max-height: 500px;
+        width: clamp(180px, 80vw, 450px);
+        max-height: 35vh;
     }
 }
