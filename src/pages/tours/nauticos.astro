@@ -1,9 +1,451 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 ---
 
 <Layout>
     <Navbar />
-    <h1>Nauticos</h1>
+    <main>
+        <!-- Carrusel superior -->
+        <div class="nauticos-carousel">
+            <div class="carousel-images">
+                <img
+                    src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
+                    alt="Tours Náuticos - Velero"
+                    class="carousel-img active"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
+                    alt="Tours Náuticos - Moto Acuática"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/ponton/pontom_1.webp"
+                    alt="Tours Náuticos - Pontón"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
+                    alt="Tours Náuticos - Snorkel"
+                    class="carousel-img"
+                />
+            </div>
+            <div class="carousel-overlay"></div>
+            <div class="carousel-content">
+                <br />
+                <h1 class="carousel-title">Tours</h1>
+                <h2 class="carousel-subtitle">Náuticos</h2>
+                <p class="carousel-desc">
+                    Vive la aventura en el agua con nuestros tours marítimos
+                    exclusivos. Explora el Caribe en barcos tradicionales y
+                    actividades acuáticas.
+                </p>
+            </div>
+        </div>
+
+        <!-- Resumen de Tours Náuticos -->
+        <!-- <section class="summary-section">
+            <div class="container">
+                <h2 class="summary-title">Tours Náuticos en Bacalar</h2>
+                <p class="summary-text">
+                    Descubre las maravillas del mar Caribe con nuestros tours
+                    náuticos especializados. Desde emocionantes paseos en velero
+                    hasta aventuras en moto acuática, ofrecemos experiencias
+                    inolvidables para todos los gustos. Nuestros guías
+                    certificados te acompañarán en cada aventura, asegurando tu
+                    seguridad y diversión.
+                </p>
+            </div>
+        </section> -->
+
+        <!-- Cards de Tours Náuticos -->
+        <section class="nauticos-section">
+            <div class="container">
+                <div class="nauticos-grid">
+                    <div class="nauticos-card">
+                        <div class="nauticos-card-image">
+                            <img
+                                src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
+                                alt="Velero"
+                            />
+                        </div>
+                        <div class="nauticos-card-content">
+                            <h3>Velero</h3>
+                            <p>
+                                Navega en un velero auténtico por las aguas
+                                cristalinas del Caribe. Disfruta de vistas
+                                panorámicas y la brisa del mar.
+                            </p>
+                            <div class="tour-details">
+                                <p class="schedule">
+                                    <strong>Horario:</strong> 8:00 AM - 1:00 PM
+                                </p>
+                                <p class="availability">
+                                    Precio sujeto a disponibilidad
+                                </p>
+                                <button class="card-contact-button"
+                                    >Contactar</button
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nauticos-card">
+                        <div class="nauticos-card-image">
+                            <img
+                                src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
+                                alt="Moto Acuática"
+                            />
+                        </div>
+                        <div class="nauticos-card-content">
+                            <h3>Moto Acuática</h3>
+                            <p>
+                                Vive la adrenalina con nuestros tours en moto
+                                acuática. Explora calas escondidas y playas
+                                paradisíacas a alta velocidad.
+                            </p>
+                            <div class="tour-details">
+                                <p class="schedule">
+                                    <strong>Horario:</strong> 10:00 AM - 2:00 PM
+                                </p>
+                                <p class="availability">
+                                    Precio sujeto a disponibilidad
+                                </p>
+                                <button class="card-contact-button"
+                                    >Contactar</button
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nauticos-card">
+                        <div class="nauticos-card-image">
+                            <img
+                                src="/src/assets/photos_azulia_webp/ponton/pontom_2.webp"
+                                alt="Pontón"
+                            />
+                        </div>
+                        <div class="nauticos-card-content">
+                            <h3>Pontón</h3>
+                            <p>
+                                Paseo relajado en pontón ideal para familias.
+                                Perfecto para disfrutar en grupo con baños en
+                                agua cristalina.
+                            </p>
+                            <div class="tour-details">
+                                <p class="schedule">
+                                    <strong>Horario:</strong> 9:00 AM - 3:00 PM
+                                </p>
+                                <p class="availability">
+                                    Precio sujeto a disponibilidad
+                                </p>
+                                <button class="card-contact-button"
+                                    >Contactar</button
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nauticos-card">
+                        <div class="nauticos-card-image">
+                            <img
+                                src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
+                                alt="Snorkel"
+                            />
+                        </div>
+                        <div class="nauticos-card-content">
+                            <h3>Snorkel</h3>
+                            <p>
+                                Bucea en arrecifes de coral y observa la vida
+                                marina tropical. Incluye equipo completo y guía
+                                especializado.
+                            </p>
+                            <div class="tour-details">
+                                <p class="schedule">
+                                    <strong>Horario:</strong> 8:00 AM - 12:00 PM
+                                </p>
+                                <p class="availability">
+                                    Precio sujeto a disponibilidad
+                                </p>
+                                <button class="card-contact-button"
+                                    >Contactar</button
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de Contacto -->
+            <!-- <div class="contact-button-container">
+                <button class="contact-button">
+                    <a href="#contacto" class="contact-link"
+                        >Contáctanos para Reservar</a
+                    >
+                </button>
+            </div> -->
+        </section>
+    </main>
+    <Footer />
 </Layout>
+
+<style>
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .nauticos-carousel {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        background: #1a3a52;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-images {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .carousel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.7s;
+    }
+
+    .carousel-img.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(33, 123, 150, 0.55) 0%,
+            rgba(26, 58, 82, 0.45) 100%
+        );
+        z-index: 2;
+    }
+
+    .carousel-content {
+        position: relative;
+        z-index: 3;
+        color: #fff;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .carousel-title {
+        font-size: 2rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .carousel-subtitle {
+        font-size: 3.5rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        letter-spacing: 0.08em;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .carousel-desc {
+        font-size: 1.1rem;
+        color: #f0f0f0;
+        max-width: 600px;
+        margin: 0 auto;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .summary-section {
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        text-align: center;
+        border-bottom: 4px solid #217b96;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .summary-title {
+        font-size: 2.2rem;
+        color: #217b96;
+        margin-bottom: 1rem;
+    }
+
+    .summary-text {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        line-height: 1.8;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .nauticos-section {
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .nauticos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .nauticos-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .nauticos-card:hover {
+        box-shadow: 0 12px 24px rgba(33, 123, 150, 0.15);
+    }
+
+    .nauticos-card-image {
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+        background: #eaf6fa;
+    }
+
+    .nauticos-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .nauticos-card:hover .nauticos-card-image img {
+        transform: scale(1.05);
+    }
+
+    .nauticos-card-content {
+        padding: 1.5rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .nauticos-card-content h3 {
+        color: #217b96;
+        font-size: 1.4rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .nauticos-card-content p {
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .tour-details {
+        margin-top: auto;
+    }
+
+    .schedule {
+        color: #2c3e50;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .availability {
+        color: #2563eb;
+        font-weight: bold;
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+        margin-bottom: 1rem;
+    }
+
+    .card-contact-button {
+        background: linear-gradient(135deg, #217b96 0%, #2a9aba 100%);
+        color: #fff;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.95rem;
+        border-radius: 0.6rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(33, 123, 150, 0.25);
+        transition: all 0.3s ease;
+        width: 100%;
+        font-weight: 500;
+    }
+
+    .card-contact-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(33, 123, 150, 0.35);
+    }
+
+    .contact-button-container {
+        display: flex;
+        justify-content: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .contact-button {
+        background: linear-gradient(135deg, #217b96 0%, #2a9aba 100%);
+        color: #fff;
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.2rem;
+        border-radius: 0.8rem;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(33, 123, 150, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .contact-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(33, 123, 150, 0.4);
+    }
+
+    .contact-link {
+        text-decoration: none;
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-subtitle {
+            font-size: 2.5rem;
+        }
+
+        .carousel-title {
+            font-size: 1.5rem;
+        }
+
+        .nauticos-carousel {
+            height: 300px;
+        }
+
+        .summary-title {
+            font-size: 1.8rem;
+        }
+
+        .contact-button {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+        }
+    }
+</style>
