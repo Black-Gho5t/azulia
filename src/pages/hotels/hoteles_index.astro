@@ -2,38 +2,42 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import Card from "../../components/cards.astro";
 ---
 
 <Layout>
     <Navbar />
     <main>
-        <section class="hotels-section">
-            <div class="container">
-                <h1 class="hotels-title">Hoteles en la Playa</h1>
-                <p class="hotels-desc">
-                    Descubre alojamientos de lujo, confort y experiencias únicas
-                    frente al mar. ¡Elige tu paraíso y vive unas vacaciones
-                    inolvidables!
-                </p>
-            </div>
-        </section>
-        <!-- Carrusel superior -->
-        <div class="hotels-carousel">
+        <!-- Image Carousel with Overlay -->
+        <div class="tours-carousel">
             <div class="carousel-images">
                 <img
-                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
-                    alt="Hotel Playa Paraíso"
+                    src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
+                    alt="Tours - Velero 1"
                     class="carousel-img active"
                 />
                 <img
-                    src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80"
-                    alt="Eco Beach Resort"
+                    src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
+                    alt="Tours - Velero 2"
                     class="carousel-img"
                 />
                 <img
-                    src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
-                    alt="Luxury Oceanfront"
+                    src="/src/assets/photos_azulia_webp/velero/velero_4.webp"
+                    alt="Tours - Velero 3"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
+                    alt="Tours - Velero 4"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/ponton/pontom_1.webp"
+                    alt="Tours - Ponton 1"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/ponton/pontom_2.webp"
+                    alt="Tours - Ponton 2"
                     class="carousel-img"
                 />
             </div>
@@ -41,11 +45,12 @@ import Card from "../../components/cards.astro";
             <div class="carousel-content">
                 <h1>Hoteles</h1>
                 <p>
-                    Hospédate en los mejores hoteles de playa, con opciones para
-                    todos los gustos y presupuestos.
+                    Alojate en los mejores hoteles de Bacalar y el sur de
+                    México.
                 </p>
             </div>
         </div>
+
         <section class="hoteles_index-section">
             <div class="container">
                 <div class="hoteles_index-grid">
@@ -62,7 +67,7 @@ import Card from "../../components/cards.astro";
                                 Alojamiento lujoso directamente en la playa con
                                 acceso privado.
                             </p>
-                            <span class="hotel-price">$7,200 MXN / noche</span>
+                            <!-- <span class="hotel-price">$7,200 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -78,7 +83,7 @@ import Card from "../../components/cards.astro";
                                 Hospedaje sostenible en armonía con la
                                 naturaleza.
                             </p>
-                            <span class="hotel-price">$2,100 MXN / noche</span>
+                            <!-- <span class="hotel-price">$2,100 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -94,7 +99,7 @@ import Card from "../../components/cards.astro";
                                 Estilo único, atención personalizada y detalles
                                 exclusivos frente al mar.
                             </p>
-                            <span class="hotel-price">$5,800 MXN / noche</span>
+                            <!-- <span class="hotel-price">$5,800 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -110,7 +115,7 @@ import Card from "../../components/cards.astro";
                                 Ideal para familias, con club infantil y
                                 actividades acuáticas.
                             </p>
-                            <span class="hotel-price">$3,400 MXN / noche</span>
+                            <!-- <span class="hotel-price">$3,400 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -126,7 +131,7 @@ import Card from "../../components/cards.astro";
                                 Suites exclusivas con terraza privada y vistas
                                 espectaculares al mar Caribe.
                             </p>
-                            <span class="hotel-price">$10,000 MXN / noche</span>
+                            <!-- <span class="hotel-price">$10,000 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -142,7 +147,7 @@ import Card from "../../components/cards.astro";
                                 Hospedaje ecológico rodeado de naturaleza, ideal
                                 para relajarse y desconectar.
                             </p>
-                            <span class="hotel-price">$1,200 MXN / noche</span>
+                            <!-- <span class="hotel-price">$1,200 MXN / noche</span> -->
                         </div>
                     </div>
                     <div class="hotel-card">
@@ -158,7 +163,7 @@ import Card from "../../components/cards.astro";
                                 Ambiente relajado, club de playa y cocteles
                                 junto al mar.
                             </p>
-                            <span class="hotel-price">$500 MXN / noche</span>
+                            <!-- <span class="hotel-price">$500 MXN / noche</span> -->
                         </div>
                     </div>
                 </div>
@@ -169,6 +174,188 @@ import Card from "../../components/cards.astro";
 </Layout>
 
 <style>
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .tours-carousel {
+        position: relative;
+        width: 100%;
+        height: 80vh;
+        overflow: hidden;
+    }
+
+    .carousel-images {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #f0f0f0;
+    }
+
+    .carousel-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+    }
+
+    .carousel-img.active {
+        opacity: 1;
+        z-index: 1;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            ellipse 90% 100% at 0% 0%,
+            rgb(33, 123, 150) 0%,
+            rgb(33, 123, 150) 25%,
+            rgba(33, 123, 150, 0.75) 45%,
+            rgba(33, 123, 150, 0.35) 65%,
+            transparent 80%
+        );
+        z-index: 2;
+    }
+
+    .carousel-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        text-align: center;
+        color: white;
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+    }
+
+    .carousel-content h1 {
+        font-size: 4rem;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .carousel-content p {
+        font-size: 1.3rem;
+        color: white;
+        line-height: 1.6;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .tours-section {
+        padding: 4rem 2rem;
+        background: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .tours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 0;
+    }
+
+    .tour-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .tour-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .tour-card-image {
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .tour-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .tour-card:hover .tour-card-image img {
+        transform: scale(1.05);
+    }
+
+    .tour-card h3 {
+        color: #217b96;
+        font-size: 1.5rem;
+        margin: 1.5rem 1.5rem 0.5rem 1.5rem;
+    }
+
+    .tour-card p {
+        color: #555;
+        line-height: 1.6;
+        padding: 0 1.5rem 1.5rem 1.5rem;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .tours-carousel {
+            height: 50vh;
+        }
+
+        .carousel-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .carousel-content p {
+            font-size: 1rem;
+        }
+
+        .tour-card h3 {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tours-carousel {
+            height: 40vh;
+        }
+
+        .carousel-content h1 {
+            font-size: 1.8rem;
+        }
+
+        .carousel-content p {
+            font-size: 0.9rem;
+        }
+
+        .tour-card-image {
+            height: 200px;
+        }
+
+        .tour-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .tour-card p {
+            font-size: 0.9rem;
+        }
+    }
     .hoteles_index-carousel {
         position: relative;
         width: 100%;
@@ -296,5 +483,23 @@ import Card from "../../components/cards.astro";
         font-size: 1.1rem;
         margin-top: auto;
         letter-spacing: 0.02em;
-    }
+
 </style>
+
+<script>
+    let currentImageIndex = 0;
+    const carouselImages = document.querySelectorAll(".carousel-img");
+    const totalImages = carouselImages.length;
+
+    function showImage(index: number): void {
+        carouselImages.forEach((img) => img.classList.remove("active"));
+        carouselImages[index].classList.add("active");
+    }
+
+    function nextImage(): void {
+        currentImageIndex = (currentImageIndex + 1) % totalImages;
+        showImage(currentImageIndex);
+    }
+
+    setInterval(nextImage, 10000);
+</script>

@@ -71,7 +71,7 @@ no acumular tantos menus desplegables en el mismo.
             </li>
             <li>
                 <!-- menu desplegable de hoteles (aun no nos dan la lista) -->
-                <a href="/hotels/hotels">
+                <a href="/hotels/hoteles_index">
                     <svg
                         id="icon-menu"
                         xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +92,7 @@ no acumular tantos menus desplegables en el mismo.
                 </a>
                 <ul class="item">
                     <li class="item">
-                        <a href="/hotels/hotels">"lista de hoteles"</a>
+                        <a href="/hotels/hoteles_index">"lista de hoteles"</a>
                     </li>
                 </ul>
             </li>
@@ -173,8 +173,9 @@ no acumular tantos menus desplegables en el mismo.
                     <span style="color: white;">Home</span>
                 </a>
             </li>
+            <!-- ! agregar las direcciones correctas -->
             <div class="spacer"></div>
-            <li><span class="title-nav">Tours</span></li>
+            <li><a href="/tours/tours_index" class="title-nav">Tours</a></li>
             <li><a href="/tours/nauticos">Nauticos</a></li>
             <li><a href="/tours/ruinas">Ruinas</a></li>
             <li><a href="/tours/mahahual">Mahahual</a></li>
@@ -182,12 +183,16 @@ no acumular tantos menus desplegables en el mismo.
             <li><a href="/tours/honduras">Honduras</a></li>
             <li><a href="/tours/belice">Belice</a></li>
             <div class="spacer"></div>
-            <li><span class="title-nav">Hoteles</span></li>
-            <li><a href="/hotels/hotels">Hoteles</a></li>
+            <li>
+                <a href="/hotels/hoteles_index" class="title-nav">Hoteles</a>
+            </li>
+            <!-- <li><a href="/hotels/hoteles_index">Hoteles</a></li> -->
             <div class="spacer"></div>
-            <li><span class="title-nav">Transportacion</span></li>
-            <li><a href="/transportation/nacional">Nacional</a></li>
-            <li><a href="/transportation/international">Internacional</a></li>
+            <li>
+                <a href="/transportation/transportacion_index" class="title-nav"
+                    >Transportacion</a
+                >
+            </li>
         </ul>
     </nav>
 </div>
@@ -255,7 +260,7 @@ no acumular tantos menus desplegables en el mismo.
     // Ejecutar al cargar
     checkIfHomePage();
 
-    // Ejecutar cuando cambia la URL (para navegación del cliente)
+    // Ejecutar cuando cambia la URL (para navegacion del cliente)
     window.addEventListener("popstate", checkIfHomePage);
 </script>
 

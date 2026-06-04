@@ -7,44 +7,261 @@ import Layout from "../../layouts/Layout.astro";
 <Layout>
     <Navbar />
     <main>
-        <section class="transportation-section">
-            <div class="container">
-                <h1>Transportación</h1>
-                <p>Traslados seguros y cómodos para todos tus viajes.</p>
-
-                <div class="transportation-grid">
-                    <div class="transport-card">
-                        <h3>Transporte Terrestre</h3>
-                        <p>
-                            Vehículos modernos y cómodos para tus
-                            desplazamientos por tierra.
-                        </p>
-                    </div>
-                    <div class="transport-card">
-                        <h3>Transporte Marítimo</h3>
-                        <p>
-                            Embarcaciones equipadas para traslados seguros por
-                            agua.
-                        </p>
-                    </div>
-                    <div class="transport-card">
-                        <h3>Servicios Especiales</h3>
-                        <p>
-                            Paquetes personalizados para grupos y eventos
-                            especiales.
-                        </p>
+        <section class="transportation-hero">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <br />
+                    <span class="eyebrow">Movilidad sin límites</span>
+                    <h1>Transportación nacional e internacional</h1>
+                    <p>
+                        Encuentra opciones seguras, cómodas y confiables para
+                        tus viajes dentro de México, hacia Belice y el sur del
+                        país. Ideal para tus aventuras.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#servicios" class="btn btn-primary"
+                            >Ver servicios</a
+                        >
+                        <a href="#destinos" class="btn btn-secondary"
+                            >Destinos destacados</a
+                        >
                     </div>
                 </div>
+                <!-- !cards que no me gustaron, pueden servir para otra cosa -->
+                <!-- <div class="hero-cards">
+                    <div class="hero-card highlight">
+                        <h3>Transporte Nacional</h3>
+                        <p>
+                            Rutas por toda la República con opciones de lujo y
+                            económica.
+                        </p>
+                    </div>
+                    <div class="hero-card">
+                        <h3>Transporte Internacional</h3>
+                        <p>
+                            Vuelos directos, conexiones terrestres y traslados
+                            VIP a Belice.
+                        </p>
+                    </div>
+                    <div class="hero-card">
+                        <h3>Privado y Público</h3>
+                        <p>
+                            Desde servicio privado en coche hasta autobuses y
+                            taxis confiables.
+                        </p>
+                    </div> -->
             </div>
         </section>
     </main>
-    <Footer />
+
+    <section id="servicios" class="transportation-services">
+        <div class="container">
+            <h2>Opciones de transporte</h2>
+            <p class="section-copy">
+                Selecciona el servicio que mejor se adapte a tu viaje.
+                Trabajamos con las rutas y plataformas más seguras para un
+                traslado cómodo y puntual.
+            </p>
+            <div class="service-grid">
+                <!-- ! creo que no habian transportes privados -->
+                <!-- <article class="service-card">
+                    <div class="service-icon">🚗</div>
+                    <h3>Privada</h3>
+                    <p>
+                        Traslados exclusivos con chofer, vehículos de lujo y
+                        recogida a la puerta de tu hotel o aeropuerto.
+                    </p>
+                </article> -->
+                <article class="service-card">
+                    <div class="service-icon">🚕</div>
+                    <h3>Taxi</h3>
+                    <p>
+                        Servicio seguro y rápido para trayectos urbanos y
+                        recorridos cortos en tus destinos favoritos.
+                    </p>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">🚍</div>
+                    <h3>Mayab</h3>
+                    <p>
+                        Rutas confiables en autobuses turísticos y de enlace
+                        para conocer ciudades, ruinas y zonas arqueológicas.
+                    </p>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">🚍</div>
+                    <h3>ADO</h3>
+                    <p>
+                        Autobuses de lujo ADO para viajes largos con mayor
+                        comodidad, entretenimiento y servicio premium.
+                    </p>
+                </article>
+                <article class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>Uber / Rideshare</h3>
+                    <p>
+                        Viajes rápidos y seguros dentro de la ciudad con pago
+                        digital y seguimiento en tiempo real.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="transportation-destinations" id="destinos">
+        <div class="container">
+            <div class="section-header">
+                <h2>Destinos básicos y turísticos</h2>
+                <p>
+                    Explora los principales puntos para tus itinerarios de
+                    viaje: destinos cercanos, aventuras en Belice, el sur de
+                    México y ruinas históricas.
+                </p>
+            </div>
+
+            <div class="destinations-table-wrapper">
+                <table class="destinations-table">
+                    <thead>
+                        <tr>
+                            <th>Destino</th>
+                            <th>Zona</th>
+                            <th>Tipo de viaje</th>
+                            <th>Recomendación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chetumal</td>
+                            <td>Básicos</td>
+                            <td>Ciudad / aeropuerto</td>
+                            <td>Traslado rápido desde la frontera</td>
+                        </tr>
+                        <tr>
+                            <td>Playa del Carmen</td>
+                            <td>Básicos</td>
+                            <td>Turístico</td>
+                            <td>Óptimo en Uber o taxi compartido</td>
+                        </tr>
+                        <tr>
+                            <td>Caye Caulker</td>
+                            <td>Belice</td>
+                            <td>Isla / ferry</td>
+                            <td>Combinación terrestre y marítima</td>
+                        </tr>
+                        <tr>
+                            <td>Belice Ciudad</td>
+                            <td>Belice</td>
+                            <td>Internacional</td>
+                            <td>Opciones terrestres con cruces fronterizos</td>
+                        </tr>
+                        <tr>
+                            <td>Tulum</td>
+                            <td>Sur de México</td>
+                            <td>Turístico</td>
+                            <td>Ideal en transporte privado o ADO</td>
+                        </tr>
+                        <tr>
+                            <td>Mahahual</td>
+                            <td>Sur de México</td>
+                            <td>Playa / marina</td>
+                            <td>Servicio de van compartida recomendado</td>
+                        </tr>
+                        <tr>
+                            <td>Ruinas de Tulum</td>
+                            <td>Ruinas</td>
+                            <td>Cultural</td>
+                            <td>Traslado con guía y llegada temprana</td>
+                        </tr>
+                        <tr>
+                            <td>Chichén Itzá</td>
+                            <td>Ruinas</td>
+                            <td>Excursión de día</td>
+                            <td>Perfecto en tour privado</td>
+                        </tr>
+                        <tr>
+                            <td>Reserva Sian Ka'an</td>
+                            <td>Lugares turísticos</td>
+                            <td>Natural</td>
+                            <td>Recomendado con transporte ecológico</td>
+                        </tr>
+                        <tr>
+                            <td>Isla Holbox</td>
+                            <td>Lugares turísticos</td>
+                            <td>Playa / aventura</td>
+                            <td>Taxi + ferry para la mejor llegada</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="destination-highlights">
+                <article class="highlight-card">
+                    <h3>Rutas esenciales en Belice</h3>
+                    <ul>
+                        <li>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing
+                            elit. Molestias, quia ullam eum labore ab facilis
+                            blanditiis quae a ratione! Dolore, consequuntur
+                            excepturi distinctio animi commodi explicabo
+                            voluptas voluptate voluptatem ut?
+                        </li>
+                        <!-- <li>Campeche ↔ Chetumal ↔ Belice Ciudad</li>
+                        <li>Belice Ciudad ↔ San Ignacio ↔ San Pedro</li>
+                        <li>Traslados combinados con ferry a Caye Caulker</li> -->
+                    </ul>
+                </article>
+                <article class="highlight-card">
+                    <h3>Sur de México en grande</h3>
+                    <ul>
+                        <li>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Quia debitis vitae unde quae minima alias,
+                            repellat totam ducimus ratione dolorem facere porro
+                            accusantium eveniet dicta, maiores ab. Quibusdam,
+                            veritatis tempora!
+                        </li>
+                        <!-- <li>Cancún ↔ Tulum ↔ Bacalar</li>
+                        <li>Mahahual ↔ Playa del Carmen ↔ Chetumal</li>
+                        <li>
+                            Vuelos y autobuses premium ADO para adultos y
+                            familias
+                        </li> -->
+                    </ul>
+                </article>
+                <article class="highlight-card">
+                    <h3>Ruinas y atracciones</h3>
+                    <ul>
+                        <li>
+                            Lorem ipsum dolor sit, amet consectetur adipisicing
+                            elit. Quod quia velit sequi beatae ducimus
+                            asperiores voluptatum labore voluptatibus, fuga
+                            quisquam quaerat eligendi in illo iste nesciunt est
+                            pariatur accusamus! Rem!
+                        </li>
+                        <!-- <li>Tulum, Chichén Itzá, Cobá y Ek Balam</li>
+                        <li>Excursiones seguras con transporte climatizado</li>
+                        <li>Guías locales y paradas en lugares fotográficos</li> -->
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
 </Layout>
+<Footer />
 
 <style>
-    .transportation-section {
-        padding: 4rem 2rem;
-        background: white;
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    :global(body) {
+        background: linear-gradient(180deg, #eef7ff 0%, #ffffff 100%);
+    }
+
+    .transportation-hero {
+        padding: 4rem 2rem 2rem;
+        background: linear-gradient(135deg, #1d4f91, #4a90e2);
+        color: white;
     }
 
     .container {
@@ -52,34 +269,240 @@ import Layout from "../../layouts/Layout.astro";
         margin: 0 auto;
     }
 
-    h1 {
-        font-size: 3rem;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-
-    .transportation-grid {
+    .hero-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1.5fr 1fr;
         gap: 2rem;
-        margin-top: 3rem;
+        align-items: center;
     }
 
-    .transport-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    .hero-copy .eyebrow {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.85);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.9rem;
+    }
+
+    .hero-copy h1 {
+        font-size: clamp(2.6rem, 4vw, 4rem);
+        line-height: 1.05;
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-copy p {
+        max-width: 680px;
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.92);
+        line-height: 1.7;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.95rem 1.6rem;
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary {
+        background: #ffb400;
+        color: #1c2733;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .hero-cards {
+        display: grid;
+        gap: 1.2rem;
+    }
+
+    .hero-card {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 24px;
         padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-height: 170px;
+        box-shadow: 0 18px 50px rgba(14, 44, 77, 0.12);
     }
 
-    .transport-card h3 {
-        color: #217b96;
-        font-size: 1.5rem;
+    .hero-card.highlight {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .hero-card h3 {
+        margin-bottom: 0.8rem;
+        font-size: 1.35rem;
+    }
+
+    .hero-card p {
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .transportation-services,
+    .transportation-destinations {
+        padding: 3.5rem 2rem;
+    }
+
+    .transportation-services {
+        background: #f7fbff;
+    }
+
+    .transportation-services h2,
+    .transportation-destinations h2 {
+        font-size: 2.3rem;
+        margin-bottom: 0.75rem;
+        color: #142d47;
+    }
+
+    .section-copy {
+        max-width: 760px;
+        color: #52667f;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+    }
+
+    .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 22px;
+        padding: 1.8rem;
+        box-shadow: 0 12px 28px rgba(33, 64, 99, 0.08);
+        border: 1px solid #e0ecf6;
+    }
+
+    .service-icon {
+        font-size: 2rem;
         margin-bottom: 1rem;
     }
 
-    .transport-card p {
-        color: #555;
-        line-height: 1.6;
+    .service-card h3 {
+        margin-bottom: 0.8rem;
+        color: #173d5e;
+    }
+
+    .service-card p {
+        color: #5f7186;
+        line-height: 1.75;
+    }
+
+    .destinations-table-wrapper {
+        overflow-x: auto;
+        margin-top: 2rem;
+    }
+
+    .destinations-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 680px;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 14px 40px rgba(31, 69, 103, 0.08);
+    }
+
+    .destinations-table th,
+    .destinations-table td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+    }
+
+    .destinations-table thead {
+        background: #1d4f91;
+        color: white;
+    }
+
+    .destinations-table tbody tr {
+        border-bottom: 1px solid #eff3f8;
+    }
+
+    .destinations-table tbody tr:nth-child(even) {
+        background: #f8fbff;
+    }
+
+    .destinations-table td {
+        color: #334862;
+    }
+
+    .section-header {
+        max-width: 820px;
+    }
+
+    .destination-highlights {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+    }
+
+    .highlight-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.8rem;
+        box-shadow: 0 18px 38px rgba(34, 82, 123, 0.08);
+        border: 1px solid #dde8f3;
+    }
+
+    .highlight-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: #173d5e;
+    }
+
+    .highlight-card ul {
+        list-style: inside disc;
+        color: #4b5f75;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 900px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-copy {
+            text-align: center;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .hero-card,
+        .service-card,
+        .highlight-card {
+            padding: 1.5rem;
+        }
+
+        .destinations-table th,
+        .destinations-table td {
+            padding: 0.9rem 0.9rem;
+        }
     }
 </style>
