@@ -7,10 +7,30 @@ interface Props {
     text: string;
     schedule: string;
     price: string;
+    rating?: string;
+    duration?: string;
+    capacity?: string;
+    ageRange?: string;
+    includes?: string[];
+    nearby?: string[];
     variant?: string;
 }
 
-const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
+const { 
+    id, 
+    title, 
+    images, 
+    text, 
+    schedule, 
+    price, 
+    rating,
+    duration,
+    capacity,
+    ageRange,
+    includes = [],
+    nearby = [],
+    variant = "" 
+} = Astro.props;
 ---
 
 <div id={`modal-${id}`} class={`dmodal-overlay ${variant}`}>
@@ -30,7 +50,7 @@ const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
             </svg>
         </button>
 
-        <!-- Izquierda: imágenes -->
+        <!-- Carrusel de imágenes -->
         <div class="dmodal-images">
             {
                 images.map((src, i) => (
@@ -60,13 +80,88 @@ const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
             }
         </div>
 
-        <!-- Derecha: contenido -->
+        <!-- Contenido derecho -->
         <div class="dmodal-info">
-            <h2 class="dmodal-title">{title}</h2>
-            <p class="dmodal-text">{text}</p>
+            <!-- Encabezado con título y rating -->
+            <div class="dmodal-header">
+                <h2 class="dmodal-title">{title}</h2>
+                {rating && (
+                    <div class="dmodal-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="rating-text">{rating}</span>
+                    </div>
+                )}
+            </div>
+
+            <!-- Descripción -->
+            <p class="dmodal-description">{text}</p>
+
+            <!-- Sección Overview -->
+            <div class="dmodal-overview">
+                <h3 class="overview-title">Información del Tour</h3>
+                <div class="overview-grid">
+                    {duration && (
+                        <div class="overview-item">
+                            <span class="overview-label">Duración</span>
+                            <span class="overview-value">{duration}</span>
+                        </div>
+                    )}
+                    {ageRange && (
+                        <div class="overview-item">
+                            <span class="overview-label">Edad mínima</span>
+                            <span class="overview-value">{ageRange}</span>
+                        </div>
+                    )}
+                    {capacity && (
+                        <div class="overview-item">
+                            <span class="overview-label">Capacidad</span>
+                            <span class="overview-value">{capacity}</span>
+                        </div>
+                    )}
+                    <div class="overview-item">
+                        <span class="overview-label">Horario</span>
+                        <span class="overview-value">{schedule}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lo que incluye -->
+            {includes.length > 0 && (
+                <div class="dmodal-includes">
+                    <h3 class="includes-title">Qué incluye</h3>
+                    <ul class="includes-list">
+                        {includes.map((item) => (
+                            <li class="include-item">
+                                <span class="include-icon">✓</span>
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            <!-- Ubicación y alrededores -->
+            {nearby.length > 0 && (
+                <div class="dmodal-nearby">
+                    <h3 class="nearby-title">Lo que hay cerca</h3>
+                    <div class="nearby-list">
+                        {nearby.map((place) => (
+                            <div class="nearby-item">
+                                <span class="location-icon">📍</span>
+                                {place}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <!-- Pie de página con precio y botón -->
             <div class="dmodal-footer">
-                <span class="dmodal-schedule">{schedule}</span>
-                <span class="dmodal-price">{price}</span>
+                <div class="footer-left">
+                    <span class="footer-label">Precio</span>
+                    <span class="dmodal-price">{price}</span>
+                </div>
+                <button class="reserve-btn">Reservar ahora</button>
             </div>
         </div>
     </div>
@@ -80,6 +175,7 @@ const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
         const prevBtn = overlay.querySelector(".dmodal-img-prev");
         const nextBtn = overlay.querySelector(".dmodal-img-next");
         const counter = overlay.querySelector(".dmodal-img-counter");
+        const reserveBtn = overlay.querySelector(".reserve-btn");
 
         let current = 0;
 
@@ -90,6 +186,7 @@ const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
             if (counter) counter.textContent = `${index + 1} / ${imgs.length}`;
         }
 
+        // Navegación de imágenes
         prevBtn?.addEventListener("click", () => {
             current = current > 0 ? current - 1 : imgs.length - 1;
             showImg(current);
@@ -100,12 +197,19 @@ const { id, title, images, text, schedule, price, variant = "" } = Astro.props;
             showImg(current);
         });
 
+        // Botón de reserva
+        reserveBtn?.addEventListener("click", () => {
+            alert("¡Gracias por tu interés! Para completar tu reserva, por favor contáctanos.");
+        });
+
+        // Cerrar con botón X
         closeBtn?.addEventListener("click", () => {
             overlay.classList.remove("open");
             current = 0;
             showImg(0);
         });
 
+        // Cerrar al hacer click fuera
         overlay.addEventListener("click", (e) => {
             if (e.target === overlay) {
                 overlay.classList.remove("open");

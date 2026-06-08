@@ -1,20 +1,743 @@
 ---
 import Navbar from "../components/navigation.astro";
-import Welcome from "../components/welcome.astro";
-import Carousel from "../components/carousel.astro";
-import PopularDestinations from "../components/popular-destinations.astro";
 import Footer from "../components/footer.astro";
-
 import Layout from "../layouts/Layout.astro";
 
-// Navbar to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const products = [
+    {
+        title: "Tours",
+        description:
+            "Excursiones náuticas y terrestres, exploración de cenotes, ruinas y lagunas de Bacalar.",
+        icon: "tour",
+        link: "/tours/tours_index/",
+    },
+    {
+        title: "Hoteles",
+        description:
+            "Alojamientos boutique y resorts frente al agua para una estancia cómoda y memorable.",
+        icon: "hotel",
+        link: "/hotels/hoteles_index/",
+    },
+    {
+        title: "Transportación",
+        description:
+            "Traslados privados, nacionales e internacionales con opciones premium y seguras.",
+        icon: "transport",
+        link: "/transportation/transportacion_index/",
+    },
+];
+
+const sections = [
+    {
+        title: "Tours",
+        subtitle: "Aventuras que conectan con la naturaleza y la historia.",
+        description:
+            "Descubre Bacalar en lancha, paddle y visitas a sitios arqueológicos con horarios pensados para turistas.",
+        features: [
+            { label: "Nauticos", icon: "anchor" },
+            { label: "Ruinas", icon: "activity" },
+            { label: "Mahahual", icon: "history" },
+        ],
+        schedule: "Horario: 8:00 - 17:00",
+        buttonLabel: "Reservar tour",
+        link: "/tours/tours_index/",
+    },
+    {
+        title: "Hoteles",
+        subtitle: "Descanso con estilo en el corazón del sur de México.",
+        description:
+            "Hospedaje seleccionado para viajeros exigentes que buscan confort, vista al agua y servicio local.",
+        features: [
+            { label: "Boutique", icon: "bed" },
+            { label: "Vista al lago", icon: "view" },
+            { label: "Experiencias locales", icon: "leaf" },
+        ],
+        schedule: null,
+        buttonLabel: "Contáctanos",
+        link: "/hotels/hoteles_index/",
+    },
+    {
+        title: "Transportación",
+        subtitle: "Movilidad segura para cada etapa de tu viaje.",
+        description:
+            "Opciones privadas, nacionales e internacionales, y traslados a Belice con servicio confiable.",
+        features: [
+            { label: "Nacional", icon: "road" },
+            { label: "Internacional", icon: "globe" },
+            { label: "Private & público", icon: "route" },
+        ],
+        schedule: null,
+        buttonLabel: "Contactanos",
+        link: "/transportation/transportacion_index/",
+    },
+];
+
+const galleryImages = [
+    {
+        src: "src/assets/photos_azulia_webp/upscale_azulia_2.webp",
+        alt: "Navegando en Bacalar",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/upscale_azulia_1.webp",
+        alt: "Playa y cielo hermoso",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/velero/velero_3.webp",
+        alt: "Velero en el agua",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/velero/velero_4.webp",
+        alt: "Navegación al atardecer",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/ponton/pontom_5.webp",
+        alt: "Ponton en la laguna",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/ponton/pontom_8.webp",
+        alt: "Tour de pontón",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",
+        alt: "Paisaje en Corozal, Belice",
+    },
+    {
+        src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",
+        alt: "Atardecer en Belice",
+    },
+];
 ---
 
 <Layout>
-	<Navbar />
-	<Welcome />
-	<Carousel />
-	<PopularDestinations />
-	<Footer />
+    <Navbar />
+
+    <header class="home-hero">
+        <img
+            class="hero-background"
+            src="src/assets/photos_azulia_webp/upscale_azulia_2.webp"
+            alt="Bacalar al amanecer"
+        />
+        <div class="hero-layer"></div>
+        <div class="hero-inner">
+            <a href="/" class="hero-logo-link">
+                <img
+                    class="hero-logo"
+                    src="src/assets/Designer.png"
+                    alt="Logo Azulia"
+                />
+            </a>
+            <div class="hero-text-block">
+                <span class="hero-label">Turismo náutico en Bacalar</span>
+                <h1>Descubre las maravillas del sur de México.</h1>
+
+                <div class="hero-actions">
+                    <a href="#productos" class="btn btn-primary"
+                        >Explorar servicios</a
+                    >
+                    <a href="#galeria" class="btn btn-secondary">Galería</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="productos" class="product-blocks">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="section-tag">Principales experiencias</p>
+                    <h2>Productos destacados</h2>
+                </div>
+                <div class="products-grid">
+                    {
+                        products.map((item) => (
+                            <article class="product-card">
+                                <div class="product-icon">
+                                    {item.icon === "tour" ? (
+                                        <span
+                                            class="material-icons"
+                                            aria-hidden="true"
+                                        >
+                                            directions_boat
+                                        </span>
+                                    ) : item.icon === "hotel" ? (
+                                        <span
+                                            class="material-icons"
+                                            aria-hidden="true"
+                                        >
+                                            hotel
+                                        </span>
+                                    ) : (
+                                        <span
+                                            class="material-icons"
+                                            aria-hidden="true"
+                                        >
+                                            airport_shuttle
+                                        </span>
+                                    )}
+                                </div>
+                                <h3>{item.title}</h3>
+                                <p>{item.description}</p>
+                                <a href={item.link} class="link-button">
+                                    Ver más
+                                </a>
+                            </article>
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
+        <section class="feature-tree">
+            <div class="container">
+                <div class="section-heading split">
+                    <p class="section-tag">Explora cada línea de servicio</p>
+                    <h2>Disfruta de nuestros...</h2>
+                </div>
+                <div class="feature-cards">
+                    {
+                        sections.map((section) => (
+                            <article class="feature-card">
+                                <div class="feature-card-header">
+                                    <div class="feature-card-icon">
+                                        {section.title === "Tours" ? (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                directions_boat
+                                            </span>
+                                        ) : section.title === "Hoteles" ? (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                hotel
+                                            </span>
+                                        ) : (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                airport_shuttle
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h3>{section.title}</h3>
+                                        <p>{section.subtitle}</p>
+                                    </div>
+                                </div>
+                                <p class="feature-description">
+                                    {section.description}
+                                </p>
+                                <ul class="feature-list">
+                                    {section.features.map((feature) => (
+                                        <li>
+                                            <span class="feature-icon-small">
+                                                {feature.icon === "location" ? (
+                                                    <i
+                                                        class="bi bi-geo-alt"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon ===
+                                                  "activity" ? (
+                                                    <i
+                                                        class="bi bi-activity"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon ===
+                                                  "history" ? (
+                                                    <i
+                                                        class="bi bi-clock-history"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "bed" ? (
+                                                    <i
+                                                        class="bi bi-bed"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "view" ? (
+                                                    <i
+                                                        class="bi bi-eye"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "leaf" ? (
+                                                    <i
+                                                        class="bi bi-leaf"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "road" ? (
+                                                    <i
+                                                        class="bi bi-truck"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "globe" ? (
+                                                    <i
+                                                        class="bi bi-globe"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : (
+                                                    <i
+                                                        class="bi bi-dash"
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+                                            </span>
+                                            <span>{feature.label}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {section.schedule ? (
+                                    <p class="feature-schedule">
+                                        {section.schedule}
+                                    </p>
+                                ) : null}
+                                <div class="feature-actions">
+                                    <a
+                                        href={section.link}
+                                        class="btn btn-primary"
+                                    >
+                                        {section.buttonLabel}
+                                    </a>
+                                    <a href={section.link} class="link-text">
+                                        Ver más
+                                    </a>
+                                </div>
+                            </article>
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
+        <section id="galeria" class="gallery-section">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="section-tag">Galería</p>
+                    <h2>Fotos que inspiran tu próxima aventura</h2>
+                    <p>
+                        Toda la belleza del sur de México y Bacalar en una
+                        colección de imágenes locales.
+                    </p>
+                </div>
+                <div class="gallery-grid">
+                    {
+                        galleryImages.map((image) => (
+                            <div class="gallery-card">
+                                <img
+                                    src={image.src}
+                                    alt={image.alt}
+                                    loading="lazy"
+                                />
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <Footer />
 </Layout>
+
+<style>
+    :global(body) {
+        background: #f5f9ff;
+        color: #16324f;
+        font-family: Inter, system-ui, sans-serif;
+    }
+
+    .home-hero {
+        position: relative;
+        min-height: 88vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hero-background {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.65);
+    }
+
+    .hero-layer {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(10, 26, 47, 0.45),
+            rgba(10, 26, 47, 0.78)
+        );
+    }
+
+    .hero-inner {
+        position: relative;
+        width: min(1180px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        display: grid;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .hero-logo-link {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        z-index: 2;
+    }
+
+    .hero-logo {
+        height: 54px;
+        width: auto;
+    }
+
+    .hero-text-block {
+        max-width: 760px;
+        margin: 0 auto;
+        text-align: center;
+        z-index: 2;
+    }
+
+    .hero-label {
+        display: inline-flex;
+        margin-bottom: 1rem;
+        color: #b8d7ff;
+        font-size: 0.95rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .hero-text-block h1 {
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        line-height: 0.96;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+
+    .hero-text-block p {
+        font-size: 1.05rem;
+        line-height: 1.85;
+        color: rgba(255, 255, 255, 0.88);
+        margin-bottom: 2rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 1rem 1.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(20, 50, 85, 0.18);
+    }
+
+    .btn-primary {
+        background: #1c5fa8;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+    }
+
+    .container {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    .section-heading {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-heading.split {
+        text-align: left;
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .section-tag {
+        color: #1c5fa8;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(2rem, 2.5vw, 3rem);
+        margin: 0.6rem auto 1rem;
+        max-width: 780px;
+    }
+
+    .section-heading p {
+        max-width: 760px;
+        margin: 0 auto;
+        color: #556d89;
+        line-height: 1.8;
+    }
+
+    .product-blocks {
+        padding: 4rem 1.5rem 2.5rem;
+    }
+
+    .products-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 28px;
+        padding: 2rem;
+        box-shadow: 0 18px 40px rgba(18, 63, 114, 0.08);
+        border: 1px solid #e5effb;
+        transition:
+            transform 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        border-color: #c8dcfa;
+    }
+
+    .product-icon {
+        width: 70px;
+        height: 70px;
+        display: grid;
+        place-items: center;
+        border-radius: 24px;
+        background: #eaf3ff;
+        margin-bottom: 1.4rem;
+    }
+
+    .product-icon svg,
+    .product-icon .material-icons,
+    .product-icon .bi {
+        width: 36px;
+        height: 36px;
+        font-size: 36px;
+        color: #1c5fa8;
+        display: inline-grid;
+        place-items: center;
+    }
+
+    .product-card h3 {
+        margin-bottom: 1rem;
+        font-size: 1.45rem;
+    }
+
+    .product-card p {
+        color: #5a6b84;
+        line-height: 1.75;
+        margin-bottom: 1.8rem;
+    }
+
+    .link-button {
+        display: inline-flex;
+        align-items: center;
+        color: #1c5fa8;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .feature-tree {
+        padding: 3.5rem 1.5rem;
+        background: #eef5ff;
+    }
+
+    .feature-cards {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 28px;
+        padding: 2rem;
+        border: 1px solid rgba(35, 87, 152, 0.1);
+        box-shadow: 0 18px 45px rgba(17, 51, 86, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+    }
+
+    .feature-card-header {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .feature-card-icon {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        background: #d7e6ff;
+    }
+
+    .feature-card-icon svg,
+    .feature-card-icon .material-icons,
+    .feature-card-icon .bi {
+        width: 28px;
+        height: 28px;
+        font-size: 28px;
+        color: #0f4f8c;
+    }
+
+    .feature-card h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .feature-card p {
+        color: #556a86;
+        line-height: 1.8;
+    }
+
+    .feature-description {
+        color: #5b718d;
+    }
+
+    .feature-list {
+        display: grid;
+        gap: 0.9rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.95rem 1rem;
+        background: #f7fbff;
+        border-radius: 16px;
+        border: 1px solid #e3ecfb;
+        color: #2d486a;
+        font-weight: 600;
+    }
+
+    .feature-icon-small {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        background: rgba(28, 95, 168, 0.12);
+        border-radius: 12px;
+    }
+
+    .feature-icon-small svg,
+    .feature-icon-small .material-icons,
+    .feature-icon-small .bi {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        color: #1c5fa8;
+    }
+
+    .feature-schedule {
+        margin: 0;
+        color: #1c5fa8;
+        font-weight: 700;
+    }
+
+    .feature-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .link-text {
+        color: #1c5fa8;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .gallery-section {
+        padding: 3.5rem 1.5rem 4.5rem;
+    }
+
+    .gallery-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .gallery-card {
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 45px rgba(18, 63, 114, 0.08);
+    }
+
+    .gallery-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        aspect-ratio: 4 / 3;
+        transition: transform 0.4s ease;
+    }
+
+    .gallery-card:hover img {
+        transform: scale(1.03);
+    }
+
+    @media (max-width: 900px) {
+        .hero-text-block h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-inner {
+            padding-top: 4rem;
+        }
+    }
+
+    @media (max-width: 680px) {
+        .hero-logo-link {
+            left: 1rem;
+            top: 1rem;
+        }
+
+        .hero-text-block p {
+            font-size: 1rem;
+        }
+
+        .feature-cards,
+        .products-grid,
+        .gallery-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

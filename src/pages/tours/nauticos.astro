@@ -2,6 +2,155 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import DestinationModal from "../../components/destination_modal.astro";
+import "../../assets/styles/destinations.css";
+import type { ImageMetadata } from "astro";
+import velero2 from "../../assets/photos_azulia_webp/velero/velero_2.webp";
+import velero3 from "../../assets/photos_azulia_webp/velero/velero_3.webp";
+import pontom1 from "../../assets/photos_azulia_webp/ponton/pontom_1.webp";
+import pontom2 from "../../assets/photos_azulia_webp/ponton/pontom_2.webp";
+import velero4 from "../../assets/photos_azulia_webp/velero/velero_4.webp";
+import velero5 from "../../assets/photos_azulia_webp/velero/velero_5.webp";
+
+interface Tour {
+    id: string;
+    name: string;
+    description: string;
+    schedule: string;
+    image: ImageMetadata;
+}
+
+const nauticosTours: Tour[] = [
+    {
+        id: "velero",
+        name: "Velero Tradicional",
+        description:
+            "Navega en un velero auténtico por las aguas cristalinas del Caribe. Disfruta de vistas panorámicas y la brisa del mar.",
+        schedule: "8:00 AM - 1:00 PM",
+        image: velero2,
+    },
+    {
+        id: "moto-acuatica",
+        name: "Moto Acuática",
+        description:
+            "Vive la adrenalina con nuestros tours en moto acuática. Explora calas escondidas y playas paradisíacas a alta velocidad.",
+        schedule: "10:00 AM - 2:00 PM",
+        image: velero3,
+    },
+    {
+        id: "ponton",
+        name: "Pontón Familiar",
+        description:
+            "Paseo relajado en pontón ideal para familias. Perfecto para disfrutar en grupo con baños en agua cristalina.",
+        schedule: "9:00 AM - 3:00 PM",
+        image: pontom2,
+    },
+    {
+        id: "snorkel",
+        name: "Snorkel Subacuático",
+        description:
+            "Bucea en arrecifes de coral y observa la vida marina tropical. Incluye equipo completo y guía especializado.",
+        schedule: "8:00 AM - 12:00 PM",
+        image: velero5,
+    },
+];
+
+const modalData = [
+    {
+        id: "velero",
+        title: "Velero Tradicional",
+        images: [velero2.src, velero4.src],
+        schedule: "8:00 AM - 1:00 PM",
+        price: "$500 MXN",
+        text: "Vive la experiencia clásica de navegar en un velero tradicional. Nuestro velero de madera te llevará a través de las aguas más hermosas del Caribe. Incluye snacks, bebidas y toda la seguridad necesaria. Máximo 8 personas por tour.",
+        rating: "4.8 de 5.0",
+        duration: "5 horas",
+        capacity: "8 personas",
+        ageRange: "Todas las edades",
+        includes: [
+            "Snacks",
+            "Bebidas",
+            "Equipo de seguridad",
+            "Chaleco salvavidas",
+        ],
+        nearby: [
+            "Playa Bacalar - 2 km",
+            "Fuerte de San Felipe - 8 km",
+            "Centro de Bacalar - 3 km",
+        ],
+    },
+    {
+        id: "moto-acuatica",
+        title: "Moto Acuática",
+        images: [velero3.src, velero5.src],
+        schedule: "10:00 AM - 2:00 PM",
+        price: "$450 MXN",
+        text: "Adrenalina pura con nuestros tours en moto acuática última generación. Explora calas secretas y playas paradisíacas a alta velocidad bajo supervisión de instructores certificados. Traje de baño y toalla incluidos.",
+        rating: "4.7 de 5.0",
+        duration: "4 horas",
+        capacity: "2 personas",
+        ageRange: "Mayor de 18 años",
+        includes: [
+            "Moto acuática última generación",
+            "Traje de baño",
+            "Toalla",
+            "Instructor certificado",
+        ],
+        nearby: [
+            "Laguna Bacalar - 1 km",
+            "Cenotes cercanos - 15 km",
+            "Playas vírgenes - 10 km",
+        ],
+    },
+    {
+        id: "ponton",
+        title: "Pontón Familiar",
+        images: [pontom2.src, pontom1.src],
+        schedule: "9:00 AM - 3:00 PM",
+        price: "$400 MXN",
+        text: "La opción perfecta para familias. Disfruta de un paseo relajado en pontón con plataforma de baño. Incluye refrigerios, bebidas y zona de sombra. Ideal para niños, embarazadas y personas mayores. Capacidad 20 personas.",
+        rating: "4.9 de 5.0",
+        duration: "6 horas",
+        capacity: "20 personas",
+        ageRange: "Todas las edades",
+        includes: [
+            "Refrigerios",
+            "Bebidas",
+            "Zona de sombra",
+            "Plataforma de baño",
+            "Flotadores",
+        ],
+        nearby: [
+            "Laguna Bacalar - 0.5 km",
+            "Punta Laguna - 5 km",
+            "Pueblo mágico Bacalar - 2 km",
+        ],
+    },
+    {
+        id: "snorkel",
+        title: "Snorkel Subacuático",
+        images: [velero5.src, velero2.src],
+        schedule: "8:00 AM - 12:00 PM",
+        price: "$550 MXN",
+        text: "Descubre los arrecifes de coral y la vida marina tropical. Tour guiado por especialistas en snorkel con experiencia en seguridad acuática. Equipo completo, bebidas y snacks incluidos. Profundidad máxima 5 metros.",
+        rating: "4.9 de 5.0",
+        duration: "4 horas",
+        capacity: "12 personas",
+        ageRange: "Mayor de 8 años",
+        includes: [
+            "Equipo de snorkel completo",
+            "Guía especializado",
+            "Bebidas",
+            "Snacks",
+            "Chaleco salvavidas",
+        ],
+        nearby: [
+            "Arrecife de coral - 2 km",
+            "Isla de pájaros - 5 km",
+            "Centro de Bacalar - 3 km",
+        ],
+    },
+];
 ---
 
 <Layout>
@@ -44,145 +193,65 @@ import Layout from "../../layouts/Layout.astro";
             </div>
         </div>
 
-        <!-- Resumen de Tours Náuticos -->
-        <!-- <section class="summary-section">
-            <div class="container">
-                <h2 class="summary-title">Tours Náuticos en Bacalar</h2>
-                <p class="summary-text">
-                    Descubre las maravillas del mar Caribe con nuestros tours
-                    náuticos especializados. Desde emocionantes paseos en velero
-                    hasta aventuras en moto acuática, ofrecemos experiencias
-                    inolvidables para todos los gustos. Nuestros guías
-                    certificados te acompañarán en cada aventura, asegurando tu
-                    seguridad y diversión.
-                </p>
-            </div>
-        </section> -->
-
         <!-- Cards de Tours Náuticos -->
-        <section class="nauticos-section">
-            <div class="container">
-                <div class="nauticos-grid">
-                    <div class="nauticos-card">
-                        <div class="nauticos-card-image">
-                            <img
-                                src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
-                                alt="Velero"
-                            />
-                        </div>
-                        <div class="nauticos-card-content">
-                            <h3>Velero</h3>
-                            <p>
-                                Navega en un velero auténtico por las aguas
-                                cristalinas del Caribe. Disfruta de vistas
-                                panorámicas y la brisa del mar.
-                            </p>
-                            <div class="tour-details">
-                                <p class="schedule">
-                                    <strong>Horario:</strong> 8:00 AM - 1:00 PM
-                                </p>
-                                <p class="availability">
-                                    Precio sujeto a disponibilidad
-                                </p>
-                                <button class="card-contact-button"
-                                    >Contactar</button
-                                >
+        <section class="destinations-section">
+            <div class="destinations-container">
+                <h2 class="destinations-title">Tours Náuticos Disponibles</h2>
+                <div class="tours-grid">
+                    {
+                        nauticosTours.map((tour) => (
+                            <div
+                                class="carousel-card"
+                                data-id={tour.id}
+                                role="button"
+                                tabindex="0"
+                            >
+                                <div class="card-image">
+                                    <img
+                                        src={tour.image.src}
+                                        alt={tour.name}
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">{tour.name}</h3>
+                                    <p class="card-description">
+                                        {tour.description}
+                                    </p>
+                                    <p class="card-price">{tour.schedule}</p>
+                                    <button
+                                        class="contact-btn"
+                                        data-id={tour.id}
+                                    >
+                                        Contacto
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="nauticos-card">
-                        <div class="nauticos-card-image">
-                            <img
-                                src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
-                                alt="Moto Acuática"
-                            />
-                        </div>
-                        <div class="nauticos-card-content">
-                            <h3>Moto Acuática</h3>
-                            <p>
-                                Vive la adrenalina con nuestros tours en moto
-                                acuática. Explora calas escondidas y playas
-                                paradisíacas a alta velocidad.
-                            </p>
-                            <div class="tour-details">
-                                <p class="schedule">
-                                    <strong>Horario:</strong> 10:00 AM - 2:00 PM
-                                </p>
-                                <p class="availability">
-                                    Precio sujeto a disponibilidad
-                                </p>
-                                <button class="card-contact-button"
-                                    >Contactar</button
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="nauticos-card">
-                        <div class="nauticos-card-image">
-                            <img
-                                src="/src/assets/photos_azulia_webp/ponton/pontom_2.webp"
-                                alt="Pontón"
-                            />
-                        </div>
-                        <div class="nauticos-card-content">
-                            <h3>Pontón</h3>
-                            <p>
-                                Paseo relajado en pontón ideal para familias.
-                                Perfecto para disfrutar en grupo con baños en
-                                agua cristalina.
-                            </p>
-                            <div class="tour-details">
-                                <p class="schedule">
-                                    <strong>Horario:</strong> 9:00 AM - 3:00 PM
-                                </p>
-                                <p class="availability">
-                                    Precio sujeto a disponibilidad
-                                </p>
-                                <button class="card-contact-button"
-                                    >Contactar</button
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    <div class="nauticos-card">
-                        <div class="nauticos-card-image">
-                            <img
-                                src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
-                                alt="Snorkel"
-                            />
-                        </div>
-                        <div class="nauticos-card-content">
-                            <h3>Snorkel</h3>
-                            <p>
-                                Bucea en arrecifes de coral y observa la vida
-                                marina tropical. Incluye equipo completo y guía
-                                especializado.
-                            </p>
-                            <div class="tour-details">
-                                <p class="schedule">
-                                    <strong>Horario:</strong> 8:00 AM - 12:00 PM
-                                </p>
-                                <p class="availability">
-                                    Precio sujeto a disponibilidad
-                                </p>
-                                <button class="card-contact-button"
-                                    >Contactar</button
-                                >
-                            </div>
-                        </div>
-                    </div>
+                        ))
+                    }
                 </div>
             </div>
-
-            <!-- Botón de Contacto -->
-            <!-- <div class="contact-button-container">
-                <button class="contact-button">
-                    <a href="#contacto" class="contact-link"
-                        >Contáctanos para Reservar</a
-                    >
-                </button>
-            </div> -->
         </section>
+
+        <!-- Modales de Tours -->
+        {
+            modalData.map((m) => (
+                <DestinationModal
+                    id={m.id}
+                    title={m.title}
+                    images={m.images}
+                    text={m.text}
+                    schedule={m.schedule}
+                    price={m.price}
+                    rating={m.rating}
+                    duration={m.duration}
+                    capacity={m.capacity}
+                    ageRange={m.ageRange}
+                    includes={m.includes}
+                    nearby={m.nearby}
+                />
+            ))
+        }
     </main>
     <Footer />
 </Layout>
@@ -270,161 +339,35 @@ import Layout from "../../layouts/Layout.astro";
         text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
     }
 
-    .summary-section {
-        padding: 3rem 2rem;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        text-align: center;
-        border-bottom: 4px solid #217b96;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .summary-title {
-        font-size: 2.2rem;
-        color: #217b96;
-        margin-bottom: 1rem;
-    }
-
-    .summary-text {
-        font-size: 1.1rem;
-        color: #2c3e50;
-        line-height: 1.8;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .nauticos-section {
-        padding: 4rem 2rem;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-
-    .nauticos-grid {
+    .tours-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
+        gap: 1.5rem;
         margin-top: 2rem;
     }
 
-    .nauticos-card {
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.3s ease;
+    .carousel-card {
+        cursor: pointer;
     }
 
-    .nauticos-card:hover {
-        box-shadow: 0 12px 24px rgba(33, 123, 150, 0.15);
-    }
-
-    .nauticos-card-image {
-        width: 100%;
-        height: 220px;
-        overflow: hidden;
-        background: #eaf6fa;
-    }
-
-    .nauticos-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .nauticos-card:hover .nauticos-card-image img {
-        transform: scale(1.05);
-    }
-
-    .nauticos-card-content {
-        padding: 1.5rem 1.2rem;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-
-    .nauticos-card-content h3 {
-        color: #217b96;
-        font-size: 1.4rem;
-        margin-bottom: 0.7rem;
-    }
-
-    .nauticos-card-content p {
-        color: #555;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-
-    .tour-details {
-        margin-top: auto;
-    }
-
-    .schedule {
-        color: #2c3e50;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .availability {
-        color: #2563eb;
-        font-weight: bold;
-        font-size: 1rem;
-        letter-spacing: 0.02em;
-        margin-bottom: 1rem;
-    }
-
-    .card-contact-button {
-        background: linear-gradient(135deg, #217b96 0%, #2a9aba 100%);
+    .contact-btn {
+        background-color: #217b96;
         color: #fff;
         border: none;
-        padding: 0.7rem 1.5rem;
+        padding: 0.75rem 1.5rem;
         font-size: 0.95rem;
-        border-radius: 0.6rem;
+        border-radius: 4px;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(33, 123, 150, 0.25);
-        transition: all 0.3s ease;
+        margin-top: 1rem;
         width: 100%;
-        font-weight: 500;
+        transition: background-color 0.3s ease;
     }
 
-    .card-contact-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(33, 123, 150, 0.35);
+    .contact-btn:hover {
+        background-color: #1a5f78;
     }
 
-    .contact-button-container {
-        display: flex;
-        justify-content: center;
-        padding: 3rem 2rem;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-
-    .contact-button {
-        background: linear-gradient(135deg, #217b96 0%, #2a9aba 100%);
-        color: #fff;
-        border: none;
-        padding: 1rem 3rem;
-        font-size: 1.2rem;
-        border-radius: 0.8rem;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(33, 123, 150, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .contact-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(33, 123, 150, 0.4);
-    }
-
-    .contact-link {
-        text-decoration: none;
-        color: #fff;
-    }
+    /* Estilos anteriores mantenidos para referencia */
 
     @media (max-width: 768px) {
         .carousel-subtitle {
@@ -439,13 +382,80 @@ import Layout from "../../layouts/Layout.astro";
             height: 300px;
         }
 
-        .summary-title {
-            font-size: 1.8rem;
-        }
-
-        .contact-button {
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
+        .contact-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
         }
     }
 </style>
+
+<script>
+    const tourCards = document.querySelectorAll(".carousel-card");
+    const contactButtons = document.querySelectorAll(".contact-btn");
+
+    // Abrir modal al hacer click en la tarjeta
+    tourCards.forEach((card) => {
+        const tourId = card.getAttribute("data-id");
+
+        card.addEventListener("click", () => {
+            const modal = document.getElementById(`modal-${tourId}`);
+            if (modal) {
+                modal.classList.add("open");
+            }
+        });
+
+        // card.addEventListener("keydown", (e) => {
+        //     if (e.key === "Enter" || e.key === " ") {
+        //         e.preventDefault();
+        //         const modal = document.getElementById(`modal-${tourId}`);
+        //         if (modal) {
+        //             modal.classList.add("open");
+        //         }
+        //     }
+        // });
+    });
+
+    // Abrir modal al hacer click en el botón de contacto
+    contactButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const tourId = btn.getAttribute("data-id");
+            const modal = document.getElementById(`modal-${tourId}`);
+            if (modal) {
+                modal.classList.add("open");
+            }
+        });
+
+        // btn.addEventListener("keydown", (e) => {
+        //     if (e.key === "Enter" || e.key === " ") {
+        //         e.preventDefault();
+        //         const tourId = btn.getAttribute("data-id");
+        //         const modal = document.getElementById(`modal-${tourId}`);
+        //         if (modal) {
+        //             modal.classList.add("open");
+        //         }
+        //     }
+        // });
+    });
+
+    // Cerrar modales al hacer click fuera
+    document.addEventListener("click", (e) => {
+        const modals = document.querySelectorAll(".dmodal-overlay");
+        modals.forEach((modal) => {
+            if (e.target === modal) {
+                modal.classList.remove("open");
+            }
+        });
+    });
+
+    // Cerrar modales con botón de cerrar
+    const closeButtons = document.querySelectorAll(".dmodal-close");
+    closeButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            const modal = btn.closest(".dmodal-overlay");
+            if (modal) {
+                modal.classList.remove("open");
+            }
+        });
+    });
+</script>
