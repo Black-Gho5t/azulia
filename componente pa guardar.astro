@@ -1,0 +1,114 @@
+<div class="feature-cards">
+                    {
+                        sections.map((section) => (
+                            <article class="feature-card">
+                                <div class="feature-card-header">
+                                    <div class="feature-card-icon">
+                                        {section.title === "Tours" ? (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                directions_boat
+                                            </span>
+                                        ) : section.title === "Hoteles" ? (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                hotel
+                                            </span>
+                                        ) : (
+                                            <span
+                                                class="material-icons"
+                                                aria-hidden="true"
+                                            >
+                                                airport_shuttle
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h3>{section.title}</h3>
+                                        <p>{section.subtitle}</p>
+                                    </div>
+                                </div>
+                                <p class="feature-description">
+                                    {section.description}
+                                </p>
+                                <ul class="feature-list">
+                                    {section.features.map((feature) => (
+                                        <li>
+                                            <span class="feature-icon-small">
+                                                {feature.icon === "location" ? (
+                                                    <i
+                                                        class="bi bi-geo-alt"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon ===
+                                                  "activity" ? (
+                                                    <i
+                                                        class="bi bi-activity"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon ===
+                                                  "history" ? (
+                                                    <i
+                                                        class="bi bi-clock-history"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "bed" ? (
+                                                    <i
+                                                        class="bi bi-bed"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "view" ? (
+                                                    <i
+                                                        class="bi bi-eye"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "leaf" ? (
+                                                    <i
+                                                        class="bi bi-leaf"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "road" ? (
+                                                    <i
+                                                        class="bi bi-truck"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : feature.icon === "globe" ? (
+                                                    <i
+                                                        class="bi bi-globe"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : (
+                                                    <i
+                                                        class="bi bi-dash"
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+                                            </span>
+                                            <span>{feature.label}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {section.schedule ? (
+                                    <p class="feature-schedule">
+                                        {section.schedule}
+                                    </p>
+                                ) : null}
+                                <div class="feature-actions">
+                                    <a
+                                        href={section.link}
+                                        class="btn btn-primary"
+                                    >
+                                        {section.buttonLabel}
+                                    </a>
+                                    <a href={section.link} class="link-text">
+                                        Ver más
+                                    </a>
+                                </div>
+                            </article>
+                        ))
+                    }
+                </div>
