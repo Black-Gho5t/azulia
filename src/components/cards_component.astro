@@ -1,8 +1,10 @@
 ---
 import { Image } from "astro:assets";
 import veleImg from "../assets/photos_azulia_webp/velero/velero_4.webp";
-import pontom from "../assets/photos_azulia_webp/ponton/pontom_8.webp"
-import kayak from "../assets/photos_azulia_webp/Kayak/kayak (3).webp"
+import pontom from "../assets/photos_azulia_webp/ponton/pontom_8.webp";
+import kayak from "../assets/photos_azulia_webp/Kayak/kayak (3).webp";
+import paddle from "../assets/photos_azulia_webp/paddle/paddle (4).webp";
+import DestinationModal from "./destination_modal.astro";
 import type { ImageMetadata } from "astro";
 import velero2 from "../assets/photos_azulia_webp/velero/velero_2.webp";
 import velero3 from "../assets/photos_azulia_webp/velero/velero_3.webp";
@@ -15,42 +17,42 @@ interface Tour {
     id: string;
     name: string;
     description: string;
-    schedule: string;
+    icon: string;
     image: ImageMetadata;
 }
 
 const nauticosTours: Tour[] = [
     {
         id: "velero",
-        name: "Velero Tradicional",
+        name: "Velero",
         description:
-            "Navega en un velero auténtico por las aguas cristalinas del Caribe. Disfruta de vistas panorámicas y la brisa del mar.",
-        schedule: "8:00 AM - 1:00 PM",
+            "Explora las aguas de la laguna de bacalar en uno de nuestros preciosos veleros",
+        icon: "sailing",
         image: velero2,
     },
     {
-        id: "moto-acuatica",
-        name: "Moto Acuática",
-        description:
-            "Vive la adrenalina con nuestros tours en moto acuática. Explora calas escondidas y playas paradisíacas a alta velocidad.",
-        schedule: "10:00 AM - 2:00 PM",
-        image: velero3,
-    },
-    {
         id: "ponton",
-        name: "Pontón Familiar",
+        name: "Ponton",
         description:
-            "Paseo relajado en pontón ideal para familias. Perfecto para disfrutar en grupo con baños en agua cristalina.",
-        schedule: "9:00 AM - 3:00 PM",
-        image: pontom2,
+            "Disfruta de un dia increible con la familia o amigos en un espacioso ponton",
+        icon: "houseboat",
+        image: pontom,
     },
     {
-        id: "snorkel",
-        name: "Snorkel Subacuático",
+        id: "kayak",
+        name: "Kayak",
+        description:
+            "Comparte una experiencia unica y relajante por las aguass en nuestros kayaks",
+        icon: "kayaking",
+        image: kayak,
+    },
+    {
+        id: "paddle",
+        name: "Paddle",
         description:
             "Bucea en arrecifes de coral y observa la vida marina tropical. Incluye equipo completo y guía especializado.",
-        schedule: "8:00 AM - 12:00 PM",
-        image: velero5,
+        icon: "rowing",
+        image: paddle,
     },
 ];
 
@@ -79,7 +81,7 @@ const modalData = [
         ],
     },
     {
-        id: "moto-acuatica",
+        id: "ponton",
         title: "Moto Acuática",
         images: [velero3.src, velero5.src],
         schedule: "10:00 AM - 2:00 PM",
@@ -102,7 +104,7 @@ const modalData = [
         ],
     },
     {
-        id: "ponton",
+        id: "kayak",
         title: "Pontón Familiar",
         images: [pontom2.src, pontom1.src],
         schedule: "9:00 AM - 3:00 PM",
@@ -126,7 +128,7 @@ const modalData = [
         ],
     },
     {
-        id: "snorkel",
+        id: "paddle",
         title: "Snorkel Subacuático",
         images: [velero5.src, velero2.src],
         schedule: "8:00 AM - 12:00 PM",
@@ -189,54 +191,47 @@ const modalData = [
             la laguna de Bacalar y sus alrededores
         </p>
         <div class="card-container">
-            <div class="card-item">
-                <div class="img-card">
-                    <Image src={pontom} alt="pontom" />
-                </div>
-                <div class="title-card">
-                    <span class="material-symbols-outlined"> houseboat </span>
-                    <p>Ponton</p>
-                </div>
-                <div class="contend-card">
-                    <p>
-                        Disfruta de un dia increible con la familia o amigos en un espacioso ponton
-                    </p>
-                </div>
-            </div>
-            <div class="card-item">
-                <div class="img-card">
-                    <Image src={veleImg} alt="Velero" />
-                </div>
-                <div class="title-card">
-                    <span class="material-symbols-outlined"> sailing </span>
-                    <p>Velero</p>
-                </div>
-                <div class="contend-card">
-                    <p>
-                        Explora las aguas de la laguna de bacalar en uno de
-                        nuestros preciosos veleros
-                    </p>
-                </div>
-            </div>
-            <div class="card-item">
-                <div class="img-card">
-                    <Image src={kayak} alt="kayak" />
-                </div>
-                <div class="title-card">
-                    <span class="material-symbols-outlined"> kayaking </span>
-                    <p>kayak</p>
-                </div>
-                <div class="contend-card">
-                    <p>
-                        Comparte una experiencia unica y relajante por las aguass en nuestros kayaks
-                    </p>
-                </div>
-            </div>
-            
+            <!-- ! seccion de cards horizontales -->
+            {
+                nauticosTours.map((tour) => (
+                    <button class="card-item" data-id={tour.id}>
+                        <div class="img-card">
+                            <img src={tour.image.src} alt={tour.name} />
+                        </div>
+                        <div class="title-card">
+                            <span class="material-symbols-outlined">
+                                {tour.icon}
+                            </span>
+                            <p>{tour.name}</p>
+                        </div>
+                        <div class="contend-card">
+                            <p>{tour.description}</p>
+                        </div>
+                    </button>
+                ))
+            }
         </div>
     </div>
 </div>
-
+<!-- Modales de Tours -->
+{
+    modalData.map((m) => (
+        <DestinationModal
+            id={m.id}
+            title={m.title}
+            images={m.images}
+            text={m.text}
+            schedule={m.schedule}
+            price={m.price}
+            rating={m.rating}
+            duration={m.duration}
+            capacity={m.capacity}
+            ageRange={m.ageRange}
+            includes={m.includes}
+            nearby={m.nearby}
+        />
+    ))
+}
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
@@ -316,7 +311,6 @@ const modalData = [
         transition:
             transform 0.2s ease,
             border-color 0.2s ease;
-        
     }
 
     .card-item img {
@@ -327,7 +321,6 @@ const modalData = [
         object-fit: cover;
         display: block;
         border-radius: 20px 20px 0 0;
-
     }
 
     .title-card {
@@ -352,11 +345,11 @@ const modalData = [
         text-align: justify;
     }
 
-    .card-item:hover{
+    .card-item:hover {
         transform: scale(1.03);
     }
 
-    .card-container{
+    .card-container {
         display: flex;
         gap: 1rem;
         overflow-x: auto;
@@ -364,3 +357,73 @@ const modalData = [
         flex-wrap: nowrap;
     }
 </style>
+<script>
+    const tourCards = document.querySelectorAll(".card-item");
+    const contactButtons = document.querySelectorAll(".contact-btn");
+
+    // Abrir modal al hacer click en la tarjeta
+    tourCards.forEach((card) => {
+        const tourId = card.getAttribute("data-id");
+
+        card.addEventListener("click", () => {
+            const modal = document.getElementById(`modal-${tourId}`);
+            if (modal) {
+                modal.classList.add("open");
+            }
+        });
+
+        // card.addEventListener("keydown", (e) => {
+        //     if (e.key === "Enter" || e.key === " ") {
+        //         e.preventDefault();
+        //         const modal = document.getElementById(`modal-${tourId}`);
+        //         if (modal) {
+        //             modal.classList.add("open");
+        //         }
+        //     }
+        // });
+    });
+
+    // Abrir modal al hacer click en el botón de contacto
+    contactButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const tourId = btn.getAttribute("data-id");
+            const modal = document.getElementById(`modal-${tourId}`);
+            if (modal) {
+                modal.classList.add("open");
+            }
+        });
+
+        // btn.addEventListener("keydown", (e) => {
+        //     if (e.key === "Enter" || e.key === " ") {
+        //         e.preventDefault();
+        //         const tourId = btn.getAttribute("data-id");
+        //         const modal = document.getElementById(`modal-${tourId}`);
+        //         if (modal) {
+        //             modal.classList.add("open");
+        //         }
+        //     }
+        // });
+    });
+
+    // Cerrar modales al hacer click fuera
+    document.addEventListener("click", (e) => {
+        const modals = document.querySelectorAll(".dmodal-overlay");
+        modals.forEach((modal) => {
+            if (e.target === modal) {
+                modal.classList.remove("open");
+            }
+        });
+    });
+
+    // Cerrar modales con botón de cerrar
+    const closeButtons = document.querySelectorAll(".dmodal-close");
+    closeButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            const modal = btn.closest(".dmodal-overlay");
+            if (modal) {
+                modal.classList.remove("open");
+            }
+        });
+    });
+</script>
