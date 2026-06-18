@@ -14,6 +14,10 @@
     display: flex;
 }
 
+.duration{
+    white-space: pre-line;
+}
+
 .dmodal-content {
     background: white;
     border-radius: 1rem;

@@ -4,153 +4,7 @@ import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import DestinationModal from "../../components/destination_modal.astro";
 import "../../assets/styles/destinations.css";
-import type { ImageMetadata } from "astro";
-import velero2 from "../../assets/photos_azulia_webp/velero/velero_2.webp";
-import velero3 from "../../assets/photos_azulia_webp/velero/velero_3.webp";
-import pontom1 from "../../assets/photos_azulia_webp/ponton/pontom_1.webp";
-import pontom2 from "../../assets/photos_azulia_webp/ponton/pontom_2.webp";
-import velero4 from "../../assets/photos_azulia_webp/velero/velero_4.webp";
-import velero5 from "../../assets/photos_azulia_webp/velero/velero_5.webp";
-
-interface Tour {
-    id: string;
-    name: string;
-    description: string;
-    schedule: string;
-    image: ImageMetadata;
-}
-
-const nauticosTours: Tour[] = [
-    {
-        id: "velero",
-        name: "Velero Tradicional",
-        description:
-            "Navega en un velero auténtico por las aguas cristalinas del Caribe. Disfruta de vistas panorámicas y la brisa del mar.",
-        schedule: "8:00 AM - 1:00 PM",
-        image: velero2,
-    },
-    {
-        id: "moto-acuatica",
-        name: "Moto Acuática",
-        description:
-            "Vive la adrenalina con nuestros tours en moto acuática. Explora calas escondidas y playas paradisíacas a alta velocidad.",
-        schedule: "10:00 AM - 2:00 PM",
-        image: velero3,
-    },
-    {
-        id: "ponton",
-        name: "Pontón Familiar",
-        description:
-            "Paseo relajado en pontón ideal para familias. Perfecto para disfrutar en grupo con baños en agua cristalina.",
-        schedule: "9:00 AM - 3:00 PM",
-        image: pontom2,
-    },
-    {
-        id: "snorkel",
-        name: "Snorkel Subacuático",
-        description:
-            "Bucea en arrecifes de coral y observa la vida marina tropical. Incluye equipo completo y guía especializado.",
-        schedule: "8:00 AM - 12:00 PM",
-        image: velero5,
-    },
-];
-
-const modalData = [
-    {
-        id: "velero",
-        title: "Velero Tradicional",
-        images: [velero2.src, velero4.src],
-        schedule: "8:00 AM - 1:00 PM",
-        price: "$500 MXN",
-        text: "Vive la experiencia clásica de navegar en un velero tradicional. Nuestro velero de madera te llevará a través de las aguas más hermosas del Caribe. Incluye snacks, bebidas y toda la seguridad necesaria. Máximo 8 personas por tour.",
-        rating: "4.8 de 5.0",
-        duration: "5 horas",
-        capacity: "8 personas",
-        ageRange: "Todas las edades",
-        includes: [
-            "Snacks",
-            "Bebidas",
-            "Equipo de seguridad",
-            "Chaleco salvavidas",
-        ],
-        nearby: [
-            "Playa Bacalar - 2 km",
-            "Fuerte de San Felipe - 8 km",
-            "Centro de Bacalar - 3 km",
-        ],
-    },
-    {
-        id: "moto-acuatica",
-        title: "Moto Acuática",
-        images: [velero3.src, velero5.src],
-        schedule: "10:00 AM - 2:00 PM",
-        price: "$450 MXN",
-        text: "Adrenalina pura con nuestros tours en moto acuática última generación. Explora calas secretas y playas paradisíacas a alta velocidad bajo supervisión de instructores certificados. Traje de baño y toalla incluidos.",
-        rating: "4.7 de 5.0",
-        duration: "4 horas",
-        capacity: "2 personas",
-        ageRange: "Mayor de 18 años",
-        includes: [
-            "Moto acuática última generación",
-            "Traje de baño",
-            "Toalla",
-            "Instructor certificado",
-        ],
-        nearby: [
-            "Laguna Bacalar - 1 km",
-            "Cenotes cercanos - 15 km",
-            "Playas vírgenes - 10 km",
-        ],
-    },
-    {
-        id: "ponton",
-        title: "Pontón Familiar",
-        images: [pontom2.src, pontom1.src],
-        schedule: "9:00 AM - 3:00 PM",
-        price: "$400 MXN",
-        text: "La opción perfecta para familias. Disfruta de un paseo relajado en pontón con plataforma de baño. Incluye refrigerios, bebidas y zona de sombra. Ideal para niños, embarazadas y personas mayores. Capacidad 20 personas.",
-        rating: "4.9 de 5.0",
-        duration: "6 horas",
-        capacity: "20 personas",
-        ageRange: "Todas las edades",
-        includes: [
-            "Refrigerios",
-            "Bebidas",
-            "Zona de sombra",
-            "Plataforma de baño",
-            "Flotadores",
-        ],
-        nearby: [
-            "Laguna Bacalar - 0.5 km",
-            "Punta Laguna - 5 km",
-            "Pueblo mágico Bacalar - 2 km",
-        ],
-    },
-    {
-        id: "snorkel",
-        title: "Snorkel Subacuático",
-        images: [velero5.src, velero2.src],
-        schedule: "8:00 AM - 12:00 PM",
-        price: "$550 MXN",
-        text: "Descubre los arrecifes de coral y la vida marina tropical. Tour guiado por especialistas en snorkel con experiencia en seguridad acuática. Equipo completo, bebidas y snacks incluidos. Profundidad máxima 5 metros.",
-        rating: "4.9 de 5.0",
-        duration: "4 horas",
-        capacity: "12 personas",
-        ageRange: "Mayor de 8 años",
-        includes: [
-            "Equipo de snorkel completo",
-            "Guía especializado",
-            "Bebidas",
-            "Snacks",
-            "Chaleco salvavidas",
-        ],
-        nearby: [
-            "Arrecife de coral - 2 km",
-            "Isla de pájaros - 5 km",
-            "Centro de Bacalar - 3 km",
-        ],
-    },
-];
+import { nauticosTours, modalData } from "../../components/data/tours/nauticos_data";
 ---
 
 <Layout>
@@ -404,15 +258,6 @@ const modalData = [
             }
         });
 
-        // card.addEventListener("keydown", (e) => {
-        //     if (e.key === "Enter" || e.key === " ") {
-        //         e.preventDefault();
-        //         const modal = document.getElementById(`modal-${tourId}`);
-        //         if (modal) {
-        //             modal.classList.add("open");
-        //         }
-        //     }
-        // });
     });
 
     // Abrir modal al hacer click en el botón de contacto
@@ -425,17 +270,6 @@ const modalData = [
                 modal.classList.add("open");
             }
         });
-
-        // btn.addEventListener("keydown", (e) => {
-        //     if (e.key === "Enter" || e.key === " ") {
-        //         e.preventDefault();
-        //         const tourId = btn.getAttribute("data-id");
-        //         const modal = document.getElementById(`modal-${tourId}`);
-        //         if (modal) {
-        //             modal.classList.add("open");
-        //         }
-        //     }
-        // });
     });
 
     // Cerrar modales al hacer click fuera
