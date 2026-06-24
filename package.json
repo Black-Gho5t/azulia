@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@fontsource/material-icons": "^5.2.7",
-    "astro": "^5.17.1",
+    "astro": "^6.4.8",
     "bootstrap-icons": "^1.13.1"
   }
 }

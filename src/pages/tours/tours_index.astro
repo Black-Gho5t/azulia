@@ -2,6 +2,8 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import { tours } from "../../components/data/tours/tours_index_data";
+import { Image } from "astro:assets";
 ---
 
 <Layout>
@@ -54,102 +56,33 @@ import Layout from "../../layouts/Layout.astro";
         <section class="tours-section">
             <div class="container">
                 <div class="tours-grid">
-                    <div class="tour-card">
-                        <a
-                            href="nauticos"
-                            class="link-tour-card"
-                            style="text-decoration: none;"
-                        >
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/ponton/pontom_3.webp"
-                                    alt="Tours Nauticos"
-                                />
+                    {
+                        tours.map((tour) => (
+                            <div class="tour-card">
+                                <a
+                                    href={tour.link}
+                                    class="link-tour-card"
+                                    style="text-decoration: none;"
+                                >
+                                    <div class="tour-card-image">
+                                        <Image
+                                            src={tour.image}
+                                            alt={tour.name}
+                                            quality="normal"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                    <div class="title-card">
+                                        <span class="material-symbols-outlined">
+                                            {tour.icon}
+                                        </span>
+                                        <h3>{tour.name}</h3>
+                                    </div>
+                                    <p>{tour.description}</p>
+                                </a>
                             </div>
-                            <h3>Nauticos</h3>
-                            <p>
-                                Vive la aventura en el agua con nuestros tours
-                                marítimos exclusivos. Explora el Caribe en
-                                barcos tradicionales.
-                            </p>
-                        </a>
-                    </div>
-                    <div class="tour-card">
-                        <a href="ruinas" style="text-decoration: none;">
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/velero/velero_6.webp"
-                                    alt="Ruinas"
-                                />
-                            </div>
-                            <h3>Ruinas</h3>
-                            <p>
-                                Descubre la riqueza histórica de las antiguas
-                                civilizaciones mayas. Visita templos y
-                                estructuras milenarias.
-                            </p>
-                        </a>
-                    </div>
-                    <div class="tour-card">
-                        <a href="mahahual" style="text-decoration: none;">
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/ponton/pontom_4.webp"
-                                    alt="Mahahual"
-                                />
-                            </div>
-                            <h3>Mahahual</h3>
-                            <p>
-                                Playas vírgenes y arrecifes de coral con aguas
-                                cristalinas. Perfecto para snorkel y buceo.
-                            </p>
-                        </a>
-                    </div>
-                    <div class="tour-card">
-                        <a href="guatemala" style="text-decoration: none;">
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/velero/velero_8.webp"
-                                    alt="Guatemala"
-                                />
-                            </div>
-                            <h3>Guatemala</h3>
-                            <p>
-                                Explora volcanes, lagos y pueblos coloniales.
-                                Una experiencia cultural incomparable.
-                            </p>
-                        </a>
-                    </div>
-                    <div class="tour-card">
-                        <a href="honduras" style="text-decoration: none;">
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/ponton/pontom_5.webp"
-                                    alt="Honduras"
-                                />
-                            </div>
-                            <h3>Honduras</h3>
-                            <p>
-                                Descubre la Barrera de Arrecife más grande del
-                                Caribe. Biodiversidad marina única en el mundo.
-                            </p>
-                        </a>
-                    </div>
-                    <div class="tour-card">
-                        <a href="belice" style="text-decoration: none;">
-                            <div class="tour-card-image">
-                                <img
-                                    src="/src/assets/photos_azulia_webp/velero/velero_9.webp"
-                                    alt="Belice"
-                                />
-                            </div>
-                            <h3>Belice</h3>
-                            <p>
-                                Selva tropical, cayes de ensueño y aguas
-                                turquesas. La joya del Caribe para aventureros.
-                            </p>
-                        </a>
-                    </div>
+                        ))
+                    }
                 </div>
             </div>
         </section>
@@ -158,8 +91,31 @@ import Layout from "../../layouts/Layout.astro";
 </Layout>
 
 <style>
+    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
     * {
         font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .title-card{
+        display: flex;
+        align-items: center;
+    }
+
+    .material-symbols-outlined {
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 40px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        color: #217b96;
+        -webkit-font-smoothing: antialiased;
     }
 
     .tours-carousel {
@@ -183,6 +139,7 @@ import Layout from "../../layouts/Layout.astro";
         object-fit: cover;
         opacity: 0;
         transition: opacity 0.8s ease-in-out;
+        filter: brightness(0.65);
     }
 
     .carousel-img.active {
@@ -192,19 +149,12 @@ import Layout from "../../layouts/Layout.astro";
 
     .carousel-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(
-            ellipse 90% 100% at 0% 0%,
-            rgb(33, 123, 150) 0%,
-            rgb(33, 123, 150) 25%,
-            rgba(33, 123, 150, 0.75) 45%,
-            rgba(33, 123, 150, 0.35) 65%,
-            transparent 80%
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(10, 26, 47, 0.45),
+            rgba(10, 26, 47, 0.78)
         );
-        z-index: 2;
     }
 
     .carousel-content {
@@ -287,7 +237,17 @@ import Layout from "../../layouts/Layout.astro";
     .tour-card h3 {
         color: #217b96;
         font-size: 1.5rem;
-        margin: 1.5rem 1.5rem 0.5rem 1.5rem;
+        /* margin: 1.5rem 1.5rem 0.5rem 1.5rem; */
+        padding-left: 15px;
+    }
+
+    .title-card{
+        display: flex;
+        align-items: center;
+    }
+
+    .title-card span {
+        padding-left: 10px;
     }
 
     .tour-card p {
@@ -342,20 +302,4 @@ import Layout from "../../layouts/Layout.astro";
     }
 </style>
 
-<script>
-    let currentImageIndex = 0;
-    const carouselImages = document.querySelectorAll(".carousel-img");
-    const totalImages = carouselImages.length;
-
-    function showImage(index: number): void {
-        carouselImages.forEach((img) => img.classList.remove("active"));
-        carouselImages[index].classList.add("active");
-    }
-
-    function nextImage(): void {
-        currentImageIndex = (currentImageIndex + 1) % totalImages;
-        showImage(currentImageIndex);
-    }
-
-    setInterval(nextImage, 10000);
-</script>
+<script src="../../components/functions/scripts/1.ts"></script>
