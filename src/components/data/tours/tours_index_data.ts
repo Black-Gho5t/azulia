@@ -104,7 +104,7 @@ export const packages: TourPackage[] = [
         inclusions: [
             { icon: "restaurant", label: "Desayuno y comida" },
             { icon: "local_bar", label: "Bebidas ilimitadas" },
-            { icon: "snorkeling", label: "Equipo de snorkel" },
+            { icon: "scuba_diving", label: "Equipo de snorkel" },
             { icon: "anchor", label: "Guía bilingüe" },
             { icon: "photo_camera", label: "Fotografías incluidas" },
         ],

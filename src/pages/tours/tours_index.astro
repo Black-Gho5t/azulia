@@ -2,7 +2,11 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import { tours, packages, collageImages } from "../../components/data/tours/tours_index_data";
+import {
+    tours,
+    packages,
+    collageImages,
+} from "../../components/data/tours/tours_index_data";
 import { Image } from "astro:assets";
 ---
 
@@ -50,6 +54,12 @@ import { Image } from "astro:assets";
                     Explora las maravillas naturales y culturales de Bacalar y
                     el sur de México.
                 </p>
+                <div class="hero-actions">
+                    <a href="#paquetes" class="btn btn-primary"
+                        >Ver paquetes</a
+                    >
+                    <a href="#galeria" class="btn btn-secondary">Galería</a>
+                </div>
             </div>
         </div>
 
@@ -89,121 +99,173 @@ import { Image } from "astro:assets";
         </section>
 
         <!-- ===== PAQUETES / OFERTAS ===== -->
-        <section class="packages-section">
+        <section class="packages-section" id="paquetes">
             <div class="container">
                 <div class="section-header">
                     <span class="section-eyebrow">Ofertas especiales</span>
                     <h2 class="section-title">Paquetes recomendados</h2>
                     <p class="section-subtitle">
-                        Todo lo que necesitas para vivir el Caribe mexicano sin preocupaciones.
+                        Todo lo que necesitas para vivir el Caribe mexicano sin
+                        preocupaciones.
                     </p>
                 </div>
 
                 <div class="pkg-track-wrapper">
                     <button class="pkg-nav pkg-nav--prev" aria-label="Anterior">
-                        <span class="material-symbols-outlined">chevron_left</span>
+                        <span class="material-symbols-outlined"
+                            >chevron_left</span
+                        >
                     </button>
                     <div class="pkg-track" id="pkgTrack">
-                        {packages.map((pkg) => (
-                            <article class="pkg-card" data-id={pkg.id}>
-                                {pkg.badge && (
-                                    <div class="pkg-badge">
-                                        <span class="material-symbols-outlined" style="font-size:16px;">star</span>
-                                        {pkg.badge}
-                                    </div>
-                                )}
-                                <div class="pkg-image-wrap">
-                                    <Image
-                                        src={pkg.image}
-                                        alt={pkg.title}
-                                        quality="normal"
-                                        loading="lazy"
-                                        class="pkg-image"
-                                    />
-                                    <div class="pkg-image-overlay"></div>
-                                    <div class="pkg-meta-pill">
-                                        <span class="material-symbols-outlined" style="font-size:16px;">schedule</span>
-                                        {pkg.duration}
-                                        <span class="pkg-meta-sep">·</span>
-                                        <span class="material-symbols-outlined" style="font-size:16px;">group</span>
-                                        {pkg.groupSize}
-                                    </div>
-                                </div>
-
-                                <div class="pkg-body">
-                                    <h3 class="pkg-title">{pkg.title}</h3>
-                                    <p class="pkg-subtitle">{pkg.subtitle}</p>
-
-                                    <ul class="pkg-inclusions">
-                                        {pkg.inclusions.map((inc) => (
-                                            <li class="pkg-inclusion-item">
-                                                <span class="material-symbols-outlined pkg-inc-icon">{inc.icon}</span>
-                                                <span>{inc.label}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <div class="pkg-footer">
-                                        <div class="pkg-price-block">
-                                            <span class="pkg-price-label">Desde</span>
-                                            <span class="pkg-price">
-                                                ${pkg.price.toLocaleString("es-MX")}
-                                                <small>{pkg.currency}</small>
+                        {
+                            packages.map((pkg) => (
+                                <article class="pkg-card" data-id={pkg.id}>
+                                    {pkg.badge && (
+                                        <div class="pkg-badge">
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size:16px;"
+                                            >
+                                                star
                                             </span>
-                                            <span class="pkg-price-note">por persona</span>
+                                            {pkg.badge}
                                         </div>
-                                        <a href={pkg.link} class="pkg-cta">
-                                            Reservar
-                                            <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
-                                        </a>
+                                    )}
+                                    <div class="pkg-image-wrap">
+                                        <Image
+                                            src={pkg.image}
+                                            alt={pkg.title}
+                                            quality="normal"
+                                            loading="lazy"
+                                            class="pkg-image"
+                                        />
+                                        <div class="pkg-image-overlay" />
+                                        <div class="pkg-meta-pill">
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size:16px;"
+                                            >
+                                                schedule
+                                            </span>
+                                            {pkg.duration}
+                                            <span class="pkg-meta-sep">·</span>
+                                            <span
+                                                class="material-symbols-outlined"
+                                                style="font-size:16px;"
+                                            >
+                                                group
+                                            </span>
+                                            {pkg.groupSize}
+                                        </div>
                                     </div>
-                                </div>
-                            </article>
-                        ))}
+
+                                    <div class="pkg-body">
+                                        <h3 class="pkg-title">{pkg.title}</h3>
+                                        <p class="pkg-subtitle">
+                                            {pkg.subtitle}
+                                        </p>
+
+                                        <ul class="pkg-inclusions">
+                                            {pkg.inclusions.map((inc) => (
+                                                <li class="pkg-inclusion-item">
+                                                    <span class="material-symbols-outlined pkg-inc-icon">
+                                                        {inc.icon}
+                                                    </span>
+                                                    <span>{inc.label}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        <div class="pkg-footer">
+                                            <div class="pkg-price-block">
+                                                <span class="pkg-price-label">
+                                                    Desde
+                                                </span>
+                                                <span class="pkg-price">
+                                                    $
+                                                    {pkg.price.toLocaleString(
+                                                        "es-MX",
+                                                    )}
+                                                    <small>
+                                                        {pkg.currency}
+                                                    </small>
+                                                </span>
+                                                <span class="pkg-price-note">
+                                                    por persona
+                                                </span>
+                                            </div>
+                                            <a href={pkg.link} class="pkg-cta">
+                                                Reservar
+                                                <span
+                                                    class="material-symbols-outlined"
+                                                    style="font-size:18px;"
+                                                >
+                                                    arrow_forward
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </article>
+                            ))
+                        }
                     </div>
-                    <button class="pkg-nav pkg-nav--next" aria-label="Siguiente">
-                        <span class="material-symbols-outlined">chevron_right</span>
+                    <button
+                        class="pkg-nav pkg-nav--next"
+                        aria-label="Siguiente"
+                    >
+                        <span class="material-symbols-outlined"
+                            >chevron_right</span
+                        >
                     </button>
                 </div>
 
                 <!-- Dots -->
                 <div class="pkg-dots" id="pkgDots">
-                    {packages.map((_, i) => (
-                        <button
-                            class={`pkg-dot ${i === 0 ? "active" : ""}`}
-                            aria-label={`Paquete ${i + 1}`}
-                            data-index={i}
-                        ></button>
-                    ))}
+                    {
+                        packages.map((_, i) => (
+                            <button
+                                class={`pkg-dot ${i === 0 ? "active" : ""}`}
+                                aria-label={`Paquete ${i + 1}`}
+                                data-index={i}
+                            />
+                        ))
+                    }
                 </div>
             </div>
         </section>
 
         <!-- ===== GALERÍA COLLAGE ===== -->
-        <section class="gallery-section">
+        <section class="gallery-section" id="galeria">
             <div class="container">
                 <div class="section-header">
                     <span class="section-eyebrow">Momentos inolvidables</span>
                     <h2 class="section-title">Galería</h2>
                     <p class="section-subtitle">
-                        Imágenes reales de nuestras aventuras en el Caribe mexicano.
+                        Imágenes reales de nuestras aventuras en el Caribe
+                        mexicano.
                     </p>
                 </div>
                 <div class="collage-grid">
-                    {collageImages.map((item) => (
-                        <div class={`collage-cell collage-cell--${item.span ?? "normal"}`}>
-                            <Image
-                                src={item.image}
-                                alt={item.alt}
-                                quality="normal"
-                                loading="lazy"
-                                class="collage-img"
-                            />
-                            <div class="collage-overlay">
-                                <span class="collage-caption">{item.alt}</span>
+                    {
+                        collageImages.map((item) => (
+                            <div
+                                class={`collage-cell collage-cell--${item.span ?? "normal"}`}
+                            >
+                                <Image
+                                    src={item.image}
+                                    alt={item.alt}
+                                    quality="normal"
+                                    loading="lazy"
+                                    class="collage-img"
+                                />
+                                <div class="collage-overlay">
+                                    <span class="collage-caption">
+                                        {item.alt}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    }
                 </div>
             </div>
         </section>
@@ -212,12 +274,17 @@ import { Image } from "astro:assets";
 </Layout>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
+    
+    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+    
     * {
         font-family: Arial, Helvetica, sans-serif;
     }
-
+    
+    html{
+            scroll-behavior: smooth;
+        }
     /* ── Shared ── */
     .material-symbols-outlined {
         font-family: "Material Symbols Outlined";
@@ -266,7 +333,7 @@ import { Image } from "astro:assets";
     }
 
     /* ─────────────────────────────────────
-       HERO CAROUSEL (unchanged)
+        HERO CAROUSEL (unchanged)
     ───────────────────────────────────── */
     .tours-carousel {
         position: relative;
@@ -337,7 +404,7 @@ import { Image } from "astro:assets";
     }
 
     /* ─────────────────────────────────────
-       TOUR CARDS (unchanged)
+        TOUR CARDS (unchanged)
     ───────────────────────────────────── */
     .tours-section {
         padding: 4rem 2rem;
@@ -366,7 +433,9 @@ import { Image } from "astro:assets";
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
     }
 
     .tour-card:hover {
@@ -409,7 +478,7 @@ import { Image } from "astro:assets";
     }
 
     /* ─────────────────────────────────────
-       PAQUETES – carrusel
+        PAQUETES – carrusel
     ───────────────────────────────────── */
     .packages-section {
         padding: 5rem 2rem;
@@ -452,7 +521,9 @@ import { Image } from "astro:assets";
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: background 0.2s, color 0.2s;
+        transition:
+            background 0.2s,
+            color 0.2s;
         z-index: 2;
     }
 
@@ -485,7 +556,9 @@ import { Image } from "astro:assets";
         border: none;
         background: #b8d9e4;
         cursor: pointer;
-        transition: background 0.2s, transform 0.2s;
+        transition:
+            background 0.2s,
+            transform 0.2s;
         padding: 0;
     }
 
@@ -505,7 +578,9 @@ import { Image } from "astro:assets";
         overflow: hidden;
         box-shadow: 0 6px 24px rgba(33, 123, 150, 0.1);
         position: relative;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
         display: flex;
         flex-direction: column;
     }
@@ -560,14 +635,18 @@ import { Image } from "astro:assets";
     .pkg-image-overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top, rgba(10,26,47,0.55) 0%, transparent 60%);
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.55) 0%,
+            transparent 60%
+        );
     }
 
     .pkg-meta-pill {
         position: absolute;
         bottom: 12px;
         left: 12px;
-        background: rgba(255,255,255,0.92);
+        background: rgba(255, 255, 255, 0.92);
         color: #217b96;
         font-size: 0.78rem;
         font-weight: 600;
@@ -688,7 +767,9 @@ import { Image } from "astro:assets";
         border-radius: 30px;
         text-decoration: none;
         white-space: nowrap;
-        transition: background 0.2s, transform 0.2s;
+        transition:
+            background 0.2s,
+            transform 0.2s;
     }
 
     .pkg-cta .material-symbols-outlined {
@@ -702,7 +783,7 @@ import { Image } from "astro:assets";
     }
 
     /* ─────────────────────────────────────
-       GALERÍA COLLAGE
+        GALERÍA COLLAGE
     ───────────────────────────────────── */
     .gallery-section {
         padding: 5rem 2rem 6rem;
@@ -753,7 +834,11 @@ import { Image } from "astro:assets";
     .collage-overlay {
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top, rgba(10,26,47,0.65) 0%, transparent 50%);
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.65) 0%,
+            transparent 50%
+        );
         opacity: 0;
         transition: opacity 0.3s ease;
         display: flex;
@@ -769,11 +854,11 @@ import { Image } from "astro:assets";
         color: white;
         font-size: 0.85rem;
         font-weight: 600;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
     /* ─────────────────────────────────────
-       RESPONSIVE
+        RESPONSIVE
     ───────────────────────────────────── */
     @media (max-width: 1024px) {
         .pkg-card {
@@ -873,6 +958,42 @@ import { Image } from "astro:assets";
             height: 200px;
         }
     }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 1rem 1.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(20, 50, 85, 0.18);
+    }
+
+    .btn-primary {
+        background: #1c5fa8;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+    }
 </style>
 
 <script src="../../components/functions/scripts/1.ts"></script>
@@ -880,7 +1001,7 @@ import { Image } from "astro:assets";
 <script>
     // ── Packages carousel nav ──
     const track = document.getElementById("pkgTrack") as HTMLElement;
-    const dots  = document.querySelectorAll<HTMLButtonElement>(".pkg-dot");
+    const dots = document.querySelectorAll<HTMLButtonElement>(".pkg-dot");
     const prevBtn = document.querySelector<HTMLButtonElement>(".pkg-nav--prev");
     const nextBtn = document.querySelector<HTMLButtonElement>(".pkg-nav--next");
 
