@@ -2,168 +2,29 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import DestinationModal from "../../components/destination_modal.astro";
-import "../../assets/styles/destinations.css";
-//! desde este import llamo al model de datos, el modelo cambia igualmente por cada pagina diferente
+import TourListingSection from "../../components/tours_section.astro"
 import { nauticosTours, modalData } from "../../components/data/tours/nauticos_data";
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/velero/velero_2.webp", alt: "Tours Náuticos - Velero" },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_3.webp", alt: "Tours Náuticos - Moto Acuática" },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_1.webp", alt: "Tours Náuticos - Pontón" },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_5.webp", alt: "Tours Náuticos - Snorkel" },
+];
 ---
 
 <Layout>
     <Navbar />
     <main>
-        <!-- Carrusel superior -->
-        <!--! el carrusel dejo de funcionar, arreglalo tambien -->
-        <div class="nauticos-carousel">
-            <div class="carousel-images">
-                <img
-                    src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
-                    alt="Tours Náuticos - Velero"
-                    class="carousel-img active"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
-                    alt="Tours Náuticos - Moto Acuática"
-                    class="carousel-img"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/ponton/pontom_1.webp"
-                    alt="Tours Náuticos - Pontón"
-                    class="carousel-img"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
-                    alt="Tours Náuticos - Snorkel"
-                    class="carousel-img"
-                />
-            </div>
-            <div class="carousel-overlay"></div>
-            <div class="carousel-content">
-                <br />
-                <h1 class="carousel-title">Tours</h1>
-                <!-- ! el titulo del carrusel y la descripcion se resiviran desde el lugar donde llame al componente ya que cambia por pagina -->
-                <h2 class="carousel-subtitle">Náuticos</h2>
-                <p class="carousel-desc">
-                    Vive la aventura en el agua con nuestros tours marítimos
-                    exclusivos. Explora el Caribe en barcos tradicionales y
-                    actividades acuáticas.
-                </p>
-            </div>
-        </div>
-
-        <!-- Cards de Tours -->
-        <section class="destinations-section">
-            <div class="destinations-container">
-                <!-- ! el h2 igualmente cambia -->
-                <h2 class="destinations-title">Tours Náuticos Disponibles</h2>
-                <div class="tours-grid">
-                    {
-                        nauticosTours.map((tour) => (
-                            <div
-                                class="carousel-card"
-                                data-id={tour.id}
-                                role="button"
-                                tabindex="0"
-                            >
-                                <div class="card-image">
-                                    <img
-                                        src={tour.image.src}
-                                        alt={tour.name}
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div class="card-content">
-                                    <h3 class="card-title">{tour.name}</h3>
-                                    <p class="card-description">
-                                        {tour.description}
-                                    </p>
-                                    <button
-                                        class="contact-btn"
-                                        data-id={tour.id}
-                                    >
-                                        Ver más
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
-        </section>
-
-        <!-- Modales de Tours -->
-        {
-            modalData.map((m) => (
-                <DestinationModal
-                    id={m.id}
-                    title={m.title}
-                    images={m.images}
-                    text={m.text}
-                    schedule={m.schedule}
-                    price={m.price}
-                    rating={m.rating}
-                    duration={m.duration}
-                    capacity={m.capacity}
-                    ageRange={m.ageRange}
-                    includes={m.includes}
-                    nearby={m.nearby}
-                />
-            ))
-        }
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours"
+            carouselSubtitle="Náuticos"
+            carouselDescription="Vive la aventura en el agua con nuestros tours marítimos exclusivos. Explora el Caribe en barcos tradicionales y actividades acuáticas."
+            sectionTitle="Tours Náuticos Disponibles"
+            tours={nauticosTours}
+            modals={modalData}
+        />
     </main>
     <Footer />
 </Layout>
-
-<style>
-
-</style>
-
-<script>
-    const tourCards = document.querySelectorAll(".carousel-card");
-    const contactButtons = document.querySelectorAll(".contact-btn");
-
-    // Abrir modal al hacer click en la tarjeta
-    tourCards.forEach((card) => {
-        const tourId = card.getAttribute("data-id");
-
-        card.addEventListener("click", () => {
-            const modal = document.getElementById(`modal-${tourId}`);
-            if (modal) {
-                modal.classList.add("open");
-            }
-        });
-
-    });
-
-    // Abrir modal al hacer click en el botón de contacto
-    contactButtons.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const tourId = btn.getAttribute("data-id");
-            const modal = document.getElementById(`modal-${tourId}`);
-            if (modal) {
-                modal.classList.add("open");
-            }
-        });
-    });
-
-    // Cerrar modales al hacer click fuera
-    document.addEventListener("click", (e) => {
-        const modals = document.querySelectorAll(".dmodal-overlay");
-        modals.forEach((modal) => {
-            if (e.target === modal) {
-                modal.classList.remove("open");
-            }
-        });
-    });
-
-    // Cerrar modales con botón de cerrar
-    const closeButtons = document.querySelectorAll(".dmodal-close");
-    closeButtons.forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-            const modal = btn.closest(".dmodal-overlay");
-            if (modal) {
-                modal.classList.remove("open");
-            }
-        });
-    });
-</script>

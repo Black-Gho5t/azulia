@@ -1,9 +1,30 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import TourListingSection from "../../components/tours_section.astro"
+import { ruinasTours, modalData } from "../../components/data/tours/ruinas_data"
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (1).webp", alt: "Una ruina" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (2).webp", alt: "otra ruina" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (3).webp", alt: "ruina con mono" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (1).webp", alt: "Una piramide" },
+];
 ---
 
 <Layout>
     <Navbar />
-    <h1>Ruinas</h1>
+    <main>
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours"
+            carouselSubtitle="Ruinas"
+            carouselDescription="Explora las ruinas de un mundo antigua y una civilizacion avanzada, aventurate en las ruinas de bacalar y el sur de Mexico."
+            sectionTitle="Tours en las Ruinas"
+            tours={ruinasTours}
+            modals={modalData}
+        />
+    </main>
+    <Footer />
 </Layout>
