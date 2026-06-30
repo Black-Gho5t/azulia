@@ -1,0 +1,326 @@
+---
+import DestinationModal from "./destination_modal.astro";
+import "../assets/styles/destinations.css";
+
+export interface CarouselImage {
+    src: string;
+    alt: string;
+}
+
+export interface TourCard {
+    id: string;
+    name: string;
+    description: string;
+    image: { src: string };
+}
+
+export interface ModalEntry {
+    id: string;
+    title: string;
+    images: string[];
+    text: string;
+    schedule: string;
+    price: string;
+    rating: string | number;
+    duration: string;
+    capacity: string;
+    ageRange: string;
+    includes: string[];
+    nearby: string[];
+}
+
+interface Props {
+    carouselImages: CarouselImage[];
+    carouselTitle: string;
+    carouselSubtitle: string;
+    carouselDescription: string;
+    sectionTitle: string;
+    tours: TourCard[];
+    modals: ModalEntry[];
+    carouselInterval?: number; // ms entre cada imagen del carrusel
+}
+
+const {
+    carouselImages,
+    carouselTitle,
+    carouselSubtitle,
+    carouselDescription,
+    sectionTitle,
+    tours,
+    modals,
+    carouselInterval = 5000,
+} = Astro.props;
+---
+
+<section class="tour-listing" data-tour-listing data-interval={carouselInterval}>
+    <!-- Carrusel superior -->
+    <div class="tour-carousel">
+        <div class="carousel-images" data-carousel-track>
+            {
+                carouselImages.map((img, index) => (
+                    <img
+                        src={img.src}
+                        alt={img.alt}
+                        class:list={["carousel-img", { active: index === 0 }]}
+                    />
+                ))
+            }
+        </div>
+        <div class="carousel-overlay"></div>
+        <div class="carousel-content">
+            <br />
+            <h1 class="carousel-title">{carouselTitle}</h1>
+            <h2 class="carousel-subtitle">{carouselSubtitle}</h2>
+            <p class="carousel-desc">{carouselDescription}</p>
+        </div>
+    </div>
+
+    <!-- Cards de Tours -->
+    <section class="destinations-section">
+        <div class="destinations-container">
+            <h2 class="destinations-title">{sectionTitle}</h2>
+            <div class="tours-grid">
+                {
+                    tours.map((tour) => (
+                        <div
+                            class="carousel-card"
+                            data-id={tour.id}
+                            role="button"
+                            tabindex="0"
+                        >
+                            <div class="card-image">
+                                <img
+                                    src={tour.image.src}
+                                    alt={tour.name}
+                                    loading="lazy"
+                                />
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">{tour.name}</h3>
+                                <p class="card-description">
+                                    {tour.description}
+                                </p>
+                                <button
+                                    class="contact-btn"
+                                    data-id={tour.id}
+                                >
+                                    Ver más
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Modales de Tours -->
+    {
+        modals.map((m) => (
+            <DestinationModal
+                id={m.id}
+                title={m.title}
+                images={m.images}
+                text={m.text}
+                schedule={m.schedule}
+                price={m.price}
+                rating={m.rating}
+                duration={m.duration}
+                capacity={m.capacity}
+                ageRange={m.ageRange}
+                includes={m.includes}
+                nearby={m.nearby}
+            />
+        ))
+    }
+</section>
+
+<style>
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .tour-carousel {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        background: #1a3a52;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .carousel-images {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .carousel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.7s;
+    }
+
+    .carousel-img.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(33, 123, 150, 0.55) 0%,
+            rgba(26, 58, 82, 0.45) 100%
+        );
+        z-index: 2;
+    }
+
+    .carousel-content {
+        position: relative;
+        z-index: 3;
+        color: #fff;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .carousel-title {
+        font-size: 2rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .carousel-subtitle {
+        font-size: 3.5rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        letter-spacing: 0.08em;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .carousel-desc {
+        font-size: 1.1rem;
+        color: #f0f0f0;
+        max-width: 600px;
+        margin: 0 auto;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .tours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .carousel-card {
+        cursor: pointer;
+    }
+
+    .contact-btn {
+        background-color: #217b96;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 1rem;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .contact-btn:hover {
+        background-color: #1a5f78;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-subtitle {
+            font-size: 2.5rem;
+        }
+
+        .carousel-title {
+            font-size: 1.5rem;
+        }
+
+        .tour-carousel {
+            height: 300px;
+        }
+
+        .contact-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<script>
+    function initTourListing(section: Element) {
+        // --- Carrusel automático (esto faltaba, por eso no rotaba) ---
+        const interval = Number((section as HTMLElement).dataset.interval) || 5000;
+        const images = section.querySelectorAll<HTMLImageElement>(".carousel-img");
+
+        if (images.length > 1) {
+            let current = 0;
+            setInterval(() => {
+                images[current].classList.remove("active");
+                current = (current + 1) % images.length;
+                images[current].classList.add("active");
+            }, interval);
+        }
+
+        // --- Abrir modales ---
+        const tourCards = section.querySelectorAll(".carousel-card");
+        const contactButtons = section.querySelectorAll(".contact-btn");
+
+        tourCards.forEach((card) => {
+            const tourId = card.getAttribute("data-id");
+            card.addEventListener("click", () => {
+                const modal = document.getElementById(`modal-${tourId}`);
+                if (modal) modal.classList.add("open");
+            });
+        });
+
+        contactButtons.forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const tourId = btn.getAttribute("data-id");
+                const modal = document.getElementById(`modal-${tourId}`);
+                if (modal) modal.classList.add("open");
+            });
+        });
+    }
+
+    // Inicializa cada instancia del componente presente en la página
+    document
+        .querySelectorAll("[data-tour-listing]")
+        .forEach((section) => initTourListing(section));
+
+    // Cerrar modales al hacer click fuera (global, una sola vez)
+    document.addEventListener("click", (e) => {
+        const modals = document.querySelectorAll(".dmodal-overlay");
+        modals.forEach((modal) => {
+            if (e.target === modal) modal.classList.remove("open");
+        });
+    });
+
+    // Cerrar modales con botón de cerrar
+    document.querySelectorAll(".dmodal-close").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const modal = btn.closest(".dmodal-overlay");
+            if (modal) modal.classList.remove("open");
+        });
+    });
+</script>

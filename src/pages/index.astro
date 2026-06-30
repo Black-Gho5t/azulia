@@ -122,10 +122,7 @@ const galleryImages = [
         <div class="hero-inner">
             <div class="hero-text-block">
                 <div class="hero-logo">
-                    <img
-                        src="src/assets/Designer.png"
-                        alt="Logo Azulia"
-                    />
+                    <img src="src/assets/Designer.png" alt="Logo Azulia" />
                 </div>
                 <span class="hero-label">Turismo náutico en Bacalar</span>
                 <h1>Descubre las maravillas de Bacalar y el Caribe.</h1>
@@ -141,14 +138,30 @@ const galleryImages = [
     </header>
 
     <main>
-        <div class="valoers-card">
-            <div class="mision">
-                <h2>Misión</h2>
-                <p>Brindar servicios náuticos sustentables en Bacalar, ofreciendo experiencias de alta calidad con operaciones seguras, respetando la biodiversidad de la Laguna de los Siete Colores y contribuyendo de manera positiva al desarrollo social de la comunidad local.</p>
+        <div class="valores-card">
+            <div class="card">
+                <div class="body">
+                    <span class="username">Misión</span>
+                    <p class="text">
+                        Brindar servicios náuticos sustentables en Bacalar,
+                        ofreciendo experiencias de alta calidad con operaciones
+                        seguras, respetando la biodiversidad de la Laguna de los
+                        Siete Colores y contribuyendo de manera positiva al
+                        desarrollo social de la comunidad local.
+                    </p>
+                </div>
             </div>
-            <div class="vision">
-                <h2>Visión</h2>
-                <p>Ser una empresa referente en Bacalar y la región por nuestro compromiso con la sustentabilidad ambiental, la responsabilidad social y la protección de la laguna, demostrando que el turismo y la conservación pueden coexistir de forma responsable.</p>
+            <div class="card">
+                <div class="body">
+                    <span class="username">Visión</span>
+                    <p class="text">
+                        Ser una empresa referente en Bacalar y la región por
+                        nuestro compromiso con la sustentabilidad ambiental, la
+                        responsabilidad social y la protección de la laguna,
+                        demostrando que el turismo y la conservación pueden
+                        coexistir de forma responsable.
+                    </p>
+                </div>
             </div>
         </div>
         <section id="productos" class="product-blocks">
@@ -232,13 +245,23 @@ const galleryImages = [
                     </div>
                 </div>
             </section>
+            <div class="map-contenedor">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1889.8543070499081!2d-88.3904501826024!3d18.677067246377177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f5bb1399bb9a5ad%3A0x68459b3cd0c64df8!2sZ%C3%B3calo%20Park!5e0!3m2!1ses-419!2smx!4v1782486830459!5m2!1ses-419!2smx"
+                    width="600"
+                    height="450"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
         </section>
 
         <Footer />
     </main>
 
     <style>
-        html{
+        html {
             scroll-behavior: smooth;
         }
         :global(body) {
@@ -275,7 +298,7 @@ const galleryImages = [
                 rgba(10, 26, 47, 0.78)
             );
         }
-/* contenedor del contenido XD */
+        /* contenedor del contenido XD */
         .hero-inner {
             position: relative;
             display: flex;
@@ -292,18 +315,16 @@ const galleryImages = [
         }
 
         .hero-text-block {
-            
             max-width: 760px;
             margin: 0 auto;
             text-align: center;
             z-index: 2;
         }
 
-        .hero-text-block img{
+        .hero-text-block img {
             height: 80px;
             width: auto;
         }
-
 
         .hero-label {
             display: inline-flex;
@@ -639,6 +660,105 @@ const galleryImages = [
             .gallery-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .valores-card {
+            display: grid;
+            padding: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            place-items: center;
+        }
+
+        .card {
+            position: relative;
+            background-color: #2e5795;
+            padding: 1em;
+            z-index: 5;
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            max-width: 700px;
+            transition: 200ms ease-in-out;
+        }
+
+        .username {
+            color: #c6e1ed;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .body .text {
+            margin: 0 10px 0 0;
+            white-space: pre-line;
+            color: #c0c3d7;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            position: relative;
+            width: 100%;
+            color: #9fa4aa;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: none;
+            margin-top: 10px;
+        }
+
+        .footer div {
+            margin-right: 1rem;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .footer svg {
+            margin-right: 5px;
+            height: 100%;
+            stroke: #9fa4aa;
+        }
+
+        .viewer span {
+            height: 20px;
+            width: 20px;
+            background-color: rgb(28, 117, 219);
+            margin-right: -6px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            display: grid;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 8px;
+            color: #fff;
+            padding: 2px;
+        }
+
+        .viewer span svg {
+            stroke: #fff;
+        }
+
+        .map-contenedor {
+            display: flex;
+            justify-content: center; /* centra horizontal */
+            align-items: center; /* centra vertical si das altura */
+            width: 100%;
+        }
+
+        .map-contenedor iframe {
+            width: 90vw;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border: none;
         }
     </style>
 </Layout>

@@ -4,6 +4,7 @@ import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import DestinationModal from "../../components/destination_modal.astro";
 import "../../assets/styles/destinations.css";
+//! desde este import llamo al model de datos, el modelo cambia igualmente por cada pagina diferente
 import { nauticosTours, modalData } from "../../components/data/tours/nauticos_data";
 ---
 
@@ -11,6 +12,7 @@ import { nauticosTours, modalData } from "../../components/data/tours/nauticos_d
     <Navbar />
     <main>
         <!-- Carrusel superior -->
+        <!--! el carrusel dejo de funcionar, arreglalo tambien -->
         <div class="nauticos-carousel">
             <div class="carousel-images">
                 <img
@@ -38,6 +40,7 @@ import { nauticosTours, modalData } from "../../components/data/tours/nauticos_d
             <div class="carousel-content">
                 <br />
                 <h1 class="carousel-title">Tours</h1>
+                <!-- ! el titulo del carrusel y la descripcion se resiviran desde el lugar donde llame al componente ya que cambia por pagina -->
                 <h2 class="carousel-subtitle">Náuticos</h2>
                 <p class="carousel-desc">
                     Vive la aventura en el agua con nuestros tours marítimos
@@ -47,9 +50,10 @@ import { nauticosTours, modalData } from "../../components/data/tours/nauticos_d
             </div>
         </div>
 
-        <!-- Cards de Tours Náuticos -->
+        <!-- Cards de Tours -->
         <section class="destinations-section">
             <div class="destinations-container">
+                <!-- ! el h2 igualmente cambia -->
                 <h2 class="destinations-title">Tours Náuticos Disponibles</h2>
                 <div class="tours-grid">
                     {
@@ -72,7 +76,6 @@ import { nauticosTours, modalData } from "../../components/data/tours/nauticos_d
                                     <p class="card-description">
                                         {tour.description}
                                     </p>
-                                    <p class="card-price">{tour.schedule}</p>
                                     <button
                                         class="contact-btn"
                                         data-id={tour.id}
@@ -111,136 +114,7 @@ import { nauticosTours, modalData } from "../../components/data/tours/nauticos_d
 </Layout>
 
 <style>
-    * {
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .nauticos-carousel {
-        position: relative;
-        width: 100%;
-        height: 400px;
-        overflow: hidden;
-        background: #1a3a52;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
 
-    .carousel-images {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-    }
-
-    .carousel-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        transition: opacity 0.7s;
-    }
-
-    .carousel-img.active {
-        opacity: 1;
-        z-index: 2;
-    }
-
-    .carousel-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(33, 123, 150, 0.55) 0%,
-            rgba(26, 58, 82, 0.45) 100%
-        );
-        z-index: 2;
-    }
-
-    .carousel-content {
-        position: relative;
-        z-index: 3;
-        color: #fff;
-        text-align: center;
-        padding: 2rem;
-    }
-
-    .carousel-title {
-        font-size: 2rem;
-        color: #fff;
-        margin-bottom: 0.5rem;
-        letter-spacing: 0.05em;
-    }
-
-    .carousel-subtitle {
-        font-size: 3.5rem;
-        color: #fff;
-        margin-bottom: 1rem;
-        letter-spacing: 0.08em;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-    }
-
-    .carousel-desc {
-        font-size: 1.1rem;
-        color: #f0f0f0;
-        max-width: 600px;
-        margin: 0 auto;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    .tours-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .carousel-card {
-        cursor: pointer;
-    }
-
-    .contact-btn {
-        background-color: #217b96;
-        color: #fff;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.95rem;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 1rem;
-        width: 100%;
-        transition: background-color 0.3s ease;
-    }
-
-    .contact-btn:hover {
-        background-color: #1a5f78;
-    }
-
-    /* Estilos anteriores mantenidos para referencia */
-
-    @media (max-width: 768px) {
-        .carousel-subtitle {
-            font-size: 2.5rem;
-        }
-
-        .carousel-title {
-            font-size: 1.5rem;
-        }
-
-        .nauticos-carousel {
-            height: 300px;
-        }
-
-        .contact-btn {
-            padding: 0.8rem 1.5rem;
-            font-size: 0.9rem;
-        }
-    }
 </style>
 
 <script>
