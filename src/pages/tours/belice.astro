@@ -1,13 +1,51 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import Welcome from "../../components/tours/tours_welcome.astro";
+import TourListingSection from "../../components/tours_section.astro";
+import { beliceTours, modalData } from "../../components/data/tours/belice_data";
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__4.webp", alt: "Costa caribeña de Belice" },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp", alt: "Bahía de Corozal" },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__1.webp", alt: "Paisaje tropical de Belice" },
+];
+
+const pageIntro = {
+    title: "La Joya del Caribe Centroamericano",
+    description: "Belice es uno de los destinos más fascinantes de Centroamérica: un pequeño país con una biodiversidad extraordinaria, ruinas mayas ocultas en la selva y el arrecife de coral más hermoso del hemisferio norte. A solo un par de horas de Bacalar, te ofrecemos tours únicos que combinan historia, naturaleza y aventura caribeña.",
+    highlights: [
+        { icon: "account_balance", text: "Ruinas mayas" },
+        { icon: "scuba_diving", text: "Arrecife de coral" },
+        { icon: "beach_access", text: "Islas del Caribe" },
+        { icon: "forest", text: "Selva tropical" },
+        { icon: "directions_bus", text: "Transporte incluido" },
+        { icon: "translate", text: "Guías bilingües" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__2.webp", alt: "Pueblo de Corozal", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp", alt: "Costa de Belice", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__4.webp", alt: "Mar Caribe beliceño", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp", alt: "Bahía tropical", span: "normal" as const },
+];
 ---
 
 <Layout>
     <Navbar />
-    <Welcome
-        title="Belice"
-        background="../../../src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp"
-    />
+    <main>
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours a"
+            carouselSubtitle="Belice"
+            carouselDescription="Cruza la frontera y descubre Belice: selva tropical, ciudades mayas y el Arrecife Mesoamericano, todo a pocas horas de Bacalar."
+            sectionTitle="Tours a Belice Disponibles"
+            tours={beliceTours}
+            modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
+        />
+    </main>
+    <Footer />
 </Layout>

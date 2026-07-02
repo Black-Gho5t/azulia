@@ -1,9 +1,52 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import TourListingSection from "../../components/tours_section.astro";
+import { hondurasTours, modalData } from "../../components/data/tours/honduras_data";
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/velero/velero_9.webp", alt: "Islas del Caribe hondureño" },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (7).webp", alt: "Actividades náuticas en Honduras" },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_4.webp", alt: "Costa caribeña de Honduras" },
+];
+
+const pageIntro = {
+    title: "Honduras: Islas, Ruinas y Mar",
+    description: "Honduras ofrece dos de las experiencias más extraordinarias de Centroamérica: las Islas de la Bahía, con arrecifes de coral de talla mundial para bucear, y las Ruinas de Copán, uno de los sitios arqueológicos mayas más refinados del mundo. Combinamos historia, aventura y el mejor mar del Caribe en una sola expedición.",
+    highlights: [
+        { icon: "scuba_diving", text: "Buceo en Roatán" },
+        { icon: "account_balance", text: "Ruinas de Copán" },
+        { icon: "sailing", text: "Islas de la Bahía" },
+        { icon: "waves", text: "Arrecife Mesoamericano" },
+        { icon: "directions_bus", text: "Transporte incluido" },
+        { icon: "hotel", text: "Alojamiento disponible" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/velero/velero_4.webp", alt: "Velero en el Caribe", span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_9.webp", alt: "Día de aventura", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (9).webp", alt: "Kayak en el Caribe", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_6.webp", alt: "Costa caribeña", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (10).webp", alt: "Actividades acuáticas", span: "wide" as const },
+];
 ---
 
 <Layout>
     <Navbar />
-    <h1>Honduras</h1>
+    <main>
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours a"
+            carouselSubtitle="Honduras"
+            carouselDescription="Bucea en los arrecifes de Roatán y descubre la majestuosidad de las ruinas de Copán. Honduras en una sola aventura."
+            sectionTitle="Tours a Honduras Disponibles"
+            tours={hondurasTours}
+            modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
+        />
+    </main>
+    <Footer />
 </Layout>

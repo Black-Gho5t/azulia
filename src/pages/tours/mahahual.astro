@@ -1,9 +1,51 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import TourListingSection from "../../components/tours_section.astro";
+import { mahahualTours, modalData } from "../../components/data/tours/mahahual_data";
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (2).webp", alt: "Playa de Mahahual" },
+    { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (5).webp", alt: "Arrecife de Mahahual" },
+    { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (6).webp", alt: "Costa Maya" },
+];
+
+const pageIntro = {
+    title: "El Secreto del Caribe Mexicano",
+    description: "Mahahual es uno de los últimos paraísos vírgenes del Caribe mexicano. Con playas de arena blanca, manglares exuberantes y el atolón de coral más grande del hemisferio norte a su alcance, este pequeño pueblo pesquero ofrece experiencias marinas únicas. Lejos del turismo masivo, aquí la naturaleza todavía manda.",
+    highlights: [
+        { icon: "scuba_diving", text: "Banco Chinchorro" },
+        { icon: "kayaking", text: "Kayak en manglares" },
+        { icon: "waves", text: "Playas vírgenes" },
+        { icon: "directions_boat", text: "Lanchas privadas" },
+        { icon: "water", text: "Arrecife Mesoamericano" },
+        { icon: "spa", text: "Naturaleza pura" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (2).webp", alt: "Playa de Mahahual", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (5).webp", alt: "Aguas cristalinas", span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (4).webp", alt: "Kayak en el Caribe", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_7.webp", alt: "Día en la costa", span: "normal" as const },
+];
 ---
 
 <Layout>
     <Navbar />
-    <h1>Mahahual</h1>
+    <main>
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours en"
+            carouselSubtitle="Mahahual"
+            carouselDescription="Descubre el último paraíso virgen del Caribe mexicano. Snorkel, kayak y aventuras náuticas en las aguas más cristalinas de México."
+            sectionTitle="Tours en Mahahual Disponibles"
+            tours={mahahualTours}
+            modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
+        />
+    </main>
+    <Footer />
 </Layout>

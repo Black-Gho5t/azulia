@@ -1,9 +1,51 @@
 ---
 import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import TourListingSection from "../../components/tours_section.astro";
+import { guatemalaTours, modalData } from "../../components/data/tours/guatemala_data";
+
+const carouselImages = [
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (4).webp", alt: "Pirámide maya en Guatemala" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (5).webp", alt: "Selva tropical de Guatemala" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (3).webp", alt: "Ruinas mayas en la selva" },
+];
+
+const pageIntro = {
+    title: "Guatemala: Corazón del Mundo Maya",
+    description: "Guatemala es el corazón de la civilización maya, un país de volcanes, lagos de ensueño y ciudades prehispánicas que emergen de la selva. Desde Tikal —la ciudad maya más grandiosa del mundo— hasta las piscinas naturales de Semuc Champey, cada rincón de Guatemala es una aventura que espera ser vivida. Partimos desde Bacalar.",
+    highlights: [
+        { icon: "account_balance", text: "Tikal y ruinas mayas" },
+        { icon: "water", text: "Lago Petén Itzá" },
+        { icon: "pool", text: "Semuc Champey" },
+        { icon: "forest", text: "Selva de Petén" },
+        { icon: "directions_bus", text: "Transporte incluido" },
+        { icon: "public", text: "Experiencia cultural" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__1.webp", alt: "Paisaje centroamericano", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__2.webp", alt: "Pueblo colonial", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp", alt: "Costa tropical", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp", alt: "Naturaleza tropical", span: "normal" as const },
+];
 ---
 
 <Layout>
     <Navbar />
-    <h1>Guatemala</h1>
+    <main>
+        <TourListingSection
+            carouselImages={carouselImages}
+            carouselTitle="Tours a"
+            carouselSubtitle="Guatemala"
+            carouselDescription="Adéntrate en el corazón del mundo maya. Tikal, Flores y Semuc Champey te esperan a pocas horas de Bacalar."
+            sectionTitle="Tours a Guatemala Disponibles"
+            tours={guatemalaTours}
+            modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
+        />
+    </main>
+    <Footer />
 </Layout>

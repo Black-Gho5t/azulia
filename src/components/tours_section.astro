@@ -12,6 +12,7 @@ export interface TourCard {
     name: string;
     description: string;
     image: { src: string };
+    icon?: string;
 }
 
 export interface ModalEntry {
@@ -20,13 +21,30 @@ export interface ModalEntry {
     images: string[];
     text: string;
     schedule: string;
-    price: string;
-    rating: string | number;
-    duration: string[];
-    capacity: string;
-    ageRange: string;
-    includes: string[];
-    nearby: string[];
+    price?: string;
+    rating?: string | number;
+    duration?: string[];
+    capacity?: string;
+    ageRange?: string;
+    includes?: string[];
+    nearby?: string[];
+}
+
+export interface PageIntroHighlight {
+    icon: string;
+    text: string;
+}
+
+export interface PageIntro {
+    title: string;
+    description: string;
+    highlights?: PageIntroHighlight[];
+}
+
+export interface GalleryImage {
+    src: string;
+    alt: string;
+    span?: "tall" | "wide" | "normal";
 }
 
 interface Props {
@@ -37,7 +55,9 @@ interface Props {
     sectionTitle: string;
     tours: TourCard[];
     modals: ModalEntry[];
-    carouselInterval?: number; // ms entre cada imagen del carrusel
+    pageIntro?: PageIntro;
+    galleryImages?: GalleryImage[];
+    carouselInterval?: number;
 }
 
 const {
@@ -48,115 +68,165 @@ const {
     sectionTitle,
     tours,
     modals,
+    pageIntro,
+    galleryImages = [],
     carouselInterval = 5000,
 } = Astro.props;
 ---
 
 <section class="tour-listing" data-tour-listing data-interval={carouselInterval}>
-    <!-- Carrusel superior -->
-    <div class="tour-carousel">
+
+    <!-- ═══ HERO CAROUSEL ═══ -->
+    <div class="tour-hero-carousel">
         <div class="carousel-images" data-carousel-track>
-            {
-                carouselImages.map((img, index) => (
-                    <img
-                        src={img.src}
-                        alt={img.alt}
-                        class:list={["carousel-img", { active: index === 0 }]}
-                    />
-                ))
-            }
+            {carouselImages.map((img, i) => (
+                <img
+                    src={img.src}
+                    alt={img.alt}
+                    class:list={["carousel-img", { active: i === 0 }]}
+                />
+            ))}
         </div>
-        <div class="carousel-overlay"></div>
-        <div class="carousel-content">
-            <br />
-            <h1 class="carousel-title">{carouselTitle}</h1>
-            <h2 class="carousel-subtitle">{carouselSubtitle}</h2>
-            <p class="carousel-desc">{carouselDescription}</p>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-label">
+                <span class="material-symbols-outlined">explore</span>
+                Azulia Tours
+            </div>
+            <h1 class="hero-title">{carouselTitle}</h1>
+            <h2 class="hero-subtitle">{carouselSubtitle}</h2>
+            <p class="hero-desc">{carouselDescription}</p>
+            <a href="#tours-cards" class="hero-cta">
+                Descubrir <span class="material-symbols-outlined">arrow_downward</span>
+            </a>
+        </div>
+        <div class="carousel-dots">
+            {carouselImages.map((_, i) => (
+                <span class:list={["carousel-dot", { active: i === 0 }]} data-index={i}></span>
+            ))}
         </div>
     </div>
 
-    <!-- Cards de Tours -->
-    <section class="destinations-section">
-        <div class="destinations-container">
-            <h2 class="destinations-title">{sectionTitle}</h2>
-            <div class="tours-grid">
-                {
-                    tours.map((tour) => (
-                        <div
-                            class="carousel-card"
-                            data-id={tour.id}
-                            role="button"
-                            tabindex="0"
-                        >
-                            <div class="card-image">
-                                <img
-                                    src={tour.image.src}
-                                    alt={tour.name}
-                                    loading="lazy"
-                                />
-                            </div>
-                            <div class="card-content">
-                                <h3 class="card-title">{tour.name}</h3>
-                                <p class="card-description">
-                                    {tour.description}
-                                </p>
-                                <button
-                                    class="contact-btn"
-                                    data-id={tour.id}
-                                >
-                                    Ver más
-                                </button>
-                            </div>
+    <!-- ═══ PAGE INTRO ═══ -->
+    {pageIntro && (
+        <section class="page-intro-section">
+            <div class="page-intro-inner">
+                <div class="intro-text-block">
+                    <h2 class="intro-title">{pageIntro.title}</h2>
+                    <p class="intro-description">{pageIntro.description}</p>
+                    {pageIntro.highlights && pageIntro.highlights.length > 0 && (
+                        <div class="intro-highlights">
+                            {pageIntro.highlights.map((h) => (
+                                <div class="highlight-chip">
+                                    <span class="material-symbols-outlined">{h.icon}</span>
+                                    <span>{h.text}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))
-                }
+                    )}
+                </div>
+                <div class="intro-visual-accent" aria-hidden="true">
+                    <div class="accent-circle-1"></div>
+                    <div class="accent-circle-2"></div>
+                </div>
+            </div>
+        </section>
+    )}
+
+    <!-- ═══ TOURS GRID ═══ -->
+    <section class="tours-section" id="tours-cards">
+        <div class="tours-inner">
+            <div class="section-heading">
+                <h2 class="section-title">{sectionTitle}</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="tours-grid">
+                {tours.map((tour) => (
+                    <div class="tour-card" data-id={tour.id} role="button" tabindex="0">
+                        <div class="tc-image">
+                            <img src={tour.image.src} alt={tour.name} loading="lazy" />
+                            <div class="tc-image-overlay"></div>
+                            {tour.icon && (
+                                <div class="tc-icon-badge">
+                                    <span class="material-symbols-outlined">{tour.icon}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div class="tc-content">
+                            <h3 class="tc-title">{tour.name}</h3>
+                            <p class="tc-desc">{tour.description}</p>
+                            <button class="tc-btn" data-id={tour.id}>
+                                Ver detalles <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     </section>
 
-    <!-- Modales de Tours -->
-    {
-        modals.map((m) => (
-            <DestinationModal
-                id={m.id}
-                title={m.title}
-                images={m.images}
-                text={m.text}
-                schedule={m.schedule}
-                price={m.price}
-                rating={m.rating}
-                duration={m.duration}
-                capacity={m.capacity}
-                ageRange={m.ageRange}
-                includes={m.includes}
-                nearby={m.nearby}
-            />
-        ))
-    }
+    <!-- ═══ GALLERY COLLAGE ═══ -->
+    {galleryImages.length > 0 && (
+        <section class="gallery-section">
+            <div class="gallery-inner">
+                <div class="gallery-heading">
+                    <h2 class="gallery-title">Galería</h2>
+                    <p class="gallery-subtitle">Momentos que te esperan</p>
+                </div>
+                <div class="gallery-collage">
+                    {galleryImages.map((img) => (
+                        <div class:list={["g-item", img.span ?? "normal"]}>
+                            <img src={img.src} alt={img.alt} loading="lazy" />
+                            <div class="g-overlay">
+                                <span class="material-symbols-outlined">photo_camera</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )}
+
+    <!-- ═══ MODALES ═══ -->
+    {modals.map((m) => (
+        <DestinationModal
+            id={m.id}
+            title={m.title}
+            images={m.images}
+            text={m.text}
+            schedule={m.schedule}
+            price={m.price ?? ""}
+            rating={m.rating !== undefined ? String(m.rating) : undefined}
+            duration={m.duration}
+            capacity={m.capacity}
+            ageRange={m.ageRange}
+            includes={m.includes ?? []}
+            nearby={m.nearby ?? []}
+        />
+    ))}
 </section>
 
 <style>
-    * {
+    /* ─── BASE ─── */
+    .tour-listing {
         font-family: Arial, Helvetica, sans-serif;
     }
-    .tour-carousel {
+
+    /* ─── HERO CAROUSEL ─── */
+    .tour-hero-carousel {
         position: relative;
         width: 100%;
-        height: 400px;
+        height: 90vh;
+        min-height: 520px;
         overflow: hidden;
-        background: #1a3a52;
-        margin-bottom: 0;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .carousel-images {
-        width: 100%;
-        height: 100%;
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
         z-index: 1;
     }
 
@@ -165,162 +235,584 @@ const {
         height: 100%;
         object-fit: cover;
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
         opacity: 0;
-        transition: opacity 0.7s;
+        transition: opacity 1s ease-in-out;
     }
 
     .carousel-img.active {
         opacity: 1;
-        z-index: 2;
     }
 
-    .carousel-overlay {
+    .hero-overlay {
         position: absolute;
         inset: 0;
         background: linear-gradient(
-            90deg,
-            rgba(33, 123, 150, 0.55) 0%,
-            rgba(26, 58, 82, 0.45) 100%
+            160deg,
+            rgba(10, 30, 50, 0.45) 0%,
+            rgba(10, 50, 70, 0.6) 40%,
+            rgba(5, 20, 35, 0.82) 100%
         );
         z-index: 2;
     }
 
-    .carousel-content {
+    .tour-hero-carousel::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background: #fff;
+        clip-path: ellipse(56% 100% at 50% 100%);
+        z-index: 4;
+    }
+
+    .hero-content {
         position: relative;
         z-index: 3;
-        color: #fff;
         text-align: center;
+        color: #fff;
         padding: 2rem;
+        max-width: 820px;
+        animation: heroFadeIn 0.9s ease forwards;
     }
 
-    .carousel-title {
-        font-size: 2rem;
+    @keyframes heroFadeIn {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(33, 123, 150, 0.65);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.22);
         color: #fff;
-        margin-bottom: 0.5rem;
-        letter-spacing: 0.05em;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0.38rem 1rem;
+        border-radius: 50px;
+        margin-bottom: 1.2rem;
     }
 
-    .carousel-subtitle {
-        font-size: 3.5rem;
-        color: #fff;
-        margin-bottom: 1rem;
-        letter-spacing: 0.08em;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    .hero-label .material-symbols-outlined {
+        font-size: 1rem;
     }
 
-    .carousel-desc {
+    .hero-title {
+        font-size: 1.3rem;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+        margin: 0 0 0.2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 4.8rem;
+        font-weight: 800;
+        line-height: 1;
+        margin: 0 0 1.2rem;
+        background: linear-gradient(90deg, #fff 0%, #a8e6f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+    }
+
+    .hero-desc {
         font-size: 1.1rem;
-        color: #f0f0f0;
-        max-width: 600px;
+        color: rgba(255, 255, 255, 0.82);
+        max-width: 580px;
+        margin: 0 auto 2rem;
+        line-height: 1.65;
+    }
+
+    .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #217b96;
+        color: #fff;
+        text-decoration: none;
+        padding: 0.9rem 2.2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        transition: all 0.3s;
+        box-shadow: 0 6px 24px rgba(33, 123, 150, 0.45);
+    }
+
+    .hero-cta:hover {
+        background: #1a5f78;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 32px rgba(33, 123, 150, 0.55);
+    }
+
+    .hero-cta .material-symbols-outlined {
+        font-size: 1.1rem;
+        animation: bounceY 1.6s infinite;
+    }
+
+    @keyframes bounceY {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(5px); }
+    }
+
+    .carousel-dots {
+        position: absolute;
+        bottom: 94px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        z-index: 3;
+    }
+
+    .carousel-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.38);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .carousel-dot.active {
+        background: #fff;
+        width: 26px;
+        border-radius: 4px;
+    }
+
+    /* ─── PAGE INTRO ─── */
+    .page-intro-section {
+        background: #fff;
+        padding: 5rem 1.5rem 4.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-intro-inner {
+        max-width: 1100px;
         margin: 0 auto;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        display: grid;
+        grid-template-columns: 1fr 160px;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .intro-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0f2d42;
+        margin: 0 0 1rem;
+        padding-left: 1.4rem;
+        position: relative;
+    }
+
+    .intro-title::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 4px;
+        height: calc(100% - 8px);
+        width: 4px;
+        background: linear-gradient(180deg, #217b96, #1a3a52);
+        border-radius: 2px;
+    }
+
+    .intro-description {
+        font-size: 1.05rem;
+        color: #4a5568;
+        line-height: 1.8;
+        max-width: 640px;
+        margin: 0 0 2rem;
+    }
+
+    .intro-highlights {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+    }
+
+    .highlight-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #f0f7fb;
+        border: 1px solid #c6e8f5;
+        color: #1a3a52;
+        padding: 0.38rem 1rem;
+        border-radius: 50px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: all 0.25s;
+        cursor: default;
+    }
+
+    .highlight-chip:hover {
+        background: #217b96;
+        color: #fff;
+        border-color: #217b96;
+    }
+
+    .highlight-chip .material-symbols-outlined {
+        font-size: 1.05rem;
+        color: #217b96;
+        transition: color 0.25s;
+    }
+
+    .highlight-chip:hover .material-symbols-outlined {
+        color: #fff;
+    }
+
+    .intro-visual-accent {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        flex-shrink: 0;
+    }
+
+    .accent-circle-1 {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #217b96, #1a3a52);
+        opacity: 0.1;
+    }
+
+    .accent-circle-2 {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        top: 30px;
+        left: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #217b96, #a8e6f0);
+        opacity: 0.22;
+    }
+
+    /* ─── TOURS SECTION ─── */
+    .tours-section {
+        background: linear-gradient(150deg, #f0f6f9 0%, #e4f0f5 100%);
+        padding: 5rem 1.5rem;
+    }
+
+    .tours-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-heading {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0f2d42;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 0.8rem;
+    }
+
+    .section-divider {
+        width: 56px;
+        height: 4px;
+        background: linear-gradient(90deg, #217b96, #a8e6f0);
+        border-radius: 2px;
+        margin: 0 auto;
     }
 
     .tours-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 1.8rem;
     }
 
-    .carousel-card {
+    .tour-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
         cursor: pointer;
+        transition: transform 0.32s ease, box-shadow 0.32s ease;
+        display: flex;
+        flex-direction: column;
     }
 
-    .contact-btn {
-        background-color: #217b96;
+    .tour-card:hover {
+        transform: translateY(-9px);
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
+    }
+
+    .tc-image {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .tc-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .tour-card:hover .tc-image img {
+        transform: scale(1.08);
+    }
+
+    .tc-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(10, 30, 50, 0.45) 0%, transparent 55%);
+    }
+
+    .tc-icon-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(33, 123, 150, 0.82);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .tc-icon-badge .material-symbols-outlined {
+        font-size: 1.25rem;
+    }
+
+    .tc-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .tc-title {
+        font-size: 1.22rem;
+        font-weight: 700;
+        color: #0f2d42;
+        margin: 0 0 0.5rem;
+    }
+
+    .tc-desc {
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.6;
+        flex: 1;
+        margin: 0 0 1.2rem;
+    }
+
+    .tc-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        background: #217b96;
         color: #fff;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.78rem 1.5rem;
+        border-radius: 8px;
         font-size: 0.95rem;
-        border-radius: 4px;
+        font-weight: 600;
         cursor: pointer;
-        margin-top: 1rem;
+        transition: background 0.28s;
         width: 100%;
-        transition: background-color 0.3s ease;
     }
 
-    .contact-btn:hover {
-        background-color: #1a5f78;
+    .tc-btn:hover {
+        background: #1a5f78;
+    }
+
+    .tc-btn .material-symbols-outlined {
+        font-size: 1rem;
+        transition: transform 0.22s;
+    }
+
+    .tc-btn:hover .material-symbols-outlined {
+        transform: translateX(4px);
+    }
+
+    /* ─── GALLERY ─── */
+    .gallery-section {
+        background: #0a1e2e;
+        padding: 5rem 1.5rem;
+    }
+
+    .gallery-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .gallery-heading {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .gallery-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 0.4rem;
+    }
+
+    .gallery-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.55);
+        margin: 0;
+    }
+
+    .gallery-collage {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 200px;
+        gap: 6px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .g-item {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .g-item.tall  { grid-row: span 2; }
+    .g-item.wide  { grid-column: span 2; }
+
+    .g-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .g-item:hover img {
+        transform: scale(1.07);
+    }
+
+    .g-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 30, 50, 0.38);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        color: #fff;
+    }
+
+    .g-overlay .material-symbols-outlined {
+        font-size: 2.2rem;
+    }
+
+    .g-item:hover .g-overlay {
+        opacity: 1;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+        .gallery-collage {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .g-item.wide {
+            grid-column: span 1;
+        }
     }
 
     @media (max-width: 768px) {
-        .carousel-subtitle {
-            font-size: 2.5rem;
+        .tour-hero-carousel {
+            height: 72vh;
+            min-height: 420px;
         }
+        .hero-subtitle { font-size: 3.2rem; }
+        .hero-title    { font-size: 1rem; }
+        .page-intro-inner {
+            grid-template-columns: 1fr;
+        }
+        .intro-visual-accent { display: none; }
+        .gallery-collage {
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 160px;
+        }
+        .g-item.tall { grid-row: span 1; }
+    }
 
-        .carousel-title {
-            font-size: 1.5rem;
-        }
-
-        .tour-carousel {
-            height: 300px;
-        }
-
-        .contact-btn {
-            padding: 0.8rem 1.5rem;
-            font-size: 0.9rem;
-        }
+    @media (max-width: 480px) {
+        .hero-subtitle { font-size: 2.6rem; }
+        .gallery-collage { grid-template-columns: 1fr; }
+        .g-item.wide    { grid-column: span 1; }
+        .tour-hero-carousel::after { height: 50px; }
     }
 </style>
 
 <script>
     function initTourListing(section: Element) {
-        // --- Carrusel automático (esto faltaba, por eso no rotaba) ---
         const interval = Number((section as HTMLElement).dataset.interval) || 5000;
         const images = section.querySelectorAll<HTMLImageElement>(".carousel-img");
+        const dots   = section.querySelectorAll<HTMLElement>(".carousel-dot");
 
         if (images.length > 1) {
             let current = 0;
-            setInterval(() => {
+
+            const go = (index: number) => {
                 images[current].classList.remove("active");
-                current = (current + 1) % images.length;
+                dots[current]?.classList.remove("active");
+                current = index;
                 images[current].classList.add("active");
-            }, interval);
+                dots[current]?.classList.add("active");
+            };
+
+            setInterval(() => go((current + 1) % images.length), interval);
+            dots.forEach((dot, i) => dot.addEventListener("click", () => go(i)));
         }
 
-        // --- Abrir modales ---
-        const tourCards = section.querySelectorAll(".carousel-card");
-        const contactButtons = section.querySelectorAll(".contact-btn");
-
+        const tourCards = section.querySelectorAll<HTMLElement>(".tour-card");
         tourCards.forEach((card) => {
-            const tourId = card.getAttribute("data-id");
             card.addEventListener("click", () => {
-                const modal = document.getElementById(`modal-${tourId}`);
+                const modal = document.getElementById(`modal-${card.dataset.id}`);
                 if (modal) modal.classList.add("open");
             });
         });
 
-        contactButtons.forEach((btn) => {
+        const buttons = section.querySelectorAll<HTMLElement>(".tc-btn");
+        buttons.forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
-                const tourId = btn.getAttribute("data-id");
-                const modal = document.getElementById(`modal-${tourId}`);
+                const modal = document.getElementById(`modal-${btn.dataset.id}`);
                 if (modal) modal.classList.add("open");
             });
         });
     }
 
-    // Inicializa cada instancia del componente presente en la página
-    document
-        .querySelectorAll("[data-tour-listing]")
-        .forEach((section) => initTourListing(section));
+    document.querySelectorAll("[data-tour-listing]").forEach(initTourListing);
 
-    // Cerrar modales al hacer click fuera (global, una sola vez)
     document.addEventListener("click", (e) => {
-        const modals = document.querySelectorAll(".dmodal-overlay");
-        modals.forEach((modal) => {
+        document.querySelectorAll(".dmodal-overlay").forEach((modal) => {
             if (e.target === modal) modal.classList.remove("open");
         });
     });
 
-    // Cerrar modales con botón de cerrar
     document.querySelectorAll(".dmodal-close").forEach((btn) => {
         btn.addEventListener("click", () => {
-            const modal = btn.closest(".dmodal-overlay");
-            if (modal) modal.classList.remove("open");
+            btn.closest(".dmodal-overlay")?.classList.remove("open");
         });
     });
 </script>

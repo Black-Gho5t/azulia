@@ -2,14 +2,38 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import TourListingSection from "../../components/tours_section.astro"
+import TourListingSection from "../../components/tours_section.astro";
 import { nauticosTours, modalData } from "../../components/data/tours/nauticos_data";
 
 const carouselImages = [
-    { src: "/src/assets/photos_azulia_webp/velero/velero_2.webp", alt: "Tours Náuticos - Velero" },
-    { src: "/src/assets/photos_azulia_webp/velero/velero_3.webp", alt: "Tours Náuticos - Moto Acuática" },
-    { src: "/src/assets/photos_azulia_webp/ponton/pontom_1.webp", alt: "Tours Náuticos - Pontón" },
-    { src: "/src/assets/photos_azulia_webp/velero/velero_5.webp", alt: "Tours Náuticos - Snorkel" },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_2.webp", alt: "Velero en la laguna de Bacalar" },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_3.webp", alt: "Navegando en velero" },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_1.webp", alt: "Pontón familiar en Bacalar" },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_5.webp", alt: "Atardecer náutico en Bacalar" },
+];
+
+const pageIntro = {
+    title: "Descubre la Laguna de Bacalar",
+    description: "La Laguna de los 7 Colores te espera con sus aguas turquesas y sus rincones secretos. Desde el viento en las velas de un velero hasta la adrenalina de una moto acuática, cada tour náutico es una aventura diferente. Nuestros capitanes y guías certificados te llevan a vivir la laguna como nunca la habías imaginado.",
+    highlights: [
+        { icon: "sailing", text: "Veleros y pontones" },
+        { icon: "waves", text: "Laguna de 7 Colores" },
+        { icon: "kayaking", text: "Kayak y paddle board" },
+        { icon: "scuba_diving", text: "Snorkel y buceo" },
+        { icon: "groups", text: "Guías certificados" },
+        { icon: "star", text: "Experiencia única" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/velero/velero_4.webp", alt: "Velero navegando", span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_2.webp", alt: "Pontón en la laguna", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_4.webp", alt: "Día en el pontón", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (1).webp", alt: "Kayak al amanecer", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_6.webp", alt: "Velero al atardecer", span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/Kayak/kayak (2).webp", alt: "Kayak en la laguna", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Paddle/paddle (1).webp", alt: "Paddle board en Bacalar", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_5.webp", alt: "Atardecer en pontón", span: "normal" as const },
 ];
 ---
 
@@ -24,6 +48,8 @@ const carouselImages = [
             sectionTitle="Tours Náuticos Disponibles"
             tours={nauticosTours}
             modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
         />
     </main>
     <Footer />

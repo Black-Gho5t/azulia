@@ -2,14 +2,34 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
-import TourListingSection from "../../components/tours_section.astro"
-import { ruinasTours, modalData } from "../../components/data/tours/ruinas_data"
+import TourListingSection from "../../components/tours_section.astro";
+import { ruinasTours, modalData } from "../../components/data/tours/ruinas_data";
 
 const carouselImages = [
-    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (1).webp", alt: "Una ruina" },
-    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (2).webp", alt: "otra ruina" },
-    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (3).webp", alt: "ruina con mono" },
-    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (1).webp", alt: "Una piramide" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (1).webp", alt: "Gran pirámide de Calakmul" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (2).webp", alt: "Selva de Calakmul" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (3).webp", alt: "Ruinas entre la selva" },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (1).webp", alt: "Pirámide de Ichkabal" },
+];
+
+const pageIntro = {
+    title: "Civilizaciones Mayas Eternas",
+    description: "A pocos kilómetros de Bacalar se esconde el legado de una de las civilizaciones más avanzadas del mundo. Desde las pirámides secretas de Ichkabal hasta el imponente corazón de la selva maya en Calakmul, cada visita es un viaje en el tiempo. Nuestros guías arqueólogos te narran la historia viva de los antiguos mayas.",
+    highlights: [
+        { icon: "account_balance", text: "Pirámides milenarias" },
+        { icon: "forest", text: "Selva tropical" },
+        { icon: "photo_camera", text: "Paisajes únicos" },
+        { icon: "groups", text: "Guías arqueólogos" },
+        { icon: "directions_bus", text: "Transporte incluido" },
+        { icon: "history_edu", text: "Historia viva" },
+    ],
+};
+
+const galleryImages = [
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (2).webp", alt: "Templo de Ichkabal", span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (3).webp", alt: "Estructura maya", span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (4).webp", alt: "Templo antiguo", span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (5).webp", alt: "Escalinata maya", span: "normal" as const },
 ];
 ---
 
@@ -20,10 +40,12 @@ const carouselImages = [
             carouselImages={carouselImages}
             carouselTitle="Tours"
             carouselSubtitle="Ruinas"
-            carouselDescription="Explora las ruinas de un mundo antigua y una civilizacion avanzada, aventurate en las ruinas de bacalar y el sur de Mexico."
+            carouselDescription="Explora las ruinas de un mundo antiguo y una civilización avanzada. Aventúrate en las ruinas de Bacalar y el sur de México."
             sectionTitle="Tours en las Ruinas"
             tours={ruinasTours}
             modals={modalData}
+            pageIntro={pageIntro}
+            galleryImages={galleryImages}
         />
     </main>
     <Footer />
