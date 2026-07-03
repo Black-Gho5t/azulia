@@ -82,15 +82,15 @@ const pageContext = `${carouselSubtitle} ${sectionTitle} ${pageIntro?.title ?? "
 
 const contextIcons =
         pageContext.includes("nautic") || pageContext.includes("náutic")
-                ? ["sailing", "snorkeling", "directions_boat", "kayaking", "anchor"]
+                ? ["sailing", "scuba_diving", "directions_boat", "kayaking", "anchor"]
                 : pageContext.includes("ruinas")
                     ? ["history_edu", "account_balance", "travel_explore", "route", "landscape"]
                     : pageContext.includes("belice")
-                        ? ["flight_takeoff", "travel_explore", "forest", "beach_access", "snorkeling"]
+                        ? ["flight_takeoff", "travel_explore", "forest", "beach_access", "scuba_diving"]
                         : pageContext.includes("guatemala")
                             ? ["travel_explore", "forest", "landscape", "history_edu", "photo_camera"]
                             : pageContext.includes("honduras")
-                                ? ["travel_explore", "beach_access", "waves", "snorkeling", "landscape"]
+                                ? ["travel_explore", "beach_access", "waves", "scuba_diving", "landscape"]
                                 : pageContext.includes("mahahual")
                                     ? ["beach_access", "waves", "sailing", "restaurant", "photo_camera"]
                                     : ["travel_explore", "landscape", "photo_camera", "forest"];

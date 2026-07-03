@@ -45,7 +45,7 @@ export const nauticosTours: Tour[] = [
         id: "ponton",
         name: "Ponton",
         description: "Disfruta de un dia increible con la familia o amigos en un espacioso ponton",
-        icon: "houseboat",
+        icon: "directions_boat",
         image: pontom,
     },
     {

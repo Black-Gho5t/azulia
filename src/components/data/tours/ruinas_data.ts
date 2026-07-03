@@ -34,14 +34,14 @@ export const ruinasTours: Tour[] = [
         id: "ichkabal",
         name: "Ichkabal",
         description: "Adentrate en las antiguas piramides de las ruinas de Ichkabal",
-        icon: "sinagoge",
+        icon: "account_balance",
         image: ichkabal,
     },
     {
         id: "calakmul",
         name: "Calakmul",
         description: "Admira la fauna silvestre de las ruinas de Calakmul, observa los rastros de una antigua civilizacion",
-        icon: "houseboat",
+        icon: "history_edu",
         image: calakmul,
     },
 ];
