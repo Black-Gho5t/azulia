@@ -73,6 +73,31 @@ const {
     galleryImages = [],
     carouselInterval = 5000,
 } = Astro.props;
+
+const orbitIcons = Array.from(
+    new Set((pageIntro?.highlights ?? []).map((h) => h.icon)),
+).slice(0, 6);
+
+const pageContext = `${carouselSubtitle} ${sectionTitle} ${pageIntro?.title ?? ""}`.toLowerCase();
+
+const contextIcons =
+        pageContext.includes("nautic") || pageContext.includes("náutic")
+                ? ["sailing", "snorkeling", "directions_boat", "kayaking", "anchor"]
+                : pageContext.includes("ruinas")
+                    ? ["history_edu", "account_balance", "travel_explore", "route", "landscape"]
+                    : pageContext.includes("belice")
+                        ? ["flight_takeoff", "travel_explore", "forest", "beach_access", "snorkeling"]
+                        : pageContext.includes("guatemala")
+                            ? ["travel_explore", "forest", "landscape", "history_edu", "photo_camera"]
+                            : pageContext.includes("honduras")
+                                ? ["travel_explore", "beach_access", "waves", "snorkeling", "landscape"]
+                                : pageContext.includes("mahahual")
+                                    ? ["beach_access", "waves", "sailing", "restaurant", "photo_camera"]
+                                    : ["travel_explore", "landscape", "photo_camera", "forest"];
+
+const centerIcons = Array.from(
+        new Set([...contextIcons, ...(pageIntro?.highlights ?? []).map((h) => h.icon)]),
+).slice(0, 6);
 ---
 
 <section class="tour-listing" data-tour-listing data-interval={carouselInterval}>
@@ -128,7 +153,31 @@ const {
                 </div>
                 <div class="intro-visual-accent" aria-hidden="true">
                     <div class="accent-circle-1"></div>
-                    <div class="accent-circle-2"></div>
+                    <div class="accent-circle-2">
+                        {centerIcons.map((icon, i) => (
+                            <span
+                                class:list={["center-icon-item", { active: i === 0 }]}
+                                data-center-icon
+                            >
+                                <span class="material-symbols-outlined">{icon}</span>
+                            </span>
+                        ))}
+                    </div>
+                    {orbitIcons.length > 0 && (
+                        <div class="accent-orbits">
+                            {orbitIcons.map((icon, i) => (
+                                <span
+                                    class:list={[
+                                        "orbit-icon",
+                                        { "orbit-icon--outer": i % 2 === 0 },
+                                    ]}
+                                    style={`--i:${i}; --total:${orbitIcons.length}; --duration:${10 + (i % 3) * 1.8}s; --delay:${-i * 0.8}s;`}
+                                >
+                                    <span class="material-symbols-outlined">{icon}</span>
+                                </span>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </section>
@@ -468,6 +517,68 @@ const {
         flex-shrink: 0;
     }
 
+    .accent-orbits {
+        position: absolute;
+        inset: -18px;
+        pointer-events: none;
+    }
+
+    .orbit-icon {
+        --radius: 60px;
+        --angle: calc((360deg / var(--total)) * var(--i));
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 34px;
+        height: 34px;
+        margin-left: -17px;
+        margin-top: -17px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(33, 123, 150, 0.28);
+        color: #217b96;
+        box-shadow: 0 8px 20px rgba(15, 45, 66, 0.13);
+        backdrop-filter: blur(2px);
+        animation: orbitSpin var(--duration) linear infinite;
+        animation-delay: var(--delay);
+        transform:
+            rotate(var(--angle))
+            translateX(var(--radius))
+            rotate(calc(-1 * var(--angle)));
+    }
+
+    .orbit-icon--outer {
+        --radius: 78px;
+        width: 36px;
+        height: 36px;
+        margin-left: -18px;
+        margin-top: -18px;
+        animation-direction: reverse;
+    }
+
+    .orbit-icon .material-symbols-outlined {
+        font-size: 1.08rem;
+        color: #1f6f8f;
+    }
+
+    @keyframes orbitSpin {
+        from {
+            transform:
+                rotate(var(--angle))
+                translateX(var(--radius))
+                rotate(calc(-1 * var(--angle)));
+        }
+        to {
+            transform:
+                rotate(calc(var(--angle) + 360deg))
+                translateX(var(--radius))
+                rotate(calc(-1 * (var(--angle) + 360deg)));
+        }
+    }
+
     .accent-circle-1 {
         position: absolute;
         inset: 0;
@@ -485,6 +596,35 @@ const {
         border-radius: 50%;
         background: linear-gradient(135deg, #217b96, #a8e6f0);
         opacity: 0.22;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.14);
+        overflow: hidden;
+    }
+
+    .center-icon-item {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transform: scale(0.65);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .center-icon-item.active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .center-icon-item .material-symbols-outlined {
+        font-size: 2rem;
+        color: #ffffff;
+        filter: drop-shadow(0 3px 8px rgba(15, 45, 66, 0.42));
     }
 
     /* ─── TOURS SECTION ─── */
@@ -757,6 +897,7 @@ const {
         const interval = Number((section as HTMLElement).dataset.interval) || 5000;
         const images = section.querySelectorAll<HTMLImageElement>(".carousel-img");
         const dots   = section.querySelectorAll<HTMLElement>(".carousel-dot");
+        const centerIconItems = section.querySelectorAll<HTMLElement>("[data-center-icon]");
 
         if (images.length > 1) {
             let current = 0;
@@ -771,6 +912,15 @@ const {
 
             setInterval(() => go((current + 1) % images.length), interval);
             dots.forEach((dot, i) => dot.addEventListener("click", () => go(i)));
+        }
+
+        if (centerIconItems.length > 1) {
+            let currentIcon = 0;
+            setInterval(() => {
+                centerIconItems[currentIcon].classList.remove("active");
+                currentIcon = (currentIcon + 1) % centerIconItems.length;
+                centerIconItems[currentIcon].classList.add("active");
+            }, 1800);
         }
 
         const tourCards = section.querySelectorAll<HTMLElement>(".tour-card");
