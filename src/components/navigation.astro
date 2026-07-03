@@ -37,7 +37,7 @@ import "../assets/styles/home.css";
             </a>
             <ul class="nav-dropdown" role="menu">
                 <li><a href="/tours/nauticos" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">anchor</span>NÃ¡uticos</a></li>
+                    <span class="material-symbols-outlined">anchor</span>Náuticos</a></li>
                 <li><a href="/tours/ruinas" class="nav-dropdown-link">
                     <span class="material-symbols-outlined">account_balance</span>Ruinas</a></li>
                 <li><a href="/tours/mahahual" class="nav-dropdown-link">
@@ -61,12 +61,12 @@ import "../assets/styles/home.css";
         <li class="nav-item">
             <a href="/transportation/transportacion_index" class="nav-link">
                 <span class="material-symbols-outlined nav-link-icon">airport_shuttle</span>
-                TransportaciÃ³n
+                Transportación
             </a>
         </li>
     </ul>
 
-    <!-- Derecha: search + user -->
+    <!-- Derecha: search + user (desktop) -->
     <div class="nav-right">
         <Search />
         <button class="nav-user-btn" aria-label="Perfil de usuario">
@@ -74,18 +74,42 @@ import "../assets/styles/home.css";
         </button>
     </div>
 
+    <!-- Botones móvil (solo visibles en pantallas pequeñas) -->
+    <div class="nav-mobile-actions">
+        <button class="nav-mob-search-btn" id="mobSearchToggle" aria-label="Buscar" aria-expanded="false">
+            <span class="material-symbols-outlined">search</span>
+        </button>
+        <button class="nav-user-btn" aria-label="Perfil de usuario">
+            <span class="material-symbols-outlined">account_circle</span>
+        </button>
+    </div>
+
 </nav>
 
-<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     DRAWER MÃ“VIL
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- Panel de búsqueda móvil -->
+<div id="mobSearchPanel" class="mob-search-panel" aria-hidden="true">
+    <div class="mob-search-inner">
+        <span class="material-symbols-outlined mob-search-icon">search</span>
+        <input
+            id="mobSearchInput"
+            class="mob-search-input"
+            type="search"
+            placeholder="Buscar destinos, tours..."
+            autocomplete="off"
+        />
+        <button class="mob-search-close" id="mobSearchClose" aria-label="Cerrar búsqueda">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>
+
 <div id="nav-drawer" class="nav-drawer" aria-hidden="true">
 
     <!-- Cabecera del drawer -->
     <div class="drawer-header">
         <span class="material-symbols-outlined drawer-brand-icon">sailing</span>
         <span class="drawer-brand-text">Azulia</span>
-        <button class="drawer-close-btn" id="drawerClose" aria-label="Cerrar menÃº">
+        <button class="drawer-close-btn" id="drawerClose" aria-label="Cerrar menú">
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>
@@ -112,7 +136,7 @@ import "../assets/styles/home.css";
                 </a>
                 <a href="/tours/nauticos" class="drawer-sub-link">
                     <span class="material-symbols-outlined">anchor</span>
-                    NÃ¡uticos
+                    Náuticos
                 </a>
                 <a href="/tours/ruinas" class="drawer-sub-link">
                     <span class="material-symbols-outlined">account_balance</span>
@@ -144,7 +168,7 @@ import "../assets/styles/home.css";
 
         <a href="/transportation/transportacion_index" class="drawer-link">
             <span class="drawer-link-icon material-symbols-outlined">airport_shuttle</span>
-            <span>TransportaciÃ³n</span>
+            <span>Transportación</span>
         </a>
 
     </nav>
@@ -184,7 +208,7 @@ import "../assets/styles/home.css";
     overlay?.addEventListener("click",  closeDrawer);
 
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeDrawer();
+        if (e.key === "Escape") { closeDrawer(); closeMobSearch(); }
     });
 
     /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ACORDEON TOURS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -222,6 +246,31 @@ import "../assets/styles/home.css";
     const onScroll = () => navBar?.classList.toggle("scrolled", window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+
+    /* MOBILE SEARCH TOGGLE */
+    const mobToggle = document.getElementById("mobSearchToggle") as HTMLButtonElement | null;
+    const mobPanel  = document.getElementById("mobSearchPanel")  as HTMLElement | null;
+    const mobInput  = document.getElementById("mobSearchInput")  as HTMLInputElement | null;
+    const mobClose  = document.getElementById("mobSearchClose")  as HTMLButtonElement | null;
+
+    function openMobSearch() {
+        mobPanel?.classList.add("open");
+        mobPanel?.setAttribute("aria-hidden", "false");
+        mobToggle?.setAttribute("aria-expanded", "true");
+        mobToggle?.classList.add("active");
+        setTimeout(() => mobInput?.focus(), 80);
+    }
+    function closeMobSearch() {
+        mobPanel?.classList.remove("open");
+        mobPanel?.setAttribute("aria-hidden", "true");
+        mobToggle?.setAttribute("aria-expanded", "false");
+        mobToggle?.classList.remove("active");
+    }
+
+    mobToggle?.addEventListener("click", () =>
+        mobPanel?.classList.contains("open") ? closeMobSearch() : openMobSearch()
+    );
+    mobClose?.addEventListener("click", closeMobSearch);
 </script>
 
 
@@ -364,22 +413,21 @@ import "../assets/styles/home.css";
         position: absolute;
         top: 100%;
         left: 0;
-        min-width: 220px;
+        min-width: 210px;
         list-style: none;
         margin: 0;
-        padding: 6px 0 8px;
-        background: #fff;
-        border-radius: 0 0 12px 12px;
-        box-shadow: 0 12px 40px rgba(22,50,79,0.18), 0 2px 8px rgba(0,0,0,0.08);
+        padding: 6px 0;
+        background: #2e518b;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.22);
         opacity: 0;
         transform: translateY(-6px);
         pointer-events: none;
-        transition: opacity 0.2s ease, transform 0.2s ease;
+        transition: opacity 0.22s ease, transform 0.22s ease;
         z-index: 100;
-        border-top: 3px solid #2675a5;
     }
 
-    /* Bridge invisible gap so hover doesn't break between trigger and panel */
+    /* Invisible bridge — keeps hover alive crossing the seam */
     .nav-dropdown::before {
         content: '';
         position: absolute;
@@ -400,41 +448,49 @@ import "../assets/styles/home.css";
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 18px;
-        color: #16324f;
+        padding: 11px 18px;
+        color: rgba(255,255,255,0.88);
         text-decoration: none;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 0.875rem;
-        font-weight: 500;
-        transition: background 0.15s, color 0.15s, padding-left 0.15s;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        transition: background 0.18s, color 0.18s, padding-left 0.18s;
     }
 
     .nav-dropdown-link .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         line-height: 1;
-        color: #2675a5;
+        color: #a8e6f7;
         flex-shrink: 0;
-        transition: color 0.15s;
+        transition: color 0.18s;
     }
 
     .nav-dropdown-link:hover {
-        background: rgba(38,117,165,0.07);
-        color: #2675a5;
+        background: #2785c0;
+        color: #fff;
         padding-left: 24px;
     }
 
     .nav-dropdown-link:hover .material-symbols-outlined {
-        color: #217b96;
+        color: #fff;
     }
 
     /* Right section */
     .nav-right {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         margin-left: auto;
         flex-shrink: 0;
+        width: clamp(200px, 22vw, 340px);
+    }
+
+    /* Search fills the right container */
+    .nav-right .group {
+        flex: 1;
+        width: 100%;
     }
 
     .nav-user-btn {
@@ -722,15 +778,38 @@ import "../assets/styles/home.css";
         opacity: 1;
     }
 
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* Hide mobile-only elements on desktop */
+    .nav-mobile-actions { display: none; }
+    .mob-search-panel   { display: none; }
+
     @media (max-width: 768px) {
+        .nav-bar { height: 60px; flex-wrap: nowrap; padding: 0 14px; }
         .nav-burger { display: flex; }
         .nav-links  { display: none; }
-        .nav-brand  { margin-right: auto; }
+        .nav-right  { display: none; }
+        .nav-brand { position: absolute; left: 50%; transform: translateX(-50%); margin: 0; pointer-events: auto; }
+        .nav-mobile-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+        .nav-mob-search-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.28); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: background 0.2s; flex-shrink: 0; }
+        .nav-mob-search-btn:hover, .nav-mob-search-btn.active { background: rgba(255,255,255,0.28); border-color: rgba(255,255,255,0.6); }
+        .nav-mob-search-btn .material-symbols-outlined { font-size: 1.25rem; line-height: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .mob-search-panel { display: block; position: fixed; top: 60px; left: 0; width: 100%; z-index: 999; background: linear-gradient(135deg, #1a5fa0 0%, #2675a5 100%); box-shadow: 0 8px 32px rgba(0,0,0,0.28); pointer-events: none; opacity: 0; transform: translateY(-6px); transition: opacity 0.25s ease, transform 0.25s ease; }
+        .mob-search-panel.open { pointer-events: auto; opacity: 1; transform: translateY(0); }
+        .mob-search-inner { display: flex; align-items: center; gap: 10px; padding: 12px 16px 14px; max-width: 600px; margin: 0 auto; }
+        .mob-search-icon { font-size: 1.35rem; color: rgba(255,255,255,0.7); flex-shrink: 0; line-height: 1; }
+        .mob-search-input { flex: 1; height: 46px; background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 50px; padding: 0 1.2rem; color: #fff; font-size: 1rem; font-family: Arial, Helvetica, sans-serif; outline: none; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+        .mob-search-input::placeholder { color: rgba(255,255,255,0.55); }
+        .mob-search-input:focus { background: rgba(255,255,255,0.24); border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+        .mob-search-close { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.85); transition: background 0.2s; }
+        .mob-search-close:hover { background: rgba(255,255,255,0.26); }
+        .mob-search-close .material-symbols-outlined { font-size: 1.2rem; line-height: 1; }
     }
 
     @media (min-width: 769px) {
-        .nav-drawer  { display: none !important; }
-        .nav-overlay { display: none !important; }
+        .nav-drawer         { display: none !important; }
+        .nav-overlay        { display: none !important; }
+        .nav-mobile-actions { display: none !important; }
     }
 </style>

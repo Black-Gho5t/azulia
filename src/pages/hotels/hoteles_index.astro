@@ -2,170 +2,196 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+
+const hotels = [
+    {
+        name: "Casa Siete Colores Boutique",
+        zone: "Costera de Bacalar",
+        price: 3250,
+        score: 4.9,
+        description:
+            "Suites boutique frente a la laguna, muelle privado y desayuno artesanal incluido.",
+        image: "/src/assets/photos_azulia_webp/ponton/pontom_8.webp",
+        perks: [
+            { icon: "water", label: "Vista laguna" },
+            { icon: "free_breakfast", label: "Desayuno" },
+            { icon: "spa", label: "Spa" },
+        ],
+    },
+    {
+        name: "Laguna Brisa Eco Lodge",
+        zone: "Ejidal Bacalar",
+        price: 1890,
+        score: 4.7,
+        description:
+            "Hospedaje eco-chic rodeado de naturaleza con actividades de kayak y zona de fogata nocturna.",
+        image: "/src/assets/photos_azulia_webp/upscale_azulia_1.webp",
+        perks: [
+            { icon: "park", label: "Naturaleza" },
+            { icon: "kayaking", label: "Kayak" },
+            { icon: "local_fire_department", label: "Fogata" },
+        ],
+    },
+    {
+        name: "Mirador del Caribe Hotel",
+        zone: "Centro Histórico",
+        price: 2490,
+        score: 4.8,
+        description:
+            "Habitaciones premium con rooftop, cocteleria al atardecer y traslados a puntos clave.",
+        image: "/src/assets/photos_azulia_webp/velero/velero_4.webp",
+        perks: [
+            { icon: "roofing", label: "Rooftop" },
+            { icon: "airport_shuttle", label: "Traslados" },
+            { icon: "local_bar", label: "Cocteleria" },
+        ],
+    },
+    {
+        name: "Mar de Jade Family Resort",
+        zone: "Avenida Costera Norte",
+        price: 2790,
+        score: 4.6,
+        description:
+            "Ideal para familias, con club infantil, alberca y paquetes de tours personalizados.",
+        image: "/src/assets/photos_azulia_webp/velero/velero_5.webp",
+        perks: [
+            { icon: "pool", label: "Alberca" },
+            { icon: "child_care", label: "Club infantil" },
+            { icon: "travel", label: "Tours" },
+        ],
+    },
+    {
+        name: "Azul Vela Signature Stay",
+        zone: "Canal de los Piratas",
+        price: 3590,
+        score: 5.0,
+        description:
+            "Concepto adults only con experiencias privadas en velero y cenas romanticas junto al agua.",
+        image: "/src/assets/photos_azulia_webp/velero/velero_3.webp",
+        perks: [
+            { icon: "sailing", label: "Velero privado" },
+            { icon: "restaurant", label: "Cena gourmet" },
+            { icon: "king_bed", label: "Suite premium" },
+        ],
+    },
+    {
+        name: "Coralina House & Suites",
+        zone: "Barrio Mágico",
+        price: 2140,
+        score: 4.5,
+        description:
+            "Suites amplias para estancias largas, coworking y excelente ubicacion para explorar Bacalar.",
+        image: "/src/assets/photos_azulia_webp/ponton/pontom_2.webp",
+        perks: [
+            { icon: "wifi", label: "Wifi rápido" },
+            { icon: "luggage", label: "Estancias largas" },
+            { icon: "pin_drop", label: "Ubicación top" },
+        ],
+    },
+];
 ---
 
 <Layout>
     <Navbar />
     <main>
-        <!-- Image Carousel with Overlay -->
-        <div class="tours-carousel">
+        <div class="hotels-carousel">
             <div class="carousel-images">
                 <img
                     src="/src/assets/photos_azulia_webp/velero/velero_2.webp"
-                    alt="Tours - Velero 1"
+                    alt="Hoteles en Bacalar"
                     class="carousel-img active"
                 />
                 <img
-                    src="/src/assets/photos_azulia_webp/velero/velero_3.webp"
-                    alt="Tours - Velero 2"
+                    src="/src/assets/photos_azulia_webp/ponton/pontom_1.webp"
+                    alt="Muelle frente a hotel"
+                    class="carousel-img"
+                />
+                <img
+                    src="/src/assets/photos_azulia_webp/upscale_azulia_2.webp"
+                    alt="Atardecer en Bacalar"
                     class="carousel-img"
                 />
                 <img
                     src="/src/assets/photos_azulia_webp/velero/velero_4.webp"
-                    alt="Tours - Velero 3"
-                    class="carousel-img"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/velero/velero_5.webp"
-                    alt="Tours - Velero 4"
-                    class="carousel-img"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/ponton/pontom_1.webp"
-                    alt="Tours - Ponton 1"
-                    class="carousel-img"
-                />
-                <img
-                    src="/src/assets/photos_azulia_webp/ponton/pontom_2.webp"
-                    alt="Tours - Ponton 2"
+                    alt="Estancia de lujo en Bacalar"
                     class="carousel-img"
                 />
             </div>
-            <div class="carousel-overlay"></div>
+            <div class="carousel-overlay" />
             <div class="carousel-content">
-                <h1>Hoteles</h1>
+                <span class="hero-eyebrow">Hospedaje Azulia</span>
+                <h1>Hoteles para cada estilo de viaje</h1>
                 <p>
-                    Alojate en los mejores hoteles de Bacalar y el sur de
-                    México.
+                    Elige entre opciones boutique, eco y premium con la paleta y
+                    esencia del Caribe mexicano.
                 </p>
+                <div class="hero-actions">
+                    <a href="#hoteles" class="btn btn-primary">Ver hoteles</a>
+                    <a href="#recomendados" class="btn btn-secondary">Top puntuados</a>
+                </div>
             </div>
         </div>
 
-        <section class="hoteles_index-section">
+        <section class="hoteles-section" id="hoteles">
             <div class="container">
-                <div class="hoteles_index-grid">
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80"
-                                alt="Beachfront Luxury"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Beachfront Luxury</h3>
-                            <p>
-                                Alojamiento lujoso directamente en la playa con
-                                acceso privado.
-                            </p>
-                            <!-- <span class="hotel-price">$7,200 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80"
-                                alt="Eco Lodge"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Eco Lodge</h3>
-                            <p>
-                                Hospedaje sostenible en armonía con la
-                                naturaleza.
-                            </p>
-                            <!-- <span class="hotel-price">$2,100 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80"
-                                alt="Boutique Hotel"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Boutique Hotel</h3>
-                            <p>
-                                Estilo único, atención personalizada y detalles
-                                exclusivos frente al mar.
-                            </p>
-                            <!-- <span class="hotel-price">$5,800 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80"
-                                alt="Family Beach Resort"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Family Beach Resort</h3>
-                            <p>
-                                Ideal para familias, con club infantil y
-                                actividades acuáticas.
-                            </p>
-                            <!-- <span class="hotel-price">$3,400 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
-                                alt="Luxury Oceanfront"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Luxury Oceanfront</h3>
-                            <p>
-                                Suites exclusivas con terraza privada y vistas
-                                espectaculares al mar Caribe.
-                            </p>
-                            <!-- <span class="hotel-price">$10,000 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80"
-                                alt="Eco Beach Resort"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Eco Beach Resort</h3>
-                            <p>
-                                Hospedaje ecológico rodeado de naturaleza, ideal
-                                para relajarse y desconectar.
-                            </p>
-                            <!-- <span class="hotel-price">$1,200 MXN / noche</span> -->
-                        </div>
-                    </div>
-                    <div class="hotel-card">
-                        <div class="hotel-card-image">
-                            <img
-                                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
-                                alt="Beach Club Hotel"
-                            />
-                        </div>
-                        <div class="hotel-card-content">
-                            <h3>Beach Club Hotel</h3>
-                            <p>
-                                Ambiente relajado, club de playa y cocteles
-                                junto al mar.
-                            </p>
-                            <!-- <span class="hotel-price">$500 MXN / noche</span> -->
-                        </div>
-                    </div>
+                <div class="section-header" id="recomendados">
+                    <span class="section-eyebrow">Seleccionados para ti</span>
+                    <h2 class="section-title">Hospedajes recomendados en Bacalar</h2>
+                    <p class="section-subtitle">
+                        Todas las opciones incluyen informacion clara de precio, amenidades
+                        y ubicacion para que compares rapido.
+                    </p>
+                </div>
+
+                <div class="hoteles-grid">
+                    {
+                        hotels.map((hotel) => (
+                            <article class="hotel-card">
+                                <div class="hotel-card-image">
+                                    <img src={hotel.image} alt={hotel.name} loading="lazy" />
+                                    <div class="hotel-rating">
+                                        <span class="material-symbols-outlined">star</span>
+                                        {hotel.score}
+                                    </div>
+                                </div>
+
+                                <div class="hotel-card-content">
+                                    <div class="hotel-meta-top">
+                                        <h3>{hotel.name}</h3>
+                                        <span class="hotel-zone">
+                                            <span class="material-symbols-outlined">location_on</span>
+                                            {hotel.zone}
+                                        </span>
+                                    </div>
+
+                                    <p>{hotel.description}</p>
+
+                                    <ul class="hotel-perks">
+                                        {hotel.perks.map((perk) => (
+                                            <li>
+                                                <span class="material-symbols-outlined">{perk.icon}</span>
+                                                {perk.label}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <div class="hotel-footer">
+                                        <div class="hotel-price-block">
+                                            <span class="label">Desde</span>
+                                            <span class="hotel-price">
+                                                ${hotel.price.toLocaleString("es-MX")} MXN
+                                            </span>
+                                            <span class="note">por noche</span>
+                                        </div>
+                                        <a href="/menu/" class="hotel-cta">
+                                            Cotizar
+                                            <span class="material-symbols-outlined">arrow_forward</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        ))
+                    }
                 </div>
             </div>
         </section>
@@ -174,11 +200,32 @@ import Layout from "../../layouts/Layout.astro";
 </Layout>
 
 <style>
+    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
     * {
         font-family: Arial, Helvetica, sans-serif;
     }
 
-    .tours-carousel {
+    .material-symbols-outlined {
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        display: inline-block;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hotels-carousel {
         position: relative;
         width: 100%;
         height: 80vh;
@@ -189,11 +236,11 @@ import Layout from "../../layouts/Layout.astro";
         position: relative;
         width: 100%;
         height: 100%;
-        background-color: #f0f0f0;
     }
 
     .carousel-img {
         position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -208,17 +255,14 @@ import Layout from "../../layouts/Layout.astro";
 
     .carousel-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: radial-gradient(
-            ellipse 90% 100% at 0% 0%,
-            rgb(33, 123, 150) 0%,
-            rgb(33, 123, 150) 25%,
-            rgba(33, 123, 150, 0.75) 45%,
-            rgba(33, 123, 150, 0.35) 65%,
-            transparent 80%
+            ellipse 95% 100% at 0% 0%,
+            rgba(33, 123, 150, 0.95) 0%,
+            rgba(38, 117, 165, 0.82) 28%,
+            rgba(38, 117, 165, 0.52) 56%,
+            rgba(38, 117, 165, 0.18) 76%,
+            rgba(38, 117, 165, 0) 100%
         );
         z-index: 2;
     }
@@ -230,260 +274,317 @@ import Layout from "../../layouts/Layout.astro";
         transform: translate(-50%, -50%);
         z-index: 3;
         text-align: center;
-        color: white;
-        width: 100%;
-        max-width: 800px;
+        color: #fff;
+        width: min(900px, 92%);
         padding: 2rem;
     }
 
-    .carousel-content h1 {
-        font-size: 4rem;
-        color: white;
-        margin-bottom: 1rem;
+    .hero-eyebrow {
+        display: inline-block;
+        margin-bottom: 0.6rem;
+        padding: 0.42rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
         font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .carousel-content h1 {
+        margin: 0;
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        text-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
     }
 
     .carousel-content p {
-        font-size: 1.3rem;
-        color: white;
+        margin: 1rem auto 0;
+        max-width: 680px;
+        font-size: clamp(1rem, 2.1vw, 1.25rem);
         line-height: 1.6;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.94);
+        text-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
     }
 
-    .tours-section {
-        padding: 4rem 2rem;
-        background: white;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .tours-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 0;
-    }
-
-    .tour-card {
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition:
-            transform 0.3s ease,
-            box-shadow 0.3s ease;
-    }
-
-    .tour-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .tour-card-image {
-        width: 100%;
-        height: 250px;
-        overflow: hidden;
-    }
-
-    .tour-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .tour-card:hover .tour-card-image img {
-        transform: scale(1.05);
-    }
-
-    .tour-card h3 {
-        color: #217b96;
-        font-size: 1.5rem;
-        margin: 1.5rem 1.5rem 0.5rem 1.5rem;
-    }
-
-    .tour-card p {
-        color: #555;
-        line-height: 1.6;
-        padding: 0 1.5rem 1.5rem 1.5rem;
-        margin: 0;
-    }
-
-    @media (max-width: 768px) {
-        .tours-carousel {
-            height: 50vh;
-        }
-
-        .carousel-content h1 {
-            font-size: 2.5rem;
-        }
-
-        .carousel-content p {
-            font-size: 1rem;
-        }
-
-        .tour-card h3 {
-            font-size: 1.2rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .tours-carousel {
-            height: 40vh;
-        }
-
-        .carousel-content h1 {
-            font-size: 1.8rem;
-        }
-
-        .carousel-content p {
-            font-size: 0.9rem;
-        }
-
-        .tour-card-image {
-            height: 200px;
-        }
-
-        .tour-card h3 {
-            font-size: 1.1rem;
-        }
-
-        .tour-card p {
-            font-size: 0.9rem;
-        }
-    }
-    .hoteles_index-carousel {
-        position: relative;
-        width: 100%;
-        height: 350px;
-        overflow: hidden;
-        background: #eaf6fa;
-        margin-bottom: 2.5rem;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
+    .hero-actions {
+        margin-top: 1.5rem;
+        display: inline-flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
         justify-content: center;
     }
-    .carousel-images {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
+
+    .btn {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.72rem 1.2rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .carousel-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        transition: opacity 0.7s;
+
+    .btn:hover {
+        transform: translateY(-2px);
     }
-    .carousel-img.active {
-        opacity: 1;
-        z-index: 2;
+
+    .btn-primary {
+        background: #ffffff;
+        color: #1c5fa8;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
     }
-    .carousel-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(33, 123, 150, 0.45) 0%,
-            rgba(255, 255, 255, 0.1) 100%
-        );
-        z-index: 2;
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
-    .carousel-content {
-        position: relative;
-        z-index: 3;
-        color: #fff;
-        text-align: left;
-        padding-left: 3rem;
+
+    .hoteles-section {
+        padding: 4.5rem 1.25rem;
+        background: linear-gradient(180deg, #f4fbff 0%, #eef6ff 100%);
     }
-    .carousel-content h1 {
-        font-size: 2.7rem;
-        color: #fff;
-        font-family: "Allura", cursive, Arial, Helvetica, sans-serif;
-        margin-bottom: 0.5rem;
-        letter-spacing: 0.05em;
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 2.4rem;
     }
-    .carousel-content p {
-        font-size: 1.2rem;
-        color: #f0f0f0;
-        margin-bottom: 0;
+
+    .section-eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #217b96;
+        margin-bottom: 0.55rem;
     }
-    .hoteles_index-section {
-        padding: 4rem 2rem;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+    .section-title {
+        margin: 0;
+        color: #16324f;
+        font-size: clamp(1.8rem, 3.5vw, 2.4rem);
     }
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
+
+    .section-subtitle {
+        color: #4f6982;
+        margin: 0.8rem auto 0;
+        max-width: 720px;
+        line-height: 1.65;
     }
-    .hoteles_index-grid {
+
+    .hoteles-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
+        gap: 1.4rem;
     }
+
     .hotel-card {
         background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 1.1rem;
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.3s;
+        border: 1px solid rgba(38, 117, 165, 0.16);
+        box-shadow: 0 14px 32px rgba(21, 71, 117, 0.1);
+        transition: transform 0.24s ease, box-shadow 0.24s ease;
     }
+
     .hotel-card:hover {
-        box-shadow: 0 12px 24px rgba(33, 123, 150, 0.15);
+        transform: translateY(-6px);
+        box-shadow: 0 18px 36px rgba(21, 71, 117, 0.16);
     }
+
     .hotel-card-image {
+        position: relative;
         width: 100%;
-        height: 200px;
-        overflow: hidden;
-        background: #eaf6fa;
+        height: 210px;
     }
+
     .hotel-card-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s;
     }
-    .hotel-card:hover .hotel-card-image img {
-        transform: scale(1.05);
+
+    .hotel-rating {
+        position: absolute;
+        top: 0.8rem;
+        right: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.33rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(22, 50, 79, 0.75);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        backdrop-filter: blur(3px);
     }
+
+    .hotel-rating .material-symbols-outlined {
+        font-size: 1rem;
+        color: #ffd35f;
+    }
+
     .hotel-card-content {
-        padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+        padding: 1rem 1rem 1.1rem;
+    }
+
+    .hotel-meta-top h3 {
+        margin: 0;
+        color: #1c5fa8;
+        font-size: 1.2rem;
+        line-height: 1.3;
+    }
+
+    .hotel-zone {
+        margin-top: 0.3rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        color: #217b96;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .hotel-zone .material-symbols-outlined {
+        font-size: 1rem;
+    }
+
+    .hotel-card-content p {
+        color: #4e6278;
+        line-height: 1.6;
+        margin: 0.75rem 0 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .hotel-perks {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .hotel-perks li {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.36rem 0.62rem;
+        border-radius: 999px;
+        background: #e9f6fb;
+        border: 1px solid #c6e8f3;
+        color: #215b83;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .hotel-perks li .material-symbols-outlined {
+        font-size: 1rem;
+    }
+
+    .hotel-footer {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+    }
+
+    .hotel-price-block {
         display: flex;
         flex-direction: column;
-        flex: 1;
+        line-height: 1.2;
     }
-    .hotel-card-content h3 {
-        color: #217b96;
-        font-size: 1.4rem;
-        margin-bottom: 0.5rem;
-    }
-    .hotel-card-content p {
-        color: #555;
-        font-size: 1rem;
-        margin-bottom: 0.7rem;
-    }
-    .hotel-price {
-        color: #2563eb;
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin-top: auto;
-        letter-spacing: 0.02em;
 
+    .hotel-price-block .label {
+        color: #5f7285;
+        font-size: 0.76rem;
+    }
+
+    .hotel-price {
+        color: #1c5fa8;
+        font-size: 1.08rem;
+        font-weight: 800;
+        margin: 0.16rem 0;
+    }
+
+    .hotel-price-block .note {
+        color: #6e8295;
+        font-size: 0.74rem;
+    }
+
+    .hotel-cta {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+        border-radius: 999px;
+        padding: 0.52rem 0.9rem;
+        background: linear-gradient(135deg, #2675a5 0%, #217b96 100%);
+        color: #fff;
+        font-size: 0.84rem;
+        font-weight: 700;
+        box-shadow: 0 10px 18px rgba(38, 117, 165, 0.25);
+        transition: transform 0.2s ease;
+    }
+
+    .hotel-cta:hover {
+        transform: translateY(-2px);
+    }
+
+    .hotel-cta .material-symbols-outlined {
+        font-size: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        .hotels-carousel {
+            height: 62vh;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hotels-carousel {
+            height: 52vh;
+        }
+
+        .carousel-content {
+            padding: 1.1rem;
+        }
+
+        .hero-actions {
+            margin-top: 1.2rem;
+            gap: 0.55rem;
+        }
+
+        .btn {
+            font-size: 0.86rem;
+            padding: 0.62rem 1rem;
+        }
+
+        .hoteles-section {
+            padding: 3.2rem 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hotels-carousel {
+            height: 46vh;
+        }
+
+        .hotel-card-image {
+            height: 190px;
+        }
+
+        .hotel-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
 </style>
 
 <script>
@@ -501,5 +602,5 @@ import Layout from "../../layouts/Layout.astro";
         showImage(currentImageIndex);
     }
 
-    setInterval(nextImage, 10000);
+    setInterval(nextImage, 8000);
 </script>
