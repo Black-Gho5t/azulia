@@ -1,0 +1,638 @@
+---
+export interface GalleryImage {
+    src: string;
+    alt: string;
+    span?: "tall" | "wide" | "normal";
+}
+
+interface Props {
+    images: GalleryImage[];
+    darkBackground?: boolean;
+    eyebrow?: string;
+    title?: string;
+    subtitle?: string;
+    id?: string;
+}
+
+const {
+    images,
+    darkBackground = false,
+    eyebrow,
+    title = "Galería",
+    subtitle,
+    id,
+} = Astro.props;
+---
+
+<section class:list={["collage-gallery-section", { "dark-bg": darkBackground }]} id={id}>
+    <div class="collage-gallery-inner">
+        <div class="collage-gallery-heading">
+            {eyebrow && <span class="collage-eyebrow">{eyebrow}</span>}
+            <h2 class="collage-title">{title}</h2>
+            {subtitle && <p class="collage-subtitle">{subtitle}</p>}
+        </div>
+        <div class="collage-grid">
+            {images.map((img) => (
+                <div
+                    class:list={["collage-cell", `collage-cell--${img.span ?? "normal"}`]}
+                    data-lb-src={img.src}
+                    data-lb-caption={img.alt}
+                    role="button"
+                    tabindex="0"
+                    aria-label={`Ver foto: ${img.alt}`}
+                >
+                    <img src={img.src} alt={img.alt} loading="lazy" class="collage-img" />
+                    <div class="collage-overlay">
+                        <span class="collage-icon material-symbols-outlined">zoom_in</span>
+                        <span class="collage-caption">{img.alt}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+    .collage-gallery-section {
+        padding: 5rem 2rem 6rem;
+        background: #fff;
+    }
+
+    .collage-gallery-section.dark-bg {
+        background: #0a1e2e;
+    }
+
+    .collage-gallery-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .collage-gallery-heading {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .collage-eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #217b96;
+        margin-bottom: 0.5rem;
+    }
+
+    .dark-bg .collage-eyebrow {
+        color: #a8e6f0;
+    }
+
+    .collage-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0a1a2f;
+        margin: 0 0 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .dark-bg .collage-title {
+        color: #fff;
+    }
+
+    .collage-subtitle {
+        font-size: 1rem;
+        color: #666;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .dark-bg .collage-subtitle {
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ── Grid ── */
+    .collage-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 200px;
+        gap: 10px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .collage-cell {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .collage-cell--normal { grid-column: span 1; grid-row: span 1; }
+    .collage-cell--tall   { grid-column: span 1; grid-row: span 2; }
+    .collage-cell--wide   { grid-column: span 2; grid-row: span 1; }
+
+    .collage-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .collage-cell:hover .collage-img {
+        transform: scale(1.07);
+    }
+
+    .collage-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.72) 0%,
+            rgba(10, 26, 47, 0.15) 55%,
+            transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 14px 16px;
+        gap: 4px;
+    }
+
+    .collage-cell:hover .collage-overlay {
+        opacity: 1;
+    }
+
+    .collage-icon {
+        font-family: "Material Symbols Outlined", sans-serif;
+        font-size: 1.6rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+
+    .collage-caption {
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        line-height: 1.3;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+        .collage-grid { grid-template-columns: repeat(2, 1fr); }
+        .collage-cell--wide { grid-column: span 2; }
+        .collage-cell--tall { grid-row: span 2; }
+    }
+
+    @media (max-width: 768px) {
+        .collage-gallery-section { padding: 3.5rem 1rem 4rem; }
+        .collage-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+        .collage-cell--tall { grid-row: span 1; }
+    }
+
+    @media (max-width: 480px) {
+        .collage-grid { grid-template-columns: 1fr; }
+        .collage-cell--wide { grid-column: span 1; }
+        .collage-cell--tall { grid-row: span 1; }
+    }
+</style>
+
+<script>
+    // Shared lightbox — only created once per page
+    function initGalleryLightbox() {
+        if ((window as any).__galleryLightboxReady) return;
+        (window as any).__galleryLightboxReady = true;
+
+        // ─ Build DOM ─
+        const lb = document.createElement("div");
+        lb.id = "gallery-lightbox";
+        lb.setAttribute("role", "dialog");
+        lb.setAttribute("aria-modal", "true");
+        lb.setAttribute("aria-label", "Imagen ampliada");
+        lb.innerHTML = `
+            <div class="lb-backdrop"></div>
+            <button class="lb-close" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <button class="lb-nav lb-prev" aria-label="Anterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <button class="lb-nav lb-next" aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+            <div class="lb-content">
+                <img class="lb-img" src="" alt="" />
+                <div class="lb-info">
+                    <p class="lb-caption"></p>
+                    <span class="lb-counter"></span>
+                </div>
+            </div>
+        `;
+
+        // ─ Styles ─
+        const style = document.createElement("style");
+        style.textContent = `
+            #gallery-lightbox {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 10000;
+                align-items: center;
+                justify-content: center;
+            }
+            #gallery-lightbox.lb-open {
+                display: flex;
+            }
+            .lb-backdrop {
+                position: absolute;
+                inset: 0;
+                background: rgba(5, 15, 25, 0.92);
+                backdrop-filter: blur(8px);
+                cursor: pointer;
+            }
+            .lb-content {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-width: min(92vw, 1100px);
+                max-height: 92vh;
+                animation: lbFadeIn 0.28s ease;
+            }
+            @keyframes lbFadeIn {
+                from { opacity: 0; transform: scale(0.94); }
+                to   { opacity: 1; transform: scale(1); }
+            }
+            .lb-img {
+                display: block;
+                max-width: 100%;
+                max-height: 78vh;
+                object-fit: contain;
+                border-radius: 8px;
+                box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+            }
+            .lb-info {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                margin-top: 14px;
+                padding: 0 4px;
+                gap: 1rem;
+            }
+            .lb-caption {
+                color: #e8f4f8;
+                font-size: 1rem;
+                font-family: Arial, Helvetica, sans-serif;
+                font-weight: 500;
+                margin: 0;
+                line-height: 1.4;
+            }
+            .lb-counter {
+                color: rgba(255,255,255,0.45);
+                font-size: 0.82rem;
+                font-family: Arial, Helvetica, sans-serif;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .lb-close {
+                position: absolute;
+                top: 1.2rem;
+                right: 1.2rem;
+                z-index: 2;
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(255,255,255,0.12);
+                color: #fff;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s;
+                backdrop-filter: blur(4px);
+            }
+            .lb-close:hover { background: rgba(255,255,255,0.25); }
+            .lb-close svg { width: 20px; height: 20px; }
+            .lb-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 2;
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(255,255,255,0.12);
+                color: #fff;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s, opacity 0.2s;
+                backdrop-filter: blur(4px);
+            }
+            .lb-nav:hover { background: rgba(255,255,255,0.25); }
+            .lb-nav svg { width: 24px; height: 24px; }
+            .lb-prev { left: 1.2rem; }
+            .lb-next { right: 1.2rem; }
+            .lb-nav[hidden] { display: none; }
+            @media (max-width: 600px) {
+                .lb-nav { width: 40px; height: 40px; }
+                .lb-prev { left: 0.5rem; }
+                .lb-next { right: 0.5rem; }
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(lb);
+
+        // ─ State ─
+        let currentCells: HTMLElement[] = [];
+        let currentIndex = 0;
+
+        const imgEl      = lb.querySelector(".lb-img") as HTMLImageElement;
+        const captionEl  = lb.querySelector(".lb-caption") as HTMLElement;
+        const counterEl  = lb.querySelector(".lb-counter") as HTMLElement;
+        const prevBtn    = lb.querySelector(".lb-prev") as HTMLButtonElement;
+        const nextBtn    = lb.querySelector(".lb-next") as HTMLButtonElement;
+        const closeBtn   = lb.querySelector(".lb-close") as HTMLButtonElement;
+        const backdrop   = lb.querySelector(".lb-backdrop") as HTMLElement;
+
+        function show(cells: HTMLElement[], index: number) {
+            currentCells = cells;
+            currentIndex = index;
+            render();
+            lb.classList.add("lb-open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function hide() {
+            lb.classList.remove("lb-open");
+            document.body.style.overflow = "";
+        }
+
+        function render() {
+            const cell    = currentCells[currentIndex];
+            const src     = cell.dataset.lbSrc ?? "";
+            const caption = cell.dataset.lbCaption ?? "";
+
+            // Animate out then swap
+            imgEl.style.opacity = "0";
+            imgEl.style.transform = "scale(0.96)";
+            imgEl.style.transition = "opacity 0.18s ease, transform 0.18s ease";
+
+            requestAnimationFrame(() => {
+                imgEl.src = src;
+                imgEl.alt = caption;
+                captionEl.textContent = caption;
+                counterEl.textContent = `${currentIndex + 1} / ${currentCells.length}`;
+                prevBtn.hidden = currentCells.length <= 1;
+                nextBtn.hidden = currentCells.length <= 1;
+
+                imgEl.onload = () => {
+                    imgEl.style.opacity = "1";
+                    imgEl.style.transform = "scale(1)";
+                };
+                if (imgEl.complete) {
+                    imgEl.style.opacity = "1";
+                    imgEl.style.transform = "scale(1)";
+                }
+            });
+        }
+
+        function go(delta: number) {
+            currentIndex = (currentIndex + delta + currentCells.length) % currentCells.length;
+            render();
+        }
+
+        // ─ Events ─
+        document.addEventListener("click", (e) => {
+            const cell = (e.target as HTMLElement).closest(".collage-cell[data-lb-src]") as HTMLElement | null;
+            if (!cell) return;
+            const grid  = cell.closest(".collage-grid");
+            const cells = grid ? Array.from(grid.querySelectorAll<HTMLElement>(".collage-cell[data-lb-src]")) : [cell];
+            const index = cells.indexOf(cell);
+            show(cells, index >= 0 ? index : 0);
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (!lb.classList.contains("lb-open")) return;
+            if (e.key === "Escape")      hide();
+            if (e.key === "ArrowLeft")   go(-1);
+            if (e.key === "ArrowRight")  go(1);
+        });
+
+        closeBtn.addEventListener("click", hide);
+        backdrop.addEventListener("click", hide);
+        prevBtn.addEventListener("click", () => go(-1));
+        nextBtn.addEventListener("click", () => go(1));
+
+        // Keyboard on cells (Enter / Space)
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            const cell = (document.activeElement as HTMLElement)?.closest(".collage-cell[data-lb-src]") as HTMLElement | null;
+            if (!cell) return;
+            e.preventDefault();
+            const grid  = cell.closest(".collage-grid");
+            const cells = grid ? Array.from(grid.querySelectorAll<HTMLElement>(".collage-cell[data-lb-src]")) : [cell];
+            const index = cells.indexOf(cell);
+            show(cells, index >= 0 ? index : 0);
+        });
+    }
+
+    // Run immediately (handles both SSR and client-side navigation)
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initGalleryLightbox);
+    } else {
+        initGalleryLightbox();
+    }
+</script>
+
+<style>
+    .collage-gallery-section {
+        padding: 5rem 2rem 6rem;
+        background: #fff;
+    }
+
+    .collage-gallery-section.dark-bg {
+        background: #0a1e2e;
+    }
+
+    .collage-gallery-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .collage-gallery-heading {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .collage-eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #217b96;
+        margin-bottom: 0.5rem;
+    }
+
+    .dark-bg .collage-eyebrow {
+        color: #a8e6f0;
+    }
+
+    .collage-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0a1a2f;
+        margin: 0 0 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .dark-bg .collage-title {
+        color: #fff;
+    }
+
+    .collage-subtitle {
+        font-size: 1rem;
+        color: #666;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .dark-bg .collage-subtitle {
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* ── Collage grid ── */
+    .collage-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 200px;
+        gap: 10px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .collage-cell {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .collage-cell--normal {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .collage-cell--tall {
+        grid-column: span 1;
+        grid-row: span 2;
+    }
+
+    .collage-cell--wide {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+
+    .collage-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .collage-cell:hover .collage-img {
+        transform: scale(1.07);
+    }
+
+    .collage-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.65) 0%,
+            transparent 50%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 14px 16px;
+    }
+
+    .collage-cell:hover .collage-overlay {
+        opacity: 1;
+    }
+
+    .collage-caption {
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+        .collage-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .collage-cell--wide {
+            grid-column: span 2;
+        }
+
+        .collage-cell--tall {
+            grid-row: span 2;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .collage-gallery-section {
+            padding: 3.5rem 1rem 4rem;
+        }
+
+        .collage-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 160px;
+        }
+
+        .collage-cell--tall {
+            grid-row: span 1;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .collage-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .collage-cell--wide {
+            grid-column: span 1;
+        }
+
+        .collage-cell--tall {
+            grid-row: span 1;
+        }
+    }
+</style>

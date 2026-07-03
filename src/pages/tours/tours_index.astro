@@ -8,6 +8,7 @@ import {
     collageImages,
 } from "../../components/data/tours/tours_index_data";
 import { Image } from "astro:assets";
+import GalleryCollage from "../../components/gallery_collage.astro";
 ---
 
 <Layout>
@@ -235,40 +236,13 @@ import { Image } from "astro:assets";
         </section>
 
         <!-- ===== GALERÍA COLLAGE ===== -->
-        <section class="gallery-section" id="galeria">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-eyebrow">Momentos inolvidables</span>
-                    <h2 class="section-title">Galería</h2>
-                    <p class="section-subtitle">
-                        Imágenes reales de nuestras aventuras en el Caribe
-                        mexicano.
-                    </p>
-                </div>
-                <div class="collage-grid">
-                    {
-                        collageImages.map((item) => (
-                            <div
-                                class={`collage-cell collage-cell--${item.span ?? "normal"}`}
-                            >
-                                <Image
-                                    src={item.image}
-                                    alt={item.alt}
-                                    quality="normal"
-                                    loading="lazy"
-                                    class="collage-img"
-                                />
-                                <div class="collage-overlay">
-                                    <span class="collage-caption">
-                                        {item.alt}
-                                    </span>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
-        </section>
+        <GalleryCollage
+            id="galeria"
+            images={collageImages.map((item) => ({ src: item.image.src, alt: item.alt, span: item.span }))}
+            eyebrow="Momentos inolvidables"
+            title="Galería"
+            subtitle="Imágenes reales de nuestras aventuras en el Caribe mexicano."
+        />
     </main>
     <Footer />
 </Layout>

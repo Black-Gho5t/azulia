@@ -1,328 +1,736 @@
----
+﻿---
 import Search from "./search.astro";
 import "../assets/styles/home.css";
 ---
 
-<!-- 
-Documento de header y navegacion, los links llevan a 
-archivos donde tendremos la informacion restante para
-no acumular tantos menus desplegables en el mismo.
---><!--* REGRESAR UN COMMIT ==== git reset --hard HEAD -->
-<nav class="header-container">
-    <div class="left-buttons">
-        <label class="burger" for="burger">
-            <input type="checkbox" id="burger" />
-            <span></span>
-            <span></span>
-            <span></span>
-        </label>
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+     NAV PRINCIPAL (desktop)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<nav class="nav-bar">
+
+    <!-- Hamburguesa (solo mÃ³vil) -->
+    <button class="nav-burger" id="navBurger" aria-label="Abrir menÃº" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- Logo / Brand -->
+    <a href="/" class="nav-brand">
+        <span class="nav-brand-icon material-symbols-outlined">sailing</span>
+        <span class="nav-brand-text">Azulia</span>
+    </a>
+
+    <!-- Links desktop -->
+    <ul class="nav-links" role="menubar">
+        <li id="home-button" class="nav-item home-button-hidden">
+            <a href="/" class="nav-link">
+                <span class="material-symbols-outlined nav-link-icon">home</span>
+                Home
+            </a>
+        </li>
+
+        <!-- Tours con dropdown -->
+        <li class="nav-item nav-has-dropdown">
+            <a href="/tours/tours_index" class="nav-link">
+                <span class="material-symbols-outlined nav-link-icon">explore</span>
+                Tours
+                <span class="material-symbols-outlined nav-chevron">expand_more</span>
+            </a>
+            <ul class="nav-dropdown" role="menu">
+                <li><a href="/tours/nauticos" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">anchor</span>NÃ¡uticos</a></li>
+                <li><a href="/tours/ruinas" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">account_balance</span>Ruinas</a></li>
+                <li><a href="/tours/mahahual" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">beach_access</span>Mahahual</a></li>
+                <li><a href="/tours/guatemala" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">forest</span>Guatemala</a></li>
+                <li><a href="/tours/honduras" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">scuba_diving</span>Honduras</a></li>
+                <li><a href="/tours/belice" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined">water</span>Belice</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="/hotels/hoteles_index" class="nav-link">
+                <span class="material-symbols-outlined nav-link-icon">hotel</span>
+                Hoteles
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/transportation/transportacion_index" class="nav-link">
+                <span class="material-symbols-outlined nav-link-icon">airport_shuttle</span>
+                TransportaciÃ³n
+            </a>
+        </li>
+    </ul>
+
+    <!-- Derecha: search + user -->
+    <div class="nav-right">
+        <Search />
+        <button class="nav-user-btn" aria-label="Perfil de usuario">
+            <span class="material-symbols-outlined">account_circle</span>
+        </button>
     </div>
-    <div class="pages-nav menu">
-        <!-- menus principales -->
-        <ul>
-            <li id="home-button" class="home-button-hidden">
-                <a href="/" class="home-link">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="white"
-                        class="bi bi-house"
-                        viewBox="0 0 16 16"
-                    >
-                        <path
-                            d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"
-                        ></path>
-                    </svg>
-                    Home
-                </a>
-            </li>
-            <li>
-                <a href="/tours/tours_index">
-                    <svg
-                        id="icon-menu"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="white"
-                        class="bi bi-person-walking"
-                        viewBox="0 0 16 16"
-                    >
-                        <path
-                            d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.8 1.8 0 0 1-.088.395l-.318.906.213.242a.8.8 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25Z"
-                        ></path>
-                        <path
-                            d="M6.25 11.745v-1.418l1.204 1.375.261.524a.8.8 0 0 1-.12.231l-2.5 3.25a.75.75 0 1 1-1.19-.914zm4.22-4.215-.494-.494.205-1.843.006-.067 1.124 1.124h1.44a.75.75 0 0 1 0 1.5H11a.75.75 0 0 1-.531-.22Z"
-                        ></path>
-                    </svg>
-                    Tours
-                </a>
-                <!-- menu desplegable de tours -->
-                <ul class="item">
-                    <li class="item"><a href="/tours/nauticos">Nauticos</a></li>
-                    <li class="item"><a href="/tours/ruinas">Ruinas</a></li>
-                    <li class="item"><a href="/tours/mahahual">Mahahual</a></li>
-                    <li class="item">
-                        <a href="/tours/guatemala">Guatemala</a>
-                    </li>
-                    <li class="item"><a href="/tours/honduras">Honduras</a></li>
-                    <li class="item"><a href="/tours/belice">Belice</a></li>
-                </ul>
-            </li>
-            <li>
-                <!-- menu desplegable de hoteles (aun no nos dan la lista) -->
-                <a href="/hotels/hoteles_index">
-                    <svg
-                        id="icon-menu"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="white"
-                        class="bi bi-buildings"
-                        viewBox="0 0 16 16"
-                    >
-                        <path
-                            d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022M6 8.694 1 10.36V15h5zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5z"
-                        ></path>
-                        <path
-                            d="M2 11h1v1H2zm2 0h1v1H4zm-2 2h1v1H2zm2 0h1v1H4zm4-4h1v1H8zm2 0h1v1h-1zm-2 2h1v1H8zm2 0h1v1h-1zm2-2h1v1h-1zm0 2h1v1h-1zM8 7h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zM8 5h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm0-2h1v1h-1z"
-                        ></path>
-                    </svg>
-                    Hoteles
-                </a>
-                <!-- descomenta para agregar al menu desplegable -->
-                <!-- <ul class="item">
-                    <li class="item">
-                        <a href="/hotels/hoteles_index">"lista de hoteles"</a>
-                    </li>
-                </ul> -->
-            </li>
-            <li>
-                <!-- menu desplegable de transportacion -->
-                <a href="/transportation/transportacion_index">
-                    <svg
-                        id="icon-menu"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="white"
-                        class="bi bi-bus-front-fill"
-                        viewBox="0 0 16 16"
-                    >
-                        <path
-                            d="M16 7a1 1 0 0 1-1 1v3.5c0 .818-.393 1.544-1 2v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V14H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a2.5 2.5 0 0 1-1-2V8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1V2.64C1 1.452 1.845.408 3.064.268A44 44 0 0 1 8 0c2.1 0 3.792.136 4.936.268C14.155.408 15 1.452 15 2.64V4a1 1 0 0 1 1 1zM3.552 3.22A43 43 0 0 1 8 3c1.837 0 3.353.107 4.448.22a.5.5 0 0 0 .104-.994A44 44 0 0 0 8 2c-1.876 0-3.426.109-4.552.226a.5.5 0 1 0 .104.994M8 4c-1.876 0-3.426.109-4.552.226A.5.5 0 0 0 3 4.723v3.554a.5.5 0 0 0 .448.497C4.574 8.891 6.124 9 8 9s3.426-.109 4.552-.226A.5.5 0 0 0 13 8.277V4.723a.5.5 0 0 0-.448-.497A44 44 0 0 0 8 4m-3 7a1 1 0 1 0-2 0 1 1 0 0 0 2 0m8 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m-7 0a1 1 0 0 0 1 1h2a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1"
-                        ></path>
-                    </svg>
-                    Transportacion
-                </a>
-                <!-- descomenta para agregar al menu desplegable XD -->
-                <!-- <ul class="item">
-                    <li class="item">
-                        <a href="/transportation/nacional">Nacional</a>
-                    </li>
-                    <li class="item">
-                        <a href="/transportation/international">Internacional</a
-                        >
-                    </li>
-                </ul> -->
-            </li>
-        </ul>
-    </div>
-    <div class="right-buttons">
-        <!-- Contacto en version anterior -->
-        <!-- aqui iba -->
-        <div class="search-container">
-            <Search />
-            <button class="left-menu">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="30"
-                    height="30"
-                    fill="currentColor"
-                    class="bi bi-person-circle"
-                    viewBox="0 0 16 16"
-                >
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
-                    <path
-                        fill-rule="evenodd"
-                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
-                    ></path>
-                </svg>
-            </button>
-        </div>
-    </div>
+
 </nav>
 
-<!-- Drawer de navegación móvil -->
-<div id="menu-drawer" class="drawer">
-    <nav class="drawer-nav">
-        <ul>
-            <div class="spacer"></div>
-            <li id="home-drawer-button" class="home-button-hidden">
-                <a href="/">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="white"
-                        class="bi bi-house-fill"
-                        viewBox="0 0 16 16"
-                    >
-                        <path
-                            d="M8.707.5a.5.5 0 0 0-.414 0l-7 3.5a.5.5 0 0 0-.293.604l.647 4.094-.856 5.143A.5.5 0 0 0 1 13.5h14a.5.5 0 0 0 .5-.5l-.856-5.143.647-4.094a.5.5 0 0 0-.293-.604l-7-3.5z"
-                        ></path>
-                    </svg>
-                    <span style="color: white;">Home</span>
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+     DRAWER MÃ“VIL
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<div id="nav-drawer" class="nav-drawer" aria-hidden="true">
+
+    <!-- Cabecera del drawer -->
+    <div class="drawer-header">
+        <span class="material-symbols-outlined drawer-brand-icon">sailing</span>
+        <span class="drawer-brand-text">Azulia</span>
+        <button class="drawer-close-btn" id="drawerClose" aria-label="Cerrar menÃº">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <!-- Lista principal -->
+    <nav class="drawer-body">
+
+        <a id="home-drawer-button" href="/" class="drawer-link home-button-hidden">
+            <span class="drawer-link-icon material-symbols-outlined">home</span>
+            <span>Home</span>
+        </a>
+
+        <!-- Tours â€” acordeon -->
+        <div class="drawer-section">
+            <button class="drawer-section-btn" id="toursSectionBtn" aria-expanded="false">
+                <span class="drawer-link-icon material-symbols-outlined">explore</span>
+                <span>Tours</span>
+                <span class="drawer-chevron material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="drawer-sub" id="toursSub">
+                <a href="/tours/tours_index" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    Ver todos los tours
                 </a>
-            </li>
-            <!-- ! agregar las direcciones correctas -->
-            <div class="spacer"></div>
-            <li><a href="/tours/tours_index" class="title-nav">Tours</a></li>
-            <li><a href="/tours/nauticos">Nauticos</a></li>
-            <li><a href="/tours/ruinas">Ruinas</a></li>
-            <li><a href="/tours/mahahual">Mahahual</a></li>
-            <li><a href="/tours/guatemala">Guatemala</a></li>
-            <li><a href="/tours/honduras">Honduras</a></li>
-            <li><a href="/tours/belice">Belice</a></li>
-            <div class="spacer"></div>
-            <li>
-                <a href="/hotels/hoteles_index" class="title-nav">Hoteles</a>
-            </li>
-            <!-- <li><a href="/hotels/hoteles_index">Hoteles</a></li> -->
-            <div class="spacer"></div>
-            <li>
-                <a href="/transportation/transportacion_index" class="title-nav"
-                    >Transportacion</a
-                >
-            </li>
-        </ul>
+                <a href="/tours/nauticos" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">anchor</span>
+                    NÃ¡uticos
+                </a>
+                <a href="/tours/ruinas" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">account_balance</span>
+                    Ruinas
+                </a>
+                <a href="/tours/mahahual" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">beach_access</span>
+                    Mahahual
+                </a>
+                <a href="/tours/guatemala" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">forest</span>
+                    Guatemala
+                </a>
+                <a href="/tours/honduras" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">scuba_diving</span>
+                    Honduras
+                </a>
+                <a href="/tours/belice" class="drawer-sub-link">
+                    <span class="material-symbols-outlined">water</span>
+                    Belice
+                </a>
+            </div>
+        </div>
+
+        <a href="/hotels/hoteles_index" class="drawer-link">
+            <span class="drawer-link-icon material-symbols-outlined">hotel</span>
+            <span>Hoteles</span>
+        </a>
+
+        <a href="/transportation/transportacion_index" class="drawer-link">
+            <span class="drawer-link-icon material-symbols-outlined">airport_shuttle</span>
+            <span>TransportaciÃ³n</span>
+        </a>
+
     </nav>
 </div>
-<div id="drawer-overlay" class="drawer-overlay"></div>
-<!-- llamada al sidebar COMPONENTE -->
-<!-- script para mover el sidebar NECESARIO -->
+
+<!-- Overlay -->
+<div id="nav-overlay" class="nav-overlay"></div>
+
+
 <script>
-    const burger = document.getElementById("burger") as HTMLInputElement;
-    const drawer = document.getElementById("menu-drawer");
-    const overlay = document.getElementById("drawer-overlay");
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ BURGER / DRAWER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    const burger  = document.getElementById("navBurger")   as HTMLButtonElement;
+    const drawer  = document.getElementById("nav-drawer")  as HTMLElement;
+    const overlay = document.getElementById("nav-overlay") as HTMLElement;
+    const closeBtn = document.getElementById("drawerClose") as HTMLButtonElement;
 
-    if (burger && drawer && overlay) {
-        burger.addEventListener("change", () => {
-            if (burger.checked) {
-                drawer.classList.add("open");
-                overlay.classList.add("open");
-            } else {
-                drawer.classList.remove("open");
-                overlay.classList.remove("open");
-            }
-        });
-
-        // Cerrar al hacer click en el overlay
-        overlay.addEventListener("click", () => {
-            burger.checked = false;
-            drawer.classList.remove("open");
-            overlay.classList.remove("open");
-        });
+    function openDrawer() {
+        drawer.classList.add("open");
+        overlay.classList.add("open");
+        burger.setAttribute("aria-expanded", "true");
+        burger.classList.add("is-open");
+        drawer.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
     }
 
-    // Detectar si estamos en la página de home
+    function closeDrawer() {
+        drawer.classList.remove("open");
+        overlay.classList.remove("open");
+        burger.setAttribute("aria-expanded", "false");
+        burger.classList.remove("is-open");
+        drawer.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+    }
+
+    burger?.addEventListener("click",  openDrawer);
+    closeBtn?.addEventListener("click", closeDrawer);
+    overlay?.addEventListener("click",  closeDrawer);
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeDrawer();
+    });
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ACORDEON TOURS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    const toursBtn = document.getElementById("toursSectionBtn") as HTMLButtonElement;
+    const toursSub = document.getElementById("toursSub")        as HTMLElement;
+
+    toursBtn?.addEventListener("click", () => {
+        const isOpen = toursSub.classList.toggle("open");
+        toursBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HOME BUTTON VISIBILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function checkIfHomePage() {
-        const currentPath = window.location.pathname;
-        const homeButton = document.getElementById("home-button");
-        const homeDrawerButton = document.getElementById("home-drawer-button");
+        const path = window.location.pathname;
+        const isHome = path === "/" || path === "" || path === "/index.astro";
 
-        const isHomePage =
-            currentPath === "/" ||
-            currentPath === "/index.astro" ||
-            currentPath === "";
+        const homeBtn    = document.getElementById("home-button");
+        const homeDrawer = document.getElementById("home-drawer-button");
 
-        // Actualizar botón en navegación principal
-        if (homeButton) {
-            if (isHomePage) {
-                homeButton.classList.add("home-button-hidden");
-                homeButton.classList.remove("home-button-visible");
-            } else {
-                homeButton.classList.remove("home-button-hidden");
-                homeButton.classList.add("home-button-visible");
-            }
-        }
+        const toggle = (el: HTMLElement | null, hide: boolean) => {
+            if (!el) return;
+            el.classList.toggle("home-button-hidden",  hide);
+            el.classList.toggle("home-button-visible", !hide);
+        };
 
-        // Actualizar botón en drawer móvil
-        if (homeDrawerButton) {
-            if (isHomePage) {
-                homeDrawerButton.classList.add("home-button-hidden");
-                homeDrawerButton.classList.remove("home-button-visible");
-            } else {
-                homeDrawerButton.classList.remove("home-button-hidden");
-                homeDrawerButton.classList.add("home-button-visible");
-            }
-        }
+        toggle(homeBtn,    isHome);
+        toggle(homeDrawer, isHome);
     }
 
-    // Ejecutar al cargar
     checkIfHomePage();
-
-    // Ejecutar cuando cambia la URL (para navegacion del cliente)
     window.addEventListener("popstate", checkIfHomePage);
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAVBAR SCROLL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    const navBar = document.querySelector(".nav-bar") as HTMLElement;
+    const onScroll = () => navBar?.classList.toggle("scrolled", window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 </script>
 
-<style>
-    #home-button {
-        display: none;
-    }
 
-    #home-button.home-button-visible {
+<style is:global>
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ RESET DE ESTILOS ANTIGUOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* Neutraliza las reglas de home.css que ya no se usan */
+    .header-container { display: none !important; }
+    .drawer           { display: none !important; }
+    .drawer-overlay   { display: none !important; }
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ FONTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .nav-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        z-index: 1000;
+        height: 64px;
         display: flex;
         align-items: center;
+        gap: 0;
+        padding: 0 24px;
+        background: linear-gradient(90deg, #1a5fa0 0%, #2675a5 60%, #2080b5 100%);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+        transition: background 0.35s ease, box-shadow 0.35s ease;
     }
 
-    #home-button.home-button-hidden {
-        display: none;
+    .nav-bar.scrolled {
+        background: linear-gradient(90deg, #144e88 0%, #1a5fa0 60%, #1d70a8 100%);
+        box-shadow: 0 4px 24px rgba(0,0,0,0.28);
     }
 
-    #home-button .home-link {
+    /* Brand */
+    .nav-brand {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: white;
+        gap: 8px;
         text-decoration: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
+        flex-shrink: 0;
+        margin-right: 32px;
     }
 
-    #home-button .home-link:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+    .nav-brand-icon {
+        font-family: 'Material Symbols Outlined';
+        font-size: 28px;
+        color: #a8e6f7;
+        line-height: 1;
     }
 
-    #home-button svg {
-        width: 16px;
-        height: 16px;
+    .nav-brand-text {
+        font-family: 'Allura', cursive, Arial, sans-serif;
+        font-size: 1.7rem;
+        color: #fff;
+        letter-spacing: 0.04em;
+        line-height: 1;
     }
 
-    /* Estilos para el botón home en el drawer móvil */
-    #home-drawer-button {
+    /* Desktop links */
+    .nav-links {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 2px;
+        flex: 1;
+    }
+
+    .nav-item {
+        position: relative;
+    }
+
+    .nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: rgba(255,255,255,0.88);
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        padding: 0 14px;
+        height: 64px;
+        position: relative;
+        transition: color 0.2s;
+        white-space: nowrap;
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 14px;
+        right: 14px;
+        height: 3px;
+        background: #a8e6f7;
+        border-radius: 2px 2px 0 0;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.25s ease;
+    }
+
+    .nav-item:hover .nav-link,
+    .nav-link:focus-visible {
+        color: #fff;
+    }
+
+    .nav-item:hover .nav-link::after {
+        transform: scaleX(1);
+    }
+
+    .nav-link-icon {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.1rem;
+        line-height: 1;
+        color: #a8e6f7;
+        transition: transform 0.2s;
+    }
+
+    .nav-chevron {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.1rem;
+        line-height: 1;
+        color: rgba(255,255,255,0.65);
+        transition: transform 0.28s ease;
+        margin-left: -2px;
+    }
+
+    .nav-has-dropdown:hover .nav-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* Desktop dropdown */
+    .nav-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 220px;
+        list-style: none;
+        margin: 0;
+        padding: 6px 0 8px;
+        background: #fff;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 12px 40px rgba(22,50,79,0.18), 0 2px 8px rgba(0,0,0,0.08);
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 100;
+        border-top: 3px solid #2675a5;
+    }
+
+    /* Bridge invisible gap so hover doesn't break between trigger and panel */
+    .nav-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 100%;
+        height: 8px;
+    }
+
+    .nav-has-dropdown:hover .nav-dropdown,
+    .nav-has-dropdown:focus-within .nav-dropdown {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .nav-dropdown-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        color: #16324f;
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background 0.15s, color 0.15s, padding-left 0.15s;
+    }
+
+    .nav-dropdown-link .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.15rem;
+        line-height: 1;
+        color: #2675a5;
+        flex-shrink: 0;
+        transition: color 0.15s;
+    }
+
+    .nav-dropdown-link:hover {
+        background: rgba(38,117,165,0.07);
+        color: #2675a5;
+        padding-left: 24px;
+    }
+
+    .nav-dropdown-link:hover .material-symbols-outlined {
+        color: #217b96;
+    }
+
+    /* Right section */
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    .nav-user-btn {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #fff;
+        transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-user-btn:hover {
+        background: rgba(168,230,247,0.2);
+        border-color: #a8e6f7;
+    }
+
+    .nav-user-btn .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.4rem;
+        line-height: 1;
+        color: rgba(255,255,255,0.9);
+    }
+
+    /* Home button visibility */
+    #home-button.home-button-hidden  { display: none; }
+    #home-button.home-button-visible { display: flex; }
+
+    /* Burger (mobile only) */
+    .nav-burger {
         display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.22);
+        border-radius: 10px;
+        cursor: pointer;
+        padding: 8px;
+        margin-right: 12px;
+        flex-shrink: 0;
+        transition: background 0.2s;
     }
 
-    #home-drawer-button.home-button-visible {
+    .nav-burger:hover { background: rgba(255,255,255,0.16); }
+
+    .nav-burger span {
         display: block;
+        width: 100%;
+        height: 2px;
+        background: #fff;
+        border-radius: 2px;
+        transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+        transform-origin: center;
     }
 
-    #home-drawer-button.home-button-hidden {
-        display: none;
+    .nav-burger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-burger.is-open span:nth-child(2) { opacity: 0; width: 0; }
+    .nav-burger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ DRAWER MÃ“VIL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .nav-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        max-width: 85vw;
+        height: 100dvh;
+        background: linear-gradient(160deg, #1a5fa0 0%, #0d3b6e 100%);
+        z-index: 1100;
+        transform: translateX(-105%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 6px 0 40px rgba(0,0,0,0.35);
     }
 
-    #home-drawer-button a {
+    .nav-drawer.open {
+        transform: translateX(0);
+    }
+
+    /* Drawer header */
+    .drawer-header {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: inherit;
-        text-decoration: none;
+        gap: 10px;
+        padding: 0 20px;
+        height: 64px;
+        background: rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        flex-shrink: 0;
     }
 
-    #home-drawer-button svg {
-        width: 16px;
-        height: 16px;
+    .drawer-brand-icon {
+        font-family: 'Material Symbols Outlined';
+        font-size: 26px;
+        color: #a8e6f7;
+        line-height: 1;
+    }
+
+    .drawer-brand-text {
+        font-family: 'Allura', cursive, Arial, sans-serif;
+        font-size: 1.5rem;
+        color: #fff;
+        flex: 1;
+    }
+
+    .drawer-close-btn {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: rgba(255,255,255,0.7);
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .drawer-close-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+    .drawer-close-btn .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+
+    /* Drawer body */
+    .drawer-body {
+        display: flex;
+        flex-direction: column;
+        padding: 12px 0 24px;
+        flex: 1;
+    }
+
+    /* Regular drawer link */
+    .drawer-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 24px;
+        color: rgba(255,255,255,0.82);
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.98rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        border-left: 3px solid transparent;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .drawer-link:hover {
+        background: rgba(168,230,247,0.12);
+        color: #fff;
+        border-left-color: #a8e6f7;
+    }
+
+    .drawer-link-icon {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.35rem;
+        line-height: 1;
+        color: #a8e6f7;
+        flex-shrink: 0;
+    }
+
+    /* Home visibility in drawer */
+    #home-drawer-button.home-button-hidden  { display: none; }
+    #home-drawer-button.home-button-visible { display: flex; }
+
+    /* Drawer section (accordion) */
+    .drawer-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .drawer-section-btn {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 24px;
+        background: none;
+        border: none;
+        border-left: 3px solid transparent;
+        color: rgba(255,255,255,0.82);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.98rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .drawer-section-btn:hover {
+        background: rgba(168,230,247,0.12);
+        color: #fff;
+        border-left-color: #a8e6f7;
+    }
+
+    .drawer-chevron {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.2rem;
+        line-height: 1;
+        color: rgba(255,255,255,0.5);
+        margin-left: auto;
+        transition: transform 0.3s ease, color 0.2s;
+    }
+
+    .drawer-section-btn[aria-expanded="true"] .drawer-chevron {
+        transform: rotate(180deg);
+        color: #a8e6f7;
+    }
+
+    /* Accordion sub-list */
+    .drawer-sub {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(0,0,0,0.18);
+    }
+
+    .drawer-sub.open {
+        max-height: 600px;
+    }
+
+    .drawer-sub-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px 12px 36px;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 400;
+        border-left: 3px solid transparent;
+        transition: background 0.18s, color 0.18s, border-color 0.18s, padding-left 0.18s;
+    }
+
+    .drawer-sub-link .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-size: 1.1rem;
+        line-height: 1;
+        color: #a8e6f7;
+        flex-shrink: 0;
+        opacity: 0.8;
+    }
+
+    .drawer-sub-link:hover {
+        background: rgba(168,230,247,0.08);
+        color: #fff;
+        padding-left: 42px;
+        border-left-color: #a8e6f7;
+    }
+
+    .drawer-sub-link:hover .material-symbols-outlined {
+        opacity: 1;
+    }
+
+    /* Overlay */
+    .nav-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(2px);
+        z-index: 1099;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+
+    .nav-overlay.open {
+        display: block;
+        opacity: 1;
+    }
+
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    @media (max-width: 768px) {
+        .nav-burger { display: flex; }
+        .nav-links  { display: none; }
+        .nav-brand  { margin-right: auto; }
+    }
+
+    @media (min-width: 769px) {
+        .nav-drawer  { display: none !important; }
+        .nav-overlay { display: none !important; }
     }
 </style>

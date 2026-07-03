@@ -3,6 +3,7 @@ import Navbar from "../components/navigation.astro";
 import Footer from "../components/footer.astro";
 import Layout from "../layouts/Layout.astro";
 import CardsComponent from "../components/cards_component.astro";
+import GalleryCollage from "../components/gallery_collage.astro";
 
 const products = [
     {
@@ -74,38 +75,14 @@ const sections = [
 ];
 
 const galleryImages = [
-    {
-        src: "src/assets/photos_azulia_webp/upscale_azulia_2.webp",
-        alt: "Navegando en Bacalar",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/upscale_azulia_1.webp",
-        alt: "Playa y cielo hermoso",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/velero/velero_3.webp",
-        alt: "Velero en el agua",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/velero/velero_4.webp",
-        alt: "Navegación al atardecer",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/ponton/pontom_5.webp",
-        alt: "Ponton en la laguna",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/ponton/pontom_8.webp",
-        alt: "Tour de pontón",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",
-        alt: "Paisaje en Corozal, Belice",
-    },
-    {
-        src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",
-        alt: "Atardecer en Belice",
-    },
+    { src: "src/assets/photos_azulia_webp/upscale_azulia_2.webp",            alt: "Navegando en Bacalar",         span: "wide" as const },
+    { src: "src/assets/photos_azulia_webp/velero/velero_3.webp",             alt: "Velero en el agua",            span: "tall" as const },
+    { src: "src/assets/photos_azulia_webp/upscale_azulia_1.webp",            alt: "Playa y cielo hermoso",        span: "normal" as const },
+    { src: "src/assets/photos_azulia_webp/ponton/pontom_5.webp",             alt: "Pontón en la laguna",          span: "normal" as const },
+    { src: "src/assets/photos_azulia_webp/velero/velero_4.webp",             alt: "Navegación al atardecer",      span: "wide" as const },
+    { src: "src/assets/photos_azulia_webp/ponton/pontom_8.webp",             alt: "Tour de pontón",               span: "normal" as const },
+    { src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",   alt: "Paisaje en Corozal, Belice",  span: "tall" as const },
+    { src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",   alt: "Atardecer en Belice",         span: "normal" as const },
 ];
 ---
 
@@ -220,31 +197,13 @@ const galleryImages = [
                 <CardsComponent />
             </div>
 
-            <section id="galeria" class="gallery-section">
-                <div class="container">
-                    <div class="section-heading">
-                        <p class="section-tag">Galería</p>
-                        <h2>Fotos que inspiran tu próxima aventura</h2>
-                        <p>
-                            Toda la belleza del sur de México y Bacalar ceerca
-                            de ti
-                        </p>
-                    </div>
-                    <div class="gallery-grid">
-                        {
-                            galleryImages.map((image) => (
-                                <div class="gallery-card">
-                                    <img
-                                        src={image.src}
-                                        alt={image.alt}
-                                        loading="lazy"
-                                    />
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </section>
+            <GalleryCollage
+                id="galeria"
+                images={galleryImages}
+                eyebrow="Galería"
+                title="Fotos que inspiran tu próxima aventura"
+                subtitle="Toda la belleza del sur de México y Bacalar cerca de ti"
+            />
             <div class="map-contenedor">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1889.8543070499081!2d-88.3904501826024!3d18.677067246377177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f5bb1399bb9a5ad%3A0x68459b3cd0c64df8!2sZ%C3%B3calo%20Park!5e0!3m2!1ses-419!2smx!4v1782486830459!5m2!1ses-419!2smx"

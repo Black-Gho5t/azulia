@@ -1,6 +1,7 @@
 ---
 import DestinationModal from "./destination_modal.astro";
 import "../assets/styles/destinations.css";
+import GalleryCollage from "./gallery_collage.astro";
 
 export interface CarouselImage {
     src: string;
@@ -167,24 +168,12 @@ const {
 
     <!-- ═══ GALLERY COLLAGE ═══ -->
     {galleryImages.length > 0 && (
-        <section class="gallery-section">
-            <div class="gallery-inner">
-                <div class="gallery-heading">
-                    <h2 class="gallery-title">Galería</h2>
-                    <p class="gallery-subtitle">Momentos que te esperan</p>
-                </div>
-                <div class="gallery-collage">
-                    {galleryImages.map((img) => (
-                        <div class:list={["g-item", img.span ?? "normal"]}>
-                            <img src={img.src} alt={img.alt} loading="lazy" />
-                            <div class="g-overlay">
-                                <span class="material-symbols-outlined">photo_camera</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
+        <GalleryCollage
+            images={galleryImages}
+            darkBackground={true}
+            title="Galería"
+            subtitle="Momentos que te esperan"
+        />
     )}
 
     <!-- ═══ MODALES ═══ -->
