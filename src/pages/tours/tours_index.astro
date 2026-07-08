@@ -85,7 +85,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                         />
                                     </div>
                                     <div class="title-card">
-                                        <span class="material-symbols-outlined">
+                                        <span class="material-symbols-outlined" aria-hidden="true">
                                             {tour.icon}
                                         </span>
                                         <h3>{tour.name}</h3>
@@ -113,7 +113,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
 
                 <div class="pkg-track-wrapper">
                     <button class="pkg-nav pkg-nav--prev" aria-label="Anterior">
-                        <span class="material-symbols-outlined"
+                        <span class="material-symbols-outlined" aria-hidden="true"
                             >chevron_left</span
                         >
                     </button>
@@ -125,6 +125,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                         <div class="pkg-badge">
                                             <span
                                                 class="material-symbols-outlined"
+                                                aria-hidden="true"
                                                 style="font-size:16px;"
                                             >
                                                 star
@@ -144,6 +145,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                         <div class="pkg-meta-pill">
                                             <span
                                                 class="material-symbols-outlined"
+                                                aria-hidden="true"
                                                 style="font-size:16px;"
                                             >
                                                 schedule
@@ -152,6 +154,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                             <span class="pkg-meta-sep">·</span>
                                             <span
                                                 class="material-symbols-outlined"
+                                                aria-hidden="true"
                                                 style="font-size:16px;"
                                             >
                                                 group
@@ -169,7 +172,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                         <ul class="pkg-inclusions">
                                             {pkg.inclusions.map((inc) => (
                                                 <li class="pkg-inclusion-item">
-                                                    <span class="material-symbols-outlined pkg-inc-icon">
+                                                    <span class="material-symbols-outlined pkg-inc-icon" aria-hidden="true">
                                                         {inc.icon}
                                                     </span>
                                                     <span>{inc.label}</span>
@@ -199,6 +202,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                                                 Reservar
                                                 <span
                                                     class="material-symbols-outlined"
+                                                    aria-hidden="true"
                                                     style="font-size:18px;"
                                                 >
                                                     arrow_forward
@@ -214,7 +218,7 @@ import GalleryCollage from "../../components/gallery_collage.astro";
                         class="pkg-nav pkg-nav--next"
                         aria-label="Siguiente"
                     >
-                        <span class="material-symbols-outlined"
+                        <span class="material-symbols-outlined" aria-hidden="true"
                             >chevron_right</span
                         >
                     </button>
@@ -248,13 +252,12 @@ import GalleryCollage from "../../components/gallery_collage.astro";
 </Layout>
 
 <style>
-
-    
     @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
     
     * {
         font-family: Arial, Helvetica, sans-serif;
     }
+
     
     html{
             scroll-behavior: smooth;

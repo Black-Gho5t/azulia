@@ -150,7 +150,7 @@ const hotels = [
                                 <div class="hotel-card-image">
                                     <img src={hotel.image} alt={hotel.name} loading="lazy" />
                                     <div class="hotel-rating">
-                                        <span class="material-symbols-outlined">star</span>
+                                        <span class="material-symbols-outlined" aria-hidden="true">star</span>
                                         {hotel.score}
                                     </div>
                                 </div>
@@ -159,7 +159,7 @@ const hotels = [
                                     <div class="hotel-meta-top">
                                         <h3>{hotel.name}</h3>
                                         <span class="hotel-zone">
-                                            <span class="material-symbols-outlined">location_on</span>
+                                            <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
                                             {hotel.zone}
                                         </span>
                                     </div>
@@ -169,7 +169,7 @@ const hotels = [
                                     <ul class="hotel-perks">
                                         {hotel.perks.map((perk) => (
                                             <li>
-                                                <span class="material-symbols-outlined">{perk.icon}</span>
+                                                <span class="material-symbols-outlined" aria-hidden="true">{perk.icon}</span>
                                                 {perk.label}
                                             </li>
                                         ))}
@@ -185,7 +185,7 @@ const hotels = [
                                         </div>
                                         <a href="/menu/" class="hotel-cta">
                                             Cotizar
-                                            <span class="material-symbols-outlined">arrow_forward</span>
+                                            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                                         </a>
                                     </div>
                                 </div>
@@ -205,6 +205,7 @@ const hotels = [
     * {
         font-family: Arial, Helvetica, sans-serif;
     }
+
 
     .material-symbols-outlined {
         font-family: "Material Symbols Outlined";

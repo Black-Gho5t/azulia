@@ -15,7 +15,7 @@ import "../assets/styles/home.css";
 
     <!-- Logo / Brand -->
     <a href="/" class="nav-brand">
-        <span class="nav-brand-icon material-symbols-outlined">sailing</span>
+        <span class="nav-brand-icon material-symbols-outlined" aria-hidden="true">sailing</span>
         <span class="nav-brand-text">Azulia</span>
     </a>
 
@@ -23,7 +23,7 @@ import "../assets/styles/home.css";
     <ul class="nav-links" role="menubar">
         <li id="home-button" class="nav-item home-button-hidden">
             <a href="/" class="nav-link">
-                <span class="material-symbols-outlined nav-link-icon">home</span>
+                <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">home</span>
                 Home
             </a>
         </li>
@@ -31,36 +31,36 @@ import "../assets/styles/home.css";
         <!-- Tours con dropdown -->
         <li class="nav-item nav-has-dropdown">
             <a href="/tours/tours_index" class="nav-link">
-                <span class="material-symbols-outlined nav-link-icon">explore</span>
+                <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">explore</span>
                 Tours
-                <span class="material-symbols-outlined nav-chevron">expand_more</span>
+                <span class="material-symbols-outlined nav-chevron" aria-hidden="true">expand_more</span>
             </a>
             <ul class="nav-dropdown" role="menu">
                 <li><a href="/tours/nauticos" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">anchor</span>Náuticos</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">anchor</span>Náuticos</a></li>
                 <li><a href="/tours/ruinas" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">account_balance</span>Ruinas</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">account_balance</span>Ruinas</a></li>
                 <li><a href="/tours/mahahual" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">beach_access</span>Mahahual</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">beach_access</span>Mahahual</a></li>
                 <li><a href="/tours/guatemala" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">forest</span>Guatemala</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">forest</span>Guatemala</a></li>
                 <li><a href="/tours/honduras" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">scuba_diving</span>Honduras</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">scuba_diving</span>Honduras</a></li>
                 <li><a href="/tours/belice" class="nav-dropdown-link">
-                    <span class="material-symbols-outlined">water</span>Belice</a></li>
+                    <span class="material-symbols-outlined" aria-hidden="true">water</span>Belice</a></li>
             </ul>
         </li>
 
         <li class="nav-item">
             <a href="/hotels/hoteles_index" class="nav-link">
-                <span class="material-symbols-outlined nav-link-icon">hotel</span>
+                <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">hotel</span>
                 Hoteles
             </a>
         </li>
 
         <li class="nav-item">
             <a href="/transportation/transportacion_index" class="nav-link">
-                <span class="material-symbols-outlined nav-link-icon">airport_shuttle</span>
+                <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">airport_shuttle</span>
                 Transportación
             </a>
         </li>
@@ -70,17 +70,17 @@ import "../assets/styles/home.css";
     <div class="nav-right">
         <Search />
         <button class="nav-user-btn" aria-label="Perfil de usuario">
-            <span class="material-symbols-outlined">account_circle</span>
+            <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
         </button>
     </div>
 
     <!-- Botones móvil (solo visibles en pantallas pequeñas) -->
     <div class="nav-mobile-actions">
         <button class="nav-mob-search-btn" id="mobSearchToggle" aria-label="Buscar" aria-expanded="false">
-            <span class="material-symbols-outlined">search</span>
+            <span class="material-symbols-outlined" aria-hidden="true">search</span>
         </button>
         <button class="nav-user-btn" aria-label="Perfil de usuario">
-            <span class="material-symbols-outlined">account_circle</span>
+            <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
         </button>
     </div>
 
@@ -89,7 +89,7 @@ import "../assets/styles/home.css";
 <!-- Panel de búsqueda móvil -->
 <div id="mobSearchPanel" class="mob-search-panel" aria-hidden="true">
     <div class="mob-search-inner">
-        <span class="material-symbols-outlined mob-search-icon">search</span>
+        <span class="material-symbols-outlined mob-search-icon" aria-hidden="true">search</span>
         <input
             id="mobSearchInput"
             class="mob-search-input"
@@ -97,8 +97,8 @@ import "../assets/styles/home.css";
             placeholder="Buscar destinos, tours..."
             autocomplete="off"
         />
-        <button class="mob-search-close" id="mobSearchClose" aria-label="Cerrar búsqueda">
-            <span class="material-symbols-outlined">close</span>
+<button class="mob-search-close" id="mobSearchClose" aria-label="Cerrar búsqueda">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
         </button>
     </div>
 </div>
@@ -107,10 +107,10 @@ import "../assets/styles/home.css";
 
     <!-- Cabecera del drawer -->
     <div class="drawer-header">
-        <span class="material-symbols-outlined drawer-brand-icon">sailing</span>
+        <span class="material-symbols-outlined drawer-brand-icon" aria-hidden="true">sailing</span>
         <span class="drawer-brand-text">Azulia</span>
         <button class="drawer-close-btn" id="drawerClose" aria-label="Cerrar menú">
-            <span class="material-symbols-outlined">close</span>
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
         </button>
     </div>
 
@@ -118,56 +118,56 @@ import "../assets/styles/home.css";
     <nav class="drawer-body">
 
         <a id="home-drawer-button" href="/" class="drawer-link home-button-hidden">
-            <span class="drawer-link-icon material-symbols-outlined">home</span>
+            <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">home</span>
             <span>Home</span>
         </a>
 
-        <!-- Tours â€” acordeon -->
+        <!-- Tours — acordeon -->
         <div class="drawer-section">
             <button class="drawer-section-btn" id="toursSectionBtn" aria-expanded="false">
-                <span class="drawer-link-icon material-symbols-outlined">explore</span>
+                <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">explore</span>
                 <span>Tours</span>
-                <span class="drawer-chevron material-symbols-outlined">expand_more</span>
+                <span class="drawer-chevron material-symbols-outlined" aria-hidden="true">expand_more</span>
             </button>
             <div class="drawer-sub" id="toursSub">
                 <a href="/tours/tours_index" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">grid_view</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
                     Ver todos los tours
                 </a>
                 <a href="/tours/nauticos" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">anchor</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">anchor</span>
                     Náuticos
                 </a>
                 <a href="/tours/ruinas" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">account_balance</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">account_balance</span>
                     Ruinas
                 </a>
                 <a href="/tours/mahahual" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">beach_access</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">beach_access</span>
                     Mahahual
                 </a>
                 <a href="/tours/guatemala" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">forest</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">forest</span>
                     Guatemala
                 </a>
                 <a href="/tours/honduras" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">scuba_diving</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">scuba_diving</span>
                     Honduras
                 </a>
                 <a href="/tours/belice" class="drawer-sub-link">
-                    <span class="material-symbols-outlined">water</span>
+                    <span class="material-symbols-outlined" aria-hidden="true">water</span>
                     Belice
                 </a>
             </div>
         </div>
 
         <a href="/hotels/hoteles_index" class="drawer-link">
-            <span class="drawer-link-icon material-symbols-outlined">hotel</span>
+            <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">hotel</span>
             <span>Hoteles</span>
         </a>
 
         <a href="/transportation/transportacion_index" class="drawer-link">
-            <span class="drawer-link-icon material-symbols-outlined">airport_shuttle</span>
+            <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">airport_shuttle</span>
             <span>Transportación</span>
         </a>
 
@@ -223,7 +223,7 @@ import "../assets/styles/home.css";
     /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HOME BUTTON VISIBILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function checkIfHomePage() {
         const path = window.location.pathname;
-        const isHome = path === "/" || path === "" || path === "/index.astro";
+        const isHome = path === "/" || path === "";
 
         const homeBtn    = document.getElementById("home-button");
         const homeDrawer = document.getElementById("home-drawer-button");
@@ -275,16 +275,13 @@ import "../assets/styles/home.css";
 
 
 <style is:global>
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ RESET DE ESTILOS ANTIGUOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── RESET DE ESTILOS ANTIGUOS ── */
     /* Neutraliza las reglas de home.css que ya no se usan */
     .header-container { display: none !important; }
     .drawer           { display: none !important; }
     .drawer-overlay   { display: none !important; }
 
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ FONTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
-
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── NAVBAR ── */
     .nav-bar {
         position: fixed;
         top: 0;
@@ -318,7 +315,6 @@ import "../assets/styles/home.css";
     }
 
     .nav-brand-icon {
-        font-family: 'Material Symbols Outlined';
         font-size: 28px;
         color: #a8e6f7;
         line-height: 1;
@@ -388,7 +384,6 @@ import "../assets/styles/home.css";
     }
 
     .nav-link-icon {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.1rem;
         line-height: 1;
         color: #a8e6f7;
@@ -396,7 +391,6 @@ import "../assets/styles/home.css";
     }
 
     .nav-chevron {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.1rem;
         line-height: 1;
         color: rgba(255,255,255,0.65);
@@ -459,7 +453,6 @@ import "../assets/styles/home.css";
     }
 
     .nav-dropdown-link .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.1rem;
         line-height: 1;
         color: #a8e6f7;
@@ -513,7 +506,6 @@ import "../assets/styles/home.css";
     }
 
     .nav-user-btn .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.4rem;
         line-height: 1;
         color: rgba(255,255,255,0.9);
@@ -593,7 +585,6 @@ import "../assets/styles/home.css";
     }
 
     .drawer-brand-icon {
-        font-family: 'Material Symbols Outlined';
         font-size: 26px;
         color: #a8e6f7;
         line-height: 1;
@@ -623,7 +614,6 @@ import "../assets/styles/home.css";
     .drawer-close-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
 
     .drawer-close-btn .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.2rem;
         line-height: 1;
     }
@@ -659,7 +649,6 @@ import "../assets/styles/home.css";
     }
 
     .drawer-link-icon {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.35rem;
         line-height: 1;
         color: #a8e6f7;
@@ -702,7 +691,6 @@ import "../assets/styles/home.css";
     }
 
     .drawer-chevron {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.2rem;
         line-height: 1;
         color: rgba(255,255,255,0.5);
@@ -742,7 +730,6 @@ import "../assets/styles/home.css";
     }
 
     .drawer-sub-link .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined';
         font-size: 1.1rem;
         line-height: 1;
         color: #a8e6f7;

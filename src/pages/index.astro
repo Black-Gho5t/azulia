@@ -75,14 +75,14 @@ const sections = [
 ];
 
 const galleryImages = [
-    { src: "src/assets/photos_azulia_webp/upscale_azulia_2.webp",            alt: "Navegando en Bacalar",         span: "wide" as const },
-    { src: "src/assets/photos_azulia_webp/velero/velero_3.webp",             alt: "Velero en el agua",            span: "tall" as const },
-    { src: "src/assets/photos_azulia_webp/upscale_azulia_1.webp",            alt: "Playa y cielo hermoso",        span: "normal" as const },
-    { src: "src/assets/photos_azulia_webp/ponton/pontom_5.webp",             alt: "Pontón en la laguna",          span: "normal" as const },
-    { src: "src/assets/photos_azulia_webp/velero/velero_4.webp",             alt: "Navegación al atardecer",      span: "wide" as const },
-    { src: "src/assets/photos_azulia_webp/ponton/pontom_8.webp",             alt: "Tour de pontón",               span: "normal" as const },
-    { src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",   alt: "Paisaje en Corozal, Belice",  span: "tall" as const },
-    { src: "src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",   alt: "Atardecer en Belice",         span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/upscale_azulia_2.webp",            alt: "Navegando en Bacalar",         span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_3.webp",             alt: "Velero en el agua",            span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/upscale_azulia_1.webp",            alt: "Playa y cielo hermoso",        span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_5.webp",             alt: "Pontón en la laguna",          span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/velero/velero_4.webp",             alt: "Navegación al atardecer",      span: "wide" as const },
+    { src: "/src/assets/photos_azulia_webp/ponton/pontom_8.webp",             alt: "Tour de pontón",               span: "normal" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",   alt: "Paisaje en Corozal, Belice",  span: "tall" as const },
+    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",   alt: "Atardecer en Belice",         span: "normal" as const },
 ];
 ---
 
@@ -92,14 +92,14 @@ const galleryImages = [
     <header class="home-hero">
         <img
             class="hero-background"
-            src="src/assets/photos_azulia_webp/upscale_azulia_2.webp"
+            src="/src/assets/photos_azulia_webp/upscale_azulia_2.webp"
             alt="Bacalar al amanecer"
         />
         <div class="hero-layer"></div>
         <div class="hero-inner">
             <div class="hero-text-block">
                 <div class="hero-logo">
-                    <img src="src/assets/Designer.png" alt="Logo Azulia" />
+                    <img src="/src/assets/Designer.png" alt="Logo Azulia" />
                 </div>
                 <span class="hero-label">Turismo náutico en Bacalar</span>
                 <h1>Descubre las maravillas de Bacalar y el Caribe.</h1>
@@ -154,21 +154,21 @@ const galleryImages = [
                                 <div class="product-icon">
                                     {item.icon === "tour" ? (
                                         <span
-                                            class="material-icons"
+                                            class="material-symbols-outlined"
                                             aria-hidden="true"
                                         >
                                             directions_boat
                                         </span>
                                     ) : item.icon === "hotel" ? (
                                         <span
-                                            class="material-icons"
+                                            class="material-symbols-outlined"
                                             aria-hidden="true"
                                         >
                                             hotel
                                         </span>
                                     ) : (
                                         <span
-                                            class="material-icons"
+                                            class="material-symbols-outlined"
                                             aria-hidden="true"
                                         >
                                             airport_shuttle
@@ -419,7 +419,7 @@ const galleryImages = [
         }
 
         .product-icon svg,
-        .product-icon .material-icons,
+        .product-icon .material-symbols-outlined,
         .product-icon .bi {
             width: 36px;
             height: 36px;
@@ -486,7 +486,7 @@ const galleryImages = [
         }
 
         .feature-card-icon svg,
-        .feature-card-icon .material-icons,
+        .feature-card-icon .material-symbols-outlined,
         .feature-card-icon .bi {
             width: 28px;
             height: 28px;
@@ -538,7 +538,7 @@ const galleryImages = [
         }
 
         .feature-icon-small svg,
-        .feature-icon-small .material-icons,
+        .feature-icon-small .material-symbols-outlined,
         .feature-icon-small .bi {
             width: 18px;
             height: 18px;

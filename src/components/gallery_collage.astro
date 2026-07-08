@@ -43,7 +43,7 @@ const {
                 >
                     <img src={img.src} alt={img.alt} loading="lazy" class="collage-img" />
                     <div class="collage-overlay">
-                        <span class="collage-icon material-symbols-outlined">zoom_in</span>
+                        <span class="collage-icon material-symbols-outlined" aria-hidden="true">zoom_in</span>
                         <span class="collage-caption">{img.alt}</span>
                     </div>
                 </div>
@@ -167,7 +167,6 @@ const {
     }
 
     .collage-icon {
-        font-family: "Material Symbols Outlined", sans-serif;
         font-size: 1.6rem;
         color: rgba(255, 255, 255, 0.9);
         line-height: 1;

@@ -8,7 +8,7 @@ import velero5 from "../../../assets/photos_azulia_webp/velero/velero_5.webp";
 import pontom from "../../../assets/photos_azulia_webp/ponton/pontom_8.webp";
 import pontom2 from "../../../assets/photos_azulia_webp/ponton/pontom_2.webp";
 import kayak from "../../../assets/photos_azulia_webp/Kayak/kayak (3).webp";
-import paddle from "../../../assets/photos_azulia_webp/paddle/paddle (4).webp";
+import paddle from "../../../assets/photos_azulia_webp/Paddle/paddle (4).webp";
 
 export interface Tour {
     id: string;

@@ -116,14 +116,14 @@ const centerIcons = Array.from(
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div class="hero-label">
-                <span class="material-symbols-outlined">explore</span>
+                <span class="material-symbols-outlined" aria-hidden="true">explore</span>
                 Azulia Tours
             </div>
             <h1 class="hero-title">{carouselTitle}</h1>
             <h2 class="hero-subtitle">{carouselSubtitle}</h2>
             <p class="hero-desc">{carouselDescription}</p>
             <a href="#tours-cards" class="hero-cta">
-                Descubrir <span class="material-symbols-outlined">arrow_downward</span>
+                Descubrir <span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span>
             </a>
         </div>
         <div class="carousel-dots">
@@ -144,7 +144,7 @@ const centerIcons = Array.from(
                         <div class="intro-highlights">
                             {pageIntro.highlights.map((h) => (
                                 <div class="highlight-chip">
-                                    <span class="material-symbols-outlined">{h.icon}</span>
+                                    <span class="material-symbols-outlined" aria-hidden="true">{h.icon}</span>
                                     <span>{h.text}</span>
                                 </div>
                             ))}
@@ -159,7 +159,7 @@ const centerIcons = Array.from(
                                 class:list={["center-icon-item", { active: i === 0 }]}
                                 data-center-icon
                             >
-                                <span class="material-symbols-outlined">{icon}</span>
+                                <span class="material-symbols-outlined" aria-hidden="true">{icon}</span>
                             </span>
                         ))}
                     </div>
@@ -173,7 +173,7 @@ const centerIcons = Array.from(
                                     ]}
                                     style={`--i:${i}; --total:${orbitIcons.length}; --duration:${10 + (i % 3) * 1.8}s; --delay:${-i * 0.8}s;`}
                                 >
-                                    <span class="material-symbols-outlined">{icon}</span>
+                                    <span class="material-symbols-outlined" aria-hidden="true">{icon}</span>
                                 </span>
                             ))}
                         </div>
@@ -198,7 +198,7 @@ const centerIcons = Array.from(
                             <div class="tc-image-overlay"></div>
                             {tour.icon && (
                                 <div class="tc-icon-badge">
-                                    <span class="material-symbols-outlined">{tour.icon}</span>
+                                    <span class="material-symbols-outlined" aria-hidden="true">{tour.icon}</span>
                                 </div>
                             )}
                         </div>
@@ -206,7 +206,7 @@ const centerIcons = Array.from(
                             <h3 class="tc-title">{tour.name}</h3>
                             <p class="tc-desc">{tour.description}</p>
                             <button class="tc-btn" data-id={tour.id}>
-                                Ver detalles <span class="material-symbols-outlined">arrow_forward</span>
+                                Ver detalles <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                             </button>
                         </div>
                     </div>
