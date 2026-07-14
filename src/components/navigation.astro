@@ -58,11 +58,37 @@ import "../assets/styles/home.css";
             </a>
         </li>
 
-        <li class="nav-item">
-            <a href="/transportation/transportacion_index" class="nav-link">
+        <li class="nav-item nav-has-dropdown nav-has-submenu">
+            <button class="nav-link nav-link-btn" type="button" aria-haspopup="true" aria-expanded="false">
                 <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">airport_shuttle</span>
                 Transportación
-            </a>
+                <span class="material-symbols-outlined nav-chevron" aria-hidden="true">expand_more</span>
+            </button>
+            <ul class="nav-dropdown nav-dropdown-transport" role="menu">
+                <li class="nav-dropdown-item nav-dropdown-item-has-submenu">
+                    <button class="nav-dropdown-link nav-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
+                        Tipos de transporte
+                        <span class="material-symbols-outlined nav-sub-chevron" aria-hidden="true">chevron_right</span>
+                    </button>
+                    <ul class="nav-sub-dropdown" role="menu">
+                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
+                            <span class="material-symbols-outlined" aria-hidden="true">local_taxi</span>Taxi</a></li>
+                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
+                            <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>Uber</a></li>
+                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
+                            <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>Privado</a></li>
+                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
+                            <span class="material-symbols-outlined" aria-hidden="true">directions_bus</span>ADO</a></li>
+                    </ul>
+                </li>
+                <li><a href="/transportation/nacional" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">route</span>Nacional</a></li>
+                <li><a href="/transportation/international" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">public</span>Internacional</a></li>
+                <li><a href="/menu" class="nav-dropdown-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>Renta de autos</a></li>
+            </ul>
         </li>
     </ul>
 
@@ -166,10 +192,53 @@ import "../assets/styles/home.css";
             <span>Hoteles</span>
         </a>
 
-        <a href="/transportation/transportacion_index" class="drawer-link">
-            <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">airport_shuttle</span>
-            <span>Transportación</span>
-        </a>
+        <div class="drawer-section">
+            <button class="drawer-section-btn" id="transportSectionBtn" aria-expanded="false">
+                <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">airport_shuttle</span>
+                <span>Transportación</span>
+                <span class="drawer-chevron material-symbols-outlined" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="drawer-sub" id="transportSub">
+                <div class="drawer-sub-group">
+                    <button class="drawer-sub-toggle" id="transportTypesBtn" aria-expanded="false" type="button">
+                        <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
+                        Tipos de transporte
+                        <span class="drawer-sub-chevron material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                    </button>
+                    <div class="drawer-sub-nested" id="transportTypesSub">
+                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
+                            <span class="material-symbols-outlined" aria-hidden="true">local_taxi</span>
+                            Taxi
+                        </a>
+                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
+                            <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>
+                            Uber
+                        </a>
+                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
+                            <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+                            Privado
+                        </a>
+                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
+                            <span class="material-symbols-outlined" aria-hidden="true">directions_bus</span>
+                            ADO
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/transportation/nacional" class="drawer-sub-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">route</span>
+                    Nacional
+                </a>
+                <a href="/transportation/international" class="drawer-sub-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">public</span>
+                    Internacional
+                </a>
+                <a href="/menu" class="drawer-sub-link">
+                    <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+                    Renta de autos
+                </a>
+            </div>
+        </div>
 
     </nav>
 </div>
@@ -218,6 +287,26 @@ import "../assets/styles/home.css";
     toursBtn?.addEventListener("click", () => {
         const isOpen = toursSub.classList.toggle("open");
         toursBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    const transportBtn = document.getElementById("transportSectionBtn") as HTMLButtonElement;
+    const transportSub = document.getElementById("transportSub")        as HTMLElement;
+    const transportTypesBtn = document.getElementById("transportTypesBtn") as HTMLButtonElement;
+    const transportTypesSub = document.getElementById("transportTypesSub") as HTMLElement;
+
+    transportBtn?.addEventListener("click", () => {
+        const isOpen = transportSub.classList.toggle("open");
+        transportBtn.setAttribute("aria-expanded", String(isOpen));
+
+        if (!isOpen) {
+            transportTypesSub?.classList.remove("open");
+            transportTypesBtn?.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    transportTypesBtn?.addEventListener("click", () => {
+        const isOpen = transportTypesSub.classList.toggle("open");
+        transportTypesBtn.setAttribute("aria-expanded", String(isOpen));
     });
 
     /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HOME BUTTON VISIBILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -360,6 +449,12 @@ import "../assets/styles/home.css";
         white-space: nowrap;
     }
 
+    .nav-link-btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+    }
+
     .nav-link::after {
         content: '';
         position: absolute;
@@ -468,6 +563,61 @@ import "../assets/styles/home.css";
 
     .nav-dropdown-link:hover .material-symbols-outlined {
         color: #fff;
+    }
+
+    .nav-dropdown-item {
+        position: relative;
+    }
+
+    .nav-dropdown-toggle {
+        width: 100%;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .nav-sub-chevron {
+        margin-left: auto;
+        font-size: 1rem;
+        color: rgba(255,255,255,0.65);
+        transition: transform 0.2s ease;
+    }
+
+    .nav-dropdown-item-has-submenu:hover .nav-sub-chevron,
+    .nav-dropdown-item-has-submenu:focus-within .nav-sub-chevron {
+        transform: translateX(2px);
+        color: #fff;
+    }
+
+    .nav-sub-dropdown {
+        position: absolute;
+        left: 100%;
+        top: -6px;
+        min-width: 190px;
+        list-style: none;
+        margin: 0;
+        padding: 6px 0;
+        background: #355e9d;
+        border-radius: 0 10px 10px 10px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.24);
+        opacity: 0;
+        transform: translateX(8px);
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 110;
+    }
+
+    .nav-dropdown-item-has-submenu:hover .nav-sub-dropdown,
+    .nav-dropdown-item-has-submenu:focus-within .nav-sub-dropdown {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+
+    .nav-sub-link {
+        font-size: 0.84rem;
+        background: rgba(255,255,255,0.02);
     }
 
     /* Right section */
@@ -746,6 +896,58 @@ import "../assets/styles/home.css";
 
     .drawer-sub-link:hover .material-symbols-outlined {
         opacity: 1;
+    }
+
+    .drawer-sub-group {
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .drawer-sub-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 24px 11px 36px;
+        background: rgba(255,255,255,0.03);
+        border: none;
+        color: rgba(255,255,255,0.78);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.88rem;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .drawer-sub-toggle .material-symbols-outlined {
+        font-size: 1.05rem;
+        color: #a8e6f7;
+        flex-shrink: 0;
+    }
+
+    .drawer-sub-chevron {
+        margin-left: auto;
+        color: rgba(255,255,255,0.6);
+        transition: transform 0.25s ease, color 0.25s ease;
+    }
+
+    .drawer-sub-toggle[aria-expanded="true"] .drawer-sub-chevron {
+        transform: rotate(90deg);
+        color: #fff;
+    }
+
+    .drawer-sub-nested {
+        max-height: 0;
+        overflow: hidden;
+        background: rgba(0,0,0,0.16);
+        transition: max-height 0.28s ease;
+    }
+
+    .drawer-sub-nested.open {
+        max-height: 240px;
+    }
+
+    .drawer-sub-link--nested {
+        padding-left: 52px;
+        font-size: 0.85rem;
     }
 
     /* Overlay */
