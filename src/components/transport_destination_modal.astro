@@ -1,0 +1,600 @@
+---
+import type { NationalDestination } from "./data/transportation/nacional_data";
+
+interface TransportTypeOption {
+    value: string;
+    label: string;
+}
+
+interface DeparturePoint {
+    value: string;
+    label: string;
+}
+
+interface Props {
+    destination: NationalDestination;
+    transportTypes: TransportTypeOption[];
+    departurePoints: DeparturePoint[];
+    contactHref?: string;
+}
+
+const {
+    destination,
+    transportTypes,
+    departurePoints,
+    contactHref = "/wha-options",
+} = Astro.props;
+---
+
+<div id={`transport-modal-${destination.id}`} class="tdm-overlay">
+    <div class="tdm-content">
+        <button class="tdm-close" type="button" aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="tdm-gallery">
+            {destination.gallery.map((img, index) => (
+                <img
+                    src={img}
+                    alt={`${destination.name} ${index + 1}`}
+                    class:list={["tdm-img", { active: index === 0 }]}
+                />
+            ))}
+            {destination.gallery.length > 1 && (
+                <div class="tdm-gallery-nav">
+                    <button class="tdm-prev" type="button" aria-label="Imagen anterior">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <span class="tdm-counter">1 / {destination.gallery.length}</span>
+                    <button class="tdm-next" type="button" aria-label="Imagen siguiente">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            )}
+        </div>
+
+        <div class="tdm-info">
+            <div class="tdm-header">
+                <div>
+                    <p class="tdm-eyebrow">{destination.region}</p>
+                    <h3>{destination.name}</h3>
+                </div>
+                <span class="tdm-highlight">{destination.highlight}</span>
+            </div>
+
+            <p class="tdm-description">{destination.shortDescription}</p>
+
+            <div class="tdm-summary-grid">
+                <div class="tdm-summary-item">
+                    <span class="label">Terminal / punto principal</span>
+                    <span class="value">{destination.transport.nearestStop}</span>
+                </div>
+                <div class="tdm-summary-item">
+                    <span class="label">Horario recomendado</span>
+                    <span class="value">{destination.transport.schedule}</span>
+                </div>
+                <div class="tdm-summary-item">
+                    <span class="label">Distancia desde Chetumal</span>
+                    <span class="value">{destination.transport.distanceFromChetumal}</span>
+                </div>
+                <div class="tdm-summary-item">
+                    <span class="label">Distancia desde Cancún</span>
+                    <span class="value">{destination.transport.distanceFromCancun}</span>
+                </div>
+            </div>
+
+            <div class="tdm-options">
+                <h4>Opciones de transporte</h4>
+                <form class="tdm-quote-form" data-transport-form>
+                    <div class="tdm-field-row">
+                        <label for={`transport-type-${destination.id}`}>Tipo de transporte</label>
+                        <select id={`transport-type-${destination.id}`} data-transport-type>
+                            <option value="">Selecciona tipo de transporte</option>
+                            {transportTypes.map((type) => (
+                                <option value={type.value}>{type.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div class="tdm-field-row tdm-destination-fixed">
+                        <label>Destino seleccionado</label>
+                        <div class="tdm-fixed-value">
+                            <span class="material-symbols-outlined">location_on</span>
+                            {destination.name}
+                        </div>
+                    </div>
+
+                    <div class="tdm-field-row" data-origin-group>
+                        <label for={`origin-${destination.id}`}>Desde dónde viajarás</label>
+                        <select id={`origin-${destination.id}`} data-origin>
+                            <option value="">Selecciona punto de partida</option>
+                            {departurePoints.map((point) => (
+                                <option value={point.value}>{point.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div class="tdm-field-row">
+                        <label for={`people-${destination.id}`}>¿Para cuántas personas?</label>
+                        <input
+                            id={`people-${destination.id}`}
+                            type="number"
+                            min="1"
+                            max="12"
+                            step="1"
+                            value="1"
+                            data-passengers
+                        />
+                        <span class="tdm-field-help">Rango permitido: 1 a 12 personas.</span>
+                    </div>
+
+                    <div class="tdm-capacity-alert" data-capacity-alert aria-live="polite">
+                        <p>En caso de requerir más espacio contáctenos.</p>
+                        <a href={contactHref} class="tdm-contact-btn">
+                            Contactar
+                            <span class="material-symbols-outlined">chat</span>
+                        </a>
+                    </div>
+
+                    <div class="tdm-form-contact" data-form-contact>
+                        <p>Formulario completo. Continuar por contacto directo.</p>
+                        <a href={contactHref} class="tdm-contact-btn tdm-contact-btn--primary">
+                            Contactar ahora
+                            <span class="material-symbols-outlined">call</span>
+                        </a>
+                    </div>
+                </form>
+
+                <div class="tdm-options-grid">
+                    {destination.transport.options.map((option) => (
+                        <article class="tdm-option-card">
+                            <div class="tdm-option-title">
+                                <span class="material-symbols-outlined">{option.icon}</span>
+                                <strong>{option.mode}</strong>
+                            </div>
+                            <p><span>Duración:</span> {option.duration}</p>
+                            <p><span>Frecuencia:</span> {option.frequency}</p>
+                            <p><span>Precio estimado:</span> {option.estimatedPrice}</p>
+                            <small>{option.notes}</small>
+                        </article>
+                    ))}
+                </div>
+            </div>
+
+            <div class="tdm-tips">
+                <h4>Recomendaciones de ruta</h4>
+                <ul>
+                    {destination.transport.tips.map((tip) => (
+                        <li>{tip}</li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
+    .material-symbols-outlined {
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        display: inline-block;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .tdm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 31, 49, 0.64);
+        backdrop-filter: blur(4px);
+        z-index: 2100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+    }
+
+    .tdm-overlay.open {
+        display: flex;
+    }
+
+    .tdm-content {
+        width: min(1100px, 100%);
+        max-height: 92vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid #cde5f2;
+        box-shadow: 0 30px 60px rgba(9, 34, 58, 0.35);
+        display: grid;
+        grid-template-columns: minmax(260px, 42%) 1fr;
+        position: relative;
+    }
+
+    .tdm-close {
+        position: absolute;
+        right: 0.8rem;
+        top: 0.8rem;
+        z-index: 2;
+        border: none;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(19, 68, 107, 0.74);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .tdm-gallery {
+        position: relative;
+        min-height: 320px;
+        background: #0f385c;
+    }
+
+    .tdm-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+
+    .tdm-img.active {
+        opacity: 1;
+    }
+
+    .tdm-gallery-nav {
+        position: absolute;
+        bottom: 0.9rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        background: rgba(10, 31, 49, 0.7);
+        border-radius: 999px;
+        padding: 0.35rem 0.6rem;
+        color: #fff;
+    }
+
+    .tdm-prev,
+    .tdm-next {
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tdm-counter {
+        font-size: 0.82rem;
+        min-width: 52px;
+        text-align: center;
+    }
+
+    .tdm-info {
+        padding: 1.2rem 1.25rem 1.3rem;
+        color: #21394f;
+    }
+
+    .tdm-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.7rem;
+    }
+
+    .tdm-eyebrow {
+        margin: 0;
+        color: #217b96;
+        font-size: 0.74rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.13em;
+    }
+
+    .tdm-header h3 {
+        margin: 0.2rem 0 0;
+        font-size: 1.56rem;
+        color: #133f66;
+    }
+
+    .tdm-highlight {
+        font-size: 0.76rem;
+        color: #1c5fa8;
+        background: #eaf4ff;
+        border: 1px solid #cae4ff;
+        border-radius: 999px;
+        padding: 0.35rem 0.7rem;
+        white-space: nowrap;
+    }
+
+    .tdm-description {
+        color: #496278;
+        margin: 0.7rem 0 1rem;
+        line-height: 1.6;
+    }
+
+    .tdm-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    .tdm-summary-item {
+        border: 1px solid #d7e8f3;
+        border-radius: 10px;
+        padding: 0.55rem 0.65rem;
+        background: #f7fcff;
+    }
+
+    .tdm-summary-item .label {
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #627a92;
+        margin-bottom: 0.2rem;
+    }
+
+    .tdm-summary-item .value {
+        font-size: 0.9rem;
+        color: #16324f;
+        font-weight: 600;
+    }
+
+    .tdm-options h4,
+    .tdm-tips h4 {
+        margin: 1rem 0 0.55rem;
+        color: #133f66;
+        font-size: 1rem;
+    }
+
+    .tdm-quote-form {
+        border: 1px solid #d4e7f4;
+        background: linear-gradient(180deg, #f8fcff 0%, #f2f9ff 100%);
+        border-radius: 12px;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .tdm-field-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .tdm-field-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .tdm-field-row label {
+        font-size: 0.81rem;
+        color: #1b5376;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .tdm-quote-form select,
+    .tdm-quote-form input {
+        height: 40px;
+        border: 1px solid #b9d9ec;
+        border-radius: 10px;
+        padding: 0 0.72rem;
+        background: #fff;
+        color: #27475e;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .tdm-quote-form select:focus,
+    .tdm-quote-form input:focus {
+        border-color: #3a8db8;
+        box-shadow: 0 0 0 3px rgba(58, 141, 184, 0.16);
+    }
+
+    .tdm-field-help {
+        font-size: 0.72rem;
+        color: #5f7990;
+    }
+
+    .tdm-fixed-value {
+        height: 40px;
+        border: 1px solid #c4dfee;
+        background: #ffffff;
+        color: #1c4f71;
+        border-radius: 10px;
+        padding: 0 0.7rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .tdm-fixed-value .material-symbols-outlined {
+        font-size: 1rem;
+    }
+
+    [data-origin-group].is-hidden {
+        display: none;
+    }
+
+    .tdm-capacity-alert {
+        margin-top: 0.45rem;
+        padding: 0;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: #fff6ef;
+        transform: translateY(-6px);
+        transition: max-height 0.28s ease, opacity 0.28s ease, transform 0.28s ease, padding 0.28s ease;
+    }
+
+    .tdm-capacity-alert.show {
+        max-height: 110px;
+        opacity: 1;
+        transform: translateY(0);
+        padding: 0.65rem 0.7rem;
+        border-color: #f3c9a8;
+        animation: capPulse 0.5s ease;
+    }
+
+    .tdm-form-contact {
+        margin-top: 0.5rem;
+        padding: 0;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: #edf8ff;
+        transform: translateY(-6px);
+        transition: max-height 0.28s ease, opacity 0.28s ease, transform 0.28s ease, padding 0.28s ease;
+    }
+
+    .tdm-form-contact.show {
+        max-height: 96px;
+        opacity: 1;
+        transform: translateY(0);
+        border-color: #c1e2f6;
+        padding: 0.62rem 0.7rem;
+        animation: capPulse 0.5s ease;
+    }
+
+    .tdm-form-contact p {
+        margin: 0 0 0.48rem;
+        color: #2c5c82;
+        font-size: 0.82rem;
+        line-height: 1.35;
+    }
+
+    .tdm-capacity-alert p {
+        margin: 0 0 0.55rem;
+        color: #8a4e25;
+        font-size: 0.83rem;
+        line-height: 1.4;
+    }
+
+    .tdm-contact-btn {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #2675a5 0%, #217b96 100%);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 0.42rem 0.74rem;
+        box-shadow: 0 8px 14px rgba(33, 123, 150, 0.25);
+    }
+
+    .tdm-contact-btn .material-symbols-outlined {
+        font-size: 0.98rem;
+    }
+
+    .tdm-contact-btn--primary {
+        background: linear-gradient(135deg, #1c5fa8 0%, #1d7aa2 100%);
+    }
+
+    @keyframes capPulse {
+        0% { transform: translateY(-6px) scale(0.985); }
+        100% { transform: translateY(0) scale(1); }
+    }
+
+    .tdm-options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+    }
+
+    .tdm-option-card {
+        border: 1px solid #d8e8f6;
+        background: #f8fcff;
+        border-radius: 12px;
+        padding: 0.65rem;
+    }
+
+    .tdm-option-title {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.35rem;
+        color: #1e6183;
+    }
+
+    .tdm-option-title .material-symbols-outlined {
+        font-size: 1.15rem;
+    }
+
+    .tdm-option-card p {
+        margin: 0.18rem 0;
+        font-size: 0.84rem;
+        color: #3b5670;
+    }
+
+    .tdm-option-card p span {
+        color: #1d5277;
+        font-weight: 700;
+    }
+
+    .tdm-option-card small {
+        color: #60768b;
+        font-size: 0.76rem;
+        line-height: 1.4;
+        display: block;
+        margin-top: 0.32rem;
+    }
+
+    .tdm-tips ul {
+        margin: 0;
+        padding-left: 1.1rem;
+    }
+
+    .tdm-tips li {
+        margin-bottom: 0.36rem;
+        color: #425d74;
+        line-height: 1.5;
+        font-size: 0.88rem;
+    }
+
+    @media (max-width: 980px) {
+        .tdm-content {
+            grid-template-columns: 1fr;
+        }
+
+        .tdm-gallery {
+            min-height: 260px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .tdm-summary-grid,
+        .tdm-options-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

@@ -21,13 +21,6 @@ import "../assets/styles/home.css";
 
     <!-- Links desktop -->
     <ul class="nav-links" role="menubar">
-        <li id="home-button" class="nav-item home-button-hidden">
-            <a href="/" class="nav-link">
-                <span class="material-symbols-outlined nav-link-icon" aria-hidden="true">home</span>
-                Home
-            </a>
-        </li>
-
         <!-- Tours con dropdown -->
         <li class="nav-item nav-has-dropdown">
             <a href="/tours/tours_index" class="nav-link">
@@ -142,11 +135,6 @@ import "../assets/styles/home.css";
 
     <!-- Lista principal -->
     <nav class="drawer-body">
-
-        <a id="home-drawer-button" href="/" class="drawer-link home-button-hidden">
-            <span class="drawer-link-icon material-symbols-outlined" aria-hidden="true">home</span>
-            <span>Home</span>
-        </a>
 
         <!-- Tours — acordeon -->
         <div class="drawer-section">
@@ -308,27 +296,6 @@ import "../assets/styles/home.css";
         const isOpen = transportTypesSub.classList.toggle("open");
         transportTypesBtn.setAttribute("aria-expanded", String(isOpen));
     });
-
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HOME BUTTON VISIBILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    function checkIfHomePage() {
-        const path = window.location.pathname;
-        const isHome = path === "/" || path === "";
-
-        const homeBtn    = document.getElementById("home-button");
-        const homeDrawer = document.getElementById("home-drawer-button");
-
-        const toggle = (el: HTMLElement | null, hide: boolean) => {
-            if (!el) return;
-            el.classList.toggle("home-button-hidden",  hide);
-            el.classList.toggle("home-button-visible", !hide);
-        };
-
-        toggle(homeBtn,    isHome);
-        toggle(homeDrawer, isHome);
-    }
-
-    checkIfHomePage();
-    window.addEventListener("popstate", checkIfHomePage);
 
     /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAVBAR SCROLL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     const navBar = document.querySelector(".nav-bar") as HTMLElement;
@@ -661,10 +628,6 @@ import "../assets/styles/home.css";
         color: rgba(255,255,255,0.9);
     }
 
-    /* Home button visibility */
-    #home-button.home-button-hidden  { display: none; }
-    #home-button.home-button-visible { display: flex; }
-
     /* Burger (mobile only) */
     .nav-burger {
         display: none;
@@ -804,10 +767,6 @@ import "../assets/styles/home.css";
         color: #a8e6f7;
         flex-shrink: 0;
     }
-
-    /* Home visibility in drawer */
-    #home-drawer-button.home-button-hidden  { display: none; }
-    #home-drawer-button.home-button-visible { display: flex; }
 
     /* Drawer section (accordion) */
     .drawer-section {
