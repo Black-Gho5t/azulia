@@ -208,8 +208,8 @@ const {
 
     .tdm-content {
         width: min(1100px, 100%);
-        max-height: 92vh;
-        overflow: auto;
+        height: min(92vh, 780px);
+        overflow: hidden;
         background: #fff;
         border-radius: 18px;
         border: 1px solid #cde5f2;
@@ -238,7 +238,8 @@ const {
 
     .tdm-gallery {
         position: relative;
-        min-height: 320px;
+        min-height: 0;
+        height: 100%;
         background: #0f385c;
     }
 
@@ -293,6 +294,29 @@ const {
     .tdm-info {
         padding: 1.2rem 1.25rem 1.3rem;
         color: #21394f;
+        overflow-y: auto;
+        min-height: 0;
+        scrollbar-width: thin;
+        scrollbar-color: #2a7ea8 #e8f3f9;
+    }
+
+    .tdm-info::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .tdm-info::-webkit-scrollbar-track {
+        background: #e8f3f9;
+        border-radius: 10px;
+    }
+
+    .tdm-info::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #2a7ea8 0%, #1f668b 100%);
+        border-radius: 10px;
+        border: 2px solid #e8f3f9;
+    }
+
+    .tdm-info::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #328fbe 0%, #245f80 100%);
     }
 
     .tdm-header {
@@ -584,6 +608,8 @@ const {
     @media (max-width: 980px) {
         .tdm-content {
             grid-template-columns: 1fr;
+            grid-template-rows: 260px 1fr;
+            height: 92vh;
         }
 
         .tdm-gallery {
