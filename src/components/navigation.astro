@@ -306,6 +306,12 @@ import "../assets/styles/home.css";
     const mobInput  = document.getElementById("mobSearchInput")  as HTMLInputElement | null;
     const mobClose  = document.getElementById("mobSearchClose")  as HTMLButtonElement | null;
 
+    function submitSearch(value: string) {
+        const term = value.trim();
+        if (!term) return;
+        window.location.href = `/buscar?q=${encodeURIComponent(term)}`;
+    }
+
     function openMobSearch() {
         mobPanel?.classList.add("open");
         mobPanel?.setAttribute("aria-hidden", "false");
@@ -324,6 +330,11 @@ import "../assets/styles/home.css";
         mobPanel?.classList.contains("open") ? closeMobSearch() : openMobSearch()
     );
     mobClose?.addEventListener("click", closeMobSearch);
+    mobInput?.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        submitSearch(mobInput.value);
+    });
 </script>
 
 
