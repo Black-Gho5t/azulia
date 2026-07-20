@@ -56,7 +56,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             <span class="checkmark"></span>
             Recordarme
           </label>
-          <a href="/admin/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">
@@ -78,14 +78,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   </div>
 
   <script>
-    import { authenticateUser, setAuth } from '../../components/admin/auth.ts';
-    import { getAuthState } from '../../components/admin/auth.ts';
-
-    // Redirect if already authenticated
-    const auth = getAuthState();
-    if (auth.isAuthenticated) {
-      window.location.href = '/admin';
-    }
+    import { signIn, getAuthState } from '../../components/admin/auth.ts';
 
     const form = document.getElementById('loginForm') as HTMLFormElement;
     const emailInput = document.getElementById('email') as HTMLInputElement;
@@ -95,7 +88,11 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const successEl = document.getElementById('formSuccess') as HTMLElement;
     const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
 
-    // Toggle password visibility
+    // Redirect if already authenticated
+    getAuthState().then(auth => {
+      if (auth.isAuthenticated) window.location.href = '/admin';
+    });
+
     togglePassword.addEventListener('click', () => {
       const type = passwordInput.type === 'password' ? 'text' : 'password';
       passwordInput.type = type;
@@ -103,7 +100,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         type === 'password' ? 'visibility' : 'visibility_off';
     });
 
-    // Real-time validation
     emailInput.addEventListener('blur', () => validateEmail(emailInput));
     passwordInput.addEventListener('blur', () => validatePassword(passwordInput));
     emailInput.addEventListener('input', () => clearError(emailInput));
@@ -123,7 +119,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     function toggleError(input: HTMLInputElement, isValid: boolean, message: string) {
       const formGroup = input.closest('.form-group')!;
-      const errorEl = formGroup.querySelector('.form-error') as HTMLElement;
       formGroup.classList.toggle('has-error', !isValid && input.value.length > 0);
       formGroup.classList.toggle('has-success', isValid && input.value.length > 0);
     }
@@ -167,26 +162,16 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       setLoading(true);
 
       try {
-        const result = await authenticateUser(
-          emailInput.value.trim().toLowerCase(),
-          passwordInput.value
-        );
+        const result = await signIn(emailInput.value.trim().toLowerCase(), passwordInput.value);
 
-        if (result && 'pending' in result) {
-          showMessage(errorEl, 'Esta cuenta está pendiente de confirmación. Revisa tu correo para activarla.');
-        } else if (result) {
-          setAuth(result.user, result.token);
-          showMessage(successEl, 'Inicio de sesión exitoso. Redirigiendo...');
-          
-          setTimeout(() => {
-            window.location.href = '/admin';
-          }, 1000);
+        if ('error' in result) {
+          showMessage(errorEl, result.error);
         } else {
-          showMessage(errorEl, 'Credenciales incorrectas. Verifica tu correo y contraseña.');
+          showMessage(successEl, 'Inicio de sesión exitoso. Redirigiendo...');
+          setTimeout(() => window.location.href = '/admin', 1000);
         }
-      } catch (err) {
+      } catch {
         showMessage(errorEl, 'Error de conexión. Intenta nuevamente.');
-        console.error(err);
       } finally {
         setLoading(false);
       }

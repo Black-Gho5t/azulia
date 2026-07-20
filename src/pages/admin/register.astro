@@ -937,25 +937,26 @@ import Layout from "../../layouts/Layout.astro";
           return;
         }
 
-        // Build confirmation link
         const link = `${window.location.origin}/admin/confirm?token=${result.pendingToken}&email=${encodeURIComponent(result.email)}`;
 
-        // Show confirmation step
         form.hidden = true;
         document.getElementById('confirmStep')!.hidden = false;
         document.getElementById('confirmLink')!.textContent = link;
 
-        // Send confirmation email via EmailJS
-        const { sendConfirmationEmail, isEmailConfigured } = await import('../../components/admin/email.ts');
-        const emailResult = await sendConfirmationEmail(result.name, result.email, link);
         const confirmDesc = document.getElementById('confirmDesc')!;
-        if (emailResult.success) {
-          confirmDesc.textContent = 'Se ha enviado un correo de confirmación al administrador.';
-        } else {
+        try {
+          const { sendConfirmationEmail } = await import('../../components/admin/email.ts');
+          const emailResult = await sendConfirmationEmail(result.name, result.email, link);
+          if (emailResult.success) {
+            confirmDesc.textContent = 'Se ha enviado un correo de confirmación al administrador.';
+          } else {
+            confirmDesc.innerHTML = `No se pudo enviar el correo. <strong>Error:</strong> ${emailResult.error}`;
+          }
+        } catch (importErr) {
+          console.warn('[Registro] Error al cargar módulo de email:', importErr);
           confirmDesc.textContent = 'Copia y comparte este enlace con el administrador para confirmar la cuenta.';
         }
 
-        // Copy button
         document.getElementById('copyLinkBtn')!.addEventListener('click', () => {
           navigator.clipboard.writeText(link).then(() => {
             const btn = document.getElementById('copyLinkBtn')!;
@@ -977,12 +978,10 @@ import Layout from "../../layouts/Layout.astro";
     });
 
     // Redirect if already authenticated
-    (async () => {
-      const { getAuthState } = await import('../../components/admin/auth.ts');
-      const auth = getAuthState();
-      if (auth.isAuthenticated) {
-        window.location.href = '/admin';
-      }
-    })();
+    import('../../components/admin/auth.ts').then(({ getAuthState }) => {
+      getAuthState().then(auth => {
+        if (auth.isAuthenticated) window.location.href = '/admin';
+      });
+    });
   </script>
 </Layout>

@@ -5,21 +5,56 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 <AdminLayout title="Confirmar cuenta - Azulia Admin">
   <div class="confirm-container">
     <div class="confirm-card" id="statusCard">
+      <!-- Loading -->
       <div class="confirm-spinner" id="spinner">
         <span class="material-symbols-outlined spinning">sync</span>
         <p>Verificando enlace...</p>
       </div>
 
+      <!-- Login required -->
+      <div id="loginView" class="result-view" hidden>
+        <div class="result-icon lock-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
+        </div>
+        <h1 class="result-title">Autenticación requerida</h1>
+        <p class="result-desc">Ingresa como administrador principal para confirmar esta cuenta.</p>
+
+        <form id="confirmLoginForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="loginEmail">Correo del admin principal</label>
+            <input type="email" id="loginEmail" class="form-input" value="azulia.bacalar@gmail.com" readonly />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Contraseña</label>
+            <div class="password-wrapper">
+              <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required minlength="8" />
+              <button type="button" class="password-toggle" aria-label="Mostrar/ocultar">
+                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+              </button>
+            </div>
+          </div>
+          <div id="loginError" class="form-message error" role="alert" hidden></div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span class="btn-text">Confirmar identidad</span>
+            <span class="btn-loader" hidden>
+              <span class="material-symbols-outlined spinning">refresh</span>
+            </span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Success -->
       <div id="successView" class="result-view" hidden>
         <div class="result-icon success-icon">
           <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
         </div>
         <h1 class="result-title">Cuenta confirmada</h1>
         <p class="result-desc" id="successName"></p>
-        <p class="result-info">Ya puedes iniciar sesión con tu correo y contraseña.</p>
-        <a href="/admin/login" class="btn btn-primary">Iniciar sesión</a>
+        <p class="result-info">El nuevo administrador ya puede iniciar sesión.</p>
+        <a href="/admin/login" class="btn btn-primary">Ir al panel</a>
       </div>
 
+      <!-- Error -->
       <div id="errorView" class="result-view" hidden>
         <div class="result-icon error-icon">
           <span class="material-symbols-outlined" aria-hidden="true">cancel</span>
@@ -33,17 +68,18 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
   <script>
     (async () => {
+      const MAIN_EMAIL = import.meta.env?.PUBLIC_MAIN_ADMIN_EMAIL || 'azulia.bacalar@gmail.com';
       const params = new URLSearchParams(window.location.search);
       const token = params.get('token');
       const email = params.get('email');
 
-      const { confirmUser } = await import('../../components/admin/auth.ts');
-
-      const spinner = document.getElementById('spinner')!;
-      const successView = document.getElementById('successView')!;
-      const errorView = document.getElementById('errorView')!;
-      const successName = document.getElementById('successName')!;
-      const errorMsg = document.getElementById('errorMsg')!;
+      const spinner = document.getElementById('spinner');
+      const loginView = document.getElementById('loginView');
+      const successView = document.getElementById('successView');
+      const errorView = document.getElementById('errorView');
+      const successName = document.getElementById('successName');
+      const errorMsg = document.getElementById('errorMsg');
+      const loginError = document.getElementById('loginError');
 
       if (!token || !email) {
         spinner.hidden = true;
@@ -52,19 +88,95 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         return;
       }
 
-      // Small delay so spinner is visible
-      await new Promise(r => setTimeout(r, 600));
+      // Check if already authenticated as main admin
+      try {
+        const { onAuthStateChanged } = await import('firebase/auth');
+        const { auth } = await import('../../lib/firebase');
+        const { confirmUser } = await import('../../components/admin/auth.ts');
 
-      const result = confirmUser(token, email);
+        const currentUser = await new Promise((resolve) => {
+          const unsub = onAuthStateChanged(auth, (user) => {
+            unsub();
+            resolve(user);
+          });
+          setTimeout(() => resolve(null), 3000);
+        });
 
-      spinner.hidden = true;
+        if (currentUser && currentUser.email?.toLowerCase() === MAIN_EMAIL) {
+          // Already authenticated as main admin — confirm directly
+          const result = await confirmUser(token, email);
+          spinner.hidden = true;
+          if ('success' in result) {
+            successView.hidden = false;
+            successName.textContent = `¡Bienvenido, ${result.name}!`;
+          } else {
+            errorView.hidden = false;
+            errorMsg.textContent = result.error;
+          }
+          return;
+        }
 
-      if ('success' in result) {
-        successView.hidden = false;
-        successName.textContent = `¡Bienvenido, ${result.name}!`;
-      } else {
+        // Show login form
+        spinner.hidden = true;
+        loginView.hidden = false;
+
+        // Password toggle
+        document.querySelector('.password-toggle')?.addEventListener('click', () => {
+          const input = document.getElementById('loginPassword');
+          const icon = document.querySelector('.password-toggle .material-symbols-outlined');
+          const isHidden = input.type === 'password';
+          input.type = isHidden ? 'text' : 'password';
+          icon.textContent = isHidden ? 'visibility_off' : 'visibility';
+        });
+
+        // Login form submit
+        document.getElementById('confirmLoginForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          loginError.hidden = true;
+          const password = document.getElementById('loginPassword').value;
+
+          if (password.length < 8) {
+            loginError.textContent = 'Contraseña incorrecta';
+            loginError.hidden = false;
+            return;
+          }
+
+          const submitBtn = e.target.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+          submitBtn.querySelector('.btn-text').hidden = true;
+          submitBtn.querySelector('.btn-loader').hidden = false;
+
+          try {
+            const { signInWithEmailAndPassword } = await import('firebase/auth');
+            await signInWithEmailAndPassword(auth, MAIN_EMAIL, password);
+
+            // Now confirm
+            const result = await confirmUser(token, email);
+            if ('success' in result) {
+              loginView.hidden = true;
+              successView.hidden = false;
+              successName.textContent = `¡Bienvenido, ${result.name}!`;
+            } else {
+              loginError.textContent = result.error;
+              loginError.hidden = false;
+              submitBtn.disabled = false;
+              submitBtn.querySelector('.btn-text').hidden = false;
+              submitBtn.querySelector('.btn-loader').hidden = true;
+            }
+          } catch (err) {
+            loginError.textContent = 'Error al iniciar sesión. Verifica tu contraseña.';
+            loginError.hidden = false;
+            submitBtn.disabled = false;
+            submitBtn.querySelector('.btn-text').hidden = false;
+            submitBtn.querySelector('.btn-loader').hidden = true;
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginPassword').focus();
+          }
+        });
+      } catch (err) {
+        spinner.hidden = true;
         errorView.hidden = false;
-        errorMsg.textContent = result.error;
+        errorMsg.textContent = 'Error al cargar. Recarga la página.';
       }
     })();
   </script>
@@ -104,27 +216,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       color: #1c5fa8;
     }
 
-    .confirm-spinner p {
-      font-size: 1rem;
-      margin: 0;
-    }
+    .confirm-spinner p { margin: 0; }
 
-    .spinning {
-      animation: spin 1s linear infinite;
-    }
+    .spinning { animation: spin 1s linear infinite; }
 
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
-    .result-view {
-      animation: fadeInUp 0.4s ease;
-    }
+    .result-view { animation: fadeInUp 0.4s ease; }
 
     .result-icon {
-      width: 72px;
-      height: 72px;
+      width: 72px; height: 72px;
       margin: 0 auto 1.5rem;
       border-radius: 50%;
       display: flex;
@@ -132,60 +236,108 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       justify-content: center;
     }
 
-    .result-icon .material-symbols-outlined {
-      font-size: 2.75rem;
-    }
+    .result-icon .material-symbols-outlined { font-size: 2.75rem; }
 
-    .success-icon {
-      background: #f0fdf4;
-    }
+    .success-icon { background: #f0fdf4; }
+    .success-icon .material-symbols-outlined { color: #16a34a; }
 
-    .success-icon .material-symbols-outlined {
-      color: #16a34a;
-    }
+    .error-icon { background: #fef2f2; }
+    .error-icon .material-symbols-outlined { color: #dc2626; }
 
-    .error-icon {
-      background: #fef2f2;
-    }
-
-    .error-icon .material-symbols-outlined {
-      color: #dc2626;
-    }
+    .lock-icon { background: #eff6ff; }
+    .lock-icon .material-symbols-outlined { color: #1c5fa8; }
 
     .result-title {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #0a1a2f;
-      margin: 0 0 0.5rem;
+      font-size: 1.5rem; font-weight: 700;
+      color: #0a1a2f; margin: 0 0 0.5rem;
     }
 
-    .result-desc {
-      font-size: 1rem;
-      color: #475569;
-      margin: 0 0 0.5rem;
-      font-weight: 600;
+    .result-desc { font-size: 0.95rem; color: #475569; margin: 0 0 0.5rem; }
+    .result-info { font-size: 0.9rem; color: #64748b; margin: 0 0 2rem; }
+
+    /* Auth form */
+    .auth-form {
+      text-align: left;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
     }
 
-    .result-info {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin: 0 0 2rem;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .form-group {
+      display: flex;
+      flex-direction: column;
       gap: 0.5rem;
-      padding: 1rem 2rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem; font-weight: 600;
+      color: #2d486a;
+    }
+
+    .form-input {
+      width: 100%; height: 48px;
+      padding: 0 1rem;
+      border: 2px solid #e2e8f0;
       border-radius: 12px;
       font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
+      color: #0a1a2f;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
     }
+
+    .form-input:focus {
+      border-color: #1c5fa8;
+      box-shadow: 0 0 0 3px rgba(28, 95, 168, 0.15);
+    }
+
+    .form-input[readonly] {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .password-wrapper { position: relative; }
+
+    .password-toggle {
+      position: absolute; right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: #94a3b8;
+      padding: 0.5rem;
+      display: flex;
+    }
+
+    .password-toggle:hover { color: #1c5fa8; }
+
+    .form-message {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .form-message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .form-message[hidden] { display: none; }
+
+    .btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 0.5rem;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 1rem; font-weight: 600;
+      text-decoration: none; border: none;
+      cursor: pointer; transition: all 0.25s ease;
+      position: relative; font-family: inherit;
+    }
+
+    .btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .btn-primary {
       background: linear-gradient(135deg, #1c5fa8 0%, #155088 100%);
@@ -193,19 +345,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       box-shadow: 0 4px 14px rgba(28, 95, 168, 0.35);
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(28, 95, 168, 0.45);
     }
 
-    @media (max-width: 480px) {
-      .confirm-card {
-        padding: 2rem 1.5rem;
-      }
+    .btn-block { width: 100%; }
 
-      .result-title {
-        font-size: 1.5rem;
-      }
+    .btn-loader { position: absolute; display: flex; }
+    .btn-loader[hidden] { display: none; }
+    .btn-text[hidden] { display: none; }
+
+    @media (max-width: 480px) {
+      .confirm-card { padding: 2rem 1.5rem; }
     }
   </style>
 </AdminLayout>

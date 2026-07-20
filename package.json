@@ -9,10 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@fontsource/material-icons": "^5.2.7",
     "astro": "^6.4.8",
     "bootstrap-icons": "^1.13.1",
+    "firebase": "^12.16.0",
     "pdfjs-dist": "^6.1.200"
   }
 }

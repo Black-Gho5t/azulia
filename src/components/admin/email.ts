@@ -1,5 +1,3 @@
-import emailjs from '@emailjs/browser';
-
 const SERVICE_ID = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID;
 const TEMPLATE_ID = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID;
 const PUBLIC_KEY = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY;
@@ -20,31 +18,48 @@ export async function sendConfirmationEmail(
   confirmLink: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!isConfigured) {
-    console.warn(
-      '[EmailJS] No configurado. Establece PUBLIC_EMAILJS_SERVICE_ID, ' +
-      'PUBLIC_EMAILJS_TEMPLATE_ID y PUBLIC_EMAILJS_PUBLIC_KEY en .env'
-    );
-    return { success: false, error: 'EmailJS no configurado' };
+    const msg = 'EmailJS no configurado — faltan SERVICE_ID, TEMPLATE_ID o PUBLIC_KEY en .env';
+    console.warn('[EmailJS]', msg);
+    return { success: false, error: msg };
   }
 
+  const payload = {
+    service_id: SERVICE_ID,
+    template_id: TEMPLATE_ID,
+    user_id: PUBLIC_KEY,
+    template_params: {
+      to_email: ADMIN_EMAIL,
+      from_name: 'Azulia Admin',
+      logo: LOGO_HTML,
+      admin_name: name,
+      admin_email: email,
+      confirm_link: confirmLink,
+      subject: `Confirmar registro administrador - ${name}`,
+      site_name: 'Azulia Servicios Náuticos',
+      year: String(new Date().getFullYear()),
+    },
+  };
+
+  console.log('[EmailJS] Enviando a', ADMIN_EMAIL);
+
   try {
-    await emailjs.send(
-      SERVICE_ID,
-      TEMPLATE_ID,
-      {
-        to_email: ADMIN_EMAIL,
-        from_name: 'Azulia Admin',
-        logo: LOGO_HTML,
-        admin_name: name,
-        admin_email: email,
-        confirm_link: confirmLink,
-        subject: `Confirmar registro administrador - ${name}`
-      },
-      PUBLIC_KEY
-    );
-    return { success: true };
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      console.log('[EmailJS] Enviado OK');
+      return { success: true };
+    }
+
+    const text = await res.text();
+    const msg = `HTTP ${res.status}: ${text}`;
+    console.error('[EmailJS] Error:', msg);
+    return { success: false, error: msg };
   } catch (err: any) {
-    console.error('[EmailJS] Error al enviar:', err);
-    return { success: false, error: err?.text || err?.message || 'Error desconocido' };
+    console.error('[EmailJS] Error de red:', err);
+    return { success: false, error: err?.message || 'Error de conexión' };
   }
 }

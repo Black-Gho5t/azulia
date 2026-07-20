@@ -1,8 +1,18 @@
-const AUTH_KEY = 'azulia_admin_auth';
-const TOKEN_KEY = 'azulia_admin_token';
-const USERS_KEY = 'azulia_active_users';
-const PENDING_KEY = 'azulia_pending_users';
-const CONFIRM_EXPIRY_MS = 24 * 60 * 60 * 1000;
+import { auth, db } from '../../lib/firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as fbSignOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 export interface AdminUser {
   email: string;
@@ -13,28 +23,7 @@ export interface AdminUser {
 
 export interface AuthState {
   user: AdminUser | null;
-  token: string | null;
   isAuthenticated: boolean;
-}
-
-interface UserRecord extends AdminUser {
-  password: string;
-}
-
-interface PendingUser {
-  email: string;
-  name: string;
-  password: string;
-  token: string;
-  createdAt: number;
-}
-
-function generateSessionToken(): string {
-  return btoa(JSON.stringify({
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    iat: Date.now(),
-    nonce: Math.random().toString(36).substring(2, 10)
-  }));
 }
 
 function generateConfirmToken(): string {
@@ -46,159 +35,96 @@ function generateConfirmToken(): string {
   return token;
 }
 
-function parseToken(token: string): { exp: number } | null {
-  try {
-    return JSON.parse(atob(token));
-  } catch {
-    return null;
+async function buildAuthState(email: string): Promise<AuthState> {
+  const docSnap = await getDoc(doc(db, 'admins', email));
+  if (!docSnap.exists() || docSnap.data().status !== 'active') {
+    return { user: null, isAuthenticated: false };
   }
+  const data = docSnap.data();
+  return {
+    user: {
+      email,
+      name: data.name,
+      role: data.role,
+      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
+    },
+    isAuthenticated: true,
+  };
 }
 
-export function isTokenValid(token: string): boolean {
-  const payload = parseToken(token);
-  if (!payload) return false;
-  return payload.exp > Date.now();
-}
-
-export function getAuthState(): AuthState {
-  if (typeof window === 'undefined') {
-    return { user: null, token: null, isAuthenticated: false };
-  }
-  const token = localStorage.getItem(TOKEN_KEY);
-  const userStr = localStorage.getItem(AUTH_KEY);
-  if (!token || !userStr) {
-    return { user: null, token: null, isAuthenticated: false };
-  }
-  if (!isTokenValid(token)) {
-    clearAuth();
-    return { user: null, token: null, isAuthenticated: false };
-  }
-  try {
-    const user = JSON.parse(userStr) as AdminUser;
-    return { user, token, isAuthenticated: true };
-  } catch {
-    clearAuth();
-    return { user: null, token: null, isAuthenticated: false };
-  }
-}
-
-export function setAuth(user: AdminUser, token: string): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearAuth(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem(AUTH_KEY);
-  localStorage.removeItem(TOKEN_KEY);
-}
-
-export function requireAuth(redirectTo = '/admin/login'): AuthState {
-  const auth = getAuthState();
-  if (!auth.isAuthenticated && typeof window !== 'undefined') {
-    window.location.href = redirectTo;
-  }
-  return auth;
-}
-
-export function redirectIfAuthenticated(redirectTo = '/admin'): void {
-  const auth = getAuthState();
-  if (auth.isAuthenticated && typeof window !== 'undefined') {
-    window.location.href = redirectTo;
-  }
-}
-
-// --- Active users ---
-
-function loadActiveUsers(): Map<string, UserRecord> {
-  if (typeof window === 'undefined') return new Map();
-  try {
-    const stored = localStorage.getItem(USERS_KEY);
-    if (stored) {
-      const arr = JSON.parse(stored);
-      return new Map(arr.map((u: any) => [u.email, u]));
-    }
-  } catch {}
-  return new Map();
-}
-
-function saveActiveUsers(users: Map<string, UserRecord>): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(USERS_KEY, JSON.stringify(Array.from(users.values())));
-}
-
-// --- Pending users ---
-
-function loadPendingUsers(): Map<string, PendingUser> {
-  if (typeof window === 'undefined') return new Map();
-  try {
-    const stored = localStorage.getItem(PENDING_KEY);
-    if (stored) {
-      const arr = JSON.parse(stored);
-      return new Map(arr.map((u: any) => [u.email, u]));
-    }
-  } catch {}
-  return new Map();
-}
-
-function savePendingUsers(users: Map<string, PendingUser>): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(PENDING_KEY, JSON.stringify(Array.from(users.values())));
-}
-
-function cleanExpiredPending(): void {
-  const now = Date.now();
-  const pending = loadPendingUsers();
-  let changed = false;
-  for (const [email, user] of pending) {
-    if (now - user.createdAt > CONFIRM_EXPIRY_MS) {
-      pending.delete(email);
-      changed = true;
-    }
-  }
-  if (changed) savePendingUsers(pending);
-}
-
-// --- Default admin ---
-
-if (typeof window !== 'undefined' && !localStorage.getItem('azulia_admin_seeded')) {
-  const users = loadActiveUsers();
-  if (!users.has('admin@azulia.com')) {
-    users.set('admin@azulia.com', {
-      email: 'admin@azulia.com',
-      name: 'Administrador Principal',
-      role: 'superadmin',
-      createdAt: new Date().toISOString(),
-      password: 'azulia2024'
+export function getAuthState(): Promise<AuthState> {
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      unsub();
+      if (!user?.email) return resolve({ user: null, isAuthenticated: false });
+      resolve(await buildAuthState(user.email.toLowerCase()));
     });
-    saveActiveUsers(users);
-  }
-  localStorage.setItem('azulia_admin_seeded', 'true');
+    setTimeout(() => resolve({ user: null, isAuthenticated: false }), 4000);
+  });
 }
 
-// --- Public API ---
+export function onAuthChange(cb: (state: AuthState) => void): () => void {
+  return onAuthStateChanged(auth, async (user) => {
+    if (!user?.email) return cb({ user: null, isAuthenticated: false });
+    cb(await buildAuthState(user.email.toLowerCase()));
+  });
+}
 
-export async function authenticateUser(
-  email: string,
-  password: string
-): Promise<{ user: AdminUser; token: string } | null | { pending: true }> {
-  const users = loadActiveUsers();
-  const normalizedEmail = email.toLowerCase();
-  const record = users.get(normalizedEmail);
+export async function signIn(email: string, password: string): Promise<{ user: AdminUser } | { error: string; pending?: boolean }> {
+  const normalizedEmail = email.toLowerCase().trim();
 
-  if (!record || record.password !== password) {
-    // Check if user is pending confirmation
-    cleanExpiredPending();
-    const pending = loadPendingUsers();
-    if (pending.has(normalizedEmail)) {
-      return { pending: true };
+  try {
+    const cred = await signInWithEmailAndPassword(auth, normalizedEmail, password);
+    const adminRef = doc(db, 'admins', normalizedEmail);
+    const adminSnap = await getDoc(adminRef);
+
+    // First login for manually-created auth user (eg default admin)
+    if (!adminSnap.exists()) {
+      const newUser = {
+        name: cred.user.displayName || 'Administrador',
+        role: 'superadmin' as const,
+        status: 'active',
+        uid: cred.user.uid,
+        createdAt: serverTimestamp(),
+      };
+      await setDoc(adminRef, newUser);
+      return {
+        user: { email: normalizedEmail, name: newUser.name, role: newUser.role, createdAt: new Date().toISOString() },
+      };
     }
-    return null;
-  }
 
-  const { password: _, ...user } = record;
-  return { user, token: generateSessionToken() };
+    const data = adminSnap.data();
+    if (data.status === 'pending') {
+      await fbSignOut(auth);
+      return { error: 'Cuenta pendiente de confirmación. Revisa tu correo.', pending: true };
+    }
+    if (data.status !== 'active') {
+      await fbSignOut(auth);
+      return { error: 'Cuenta deshabilitada. Contacta al administrador.' };
+    }
+
+    return {
+      user: {
+        email: normalizedEmail,
+        name: data.name,
+        role: data.role,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
+      },
+    };
+  } catch (err: any) {
+    const code = err.code;
+    if (code?.includes('user-not-found') || code?.includes('wrong-password') || code?.includes('invalid-credential')) {
+      return { error: 'Credenciales incorrectas. Verifica tu correo y contraseña.' };
+    }
+    if (code === 'auth/too-many-requests') {
+      return { error: 'Demasiados intentos. Intenta más tarde.' };
+    }
+    return { error: 'Error de conexión. Intenta nuevamente.' };
+  }
+}
+
+export async function signOut(): Promise<void> {
+  await fbSignOut(auth);
 }
 
 export async function registerUser(
@@ -208,89 +134,63 @@ export async function registerUser(
 ): Promise<{ pendingToken: string; email: string; name: string } | { error: string }> {
   const normalizedEmail = email.toLowerCase().trim();
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-    return { error: 'Correo inválido' };
-  }
-  if (password.length < 8) {
-    return { error: 'La contraseña debe tener al menos 8 caracteres' };
-  }
-  if (name.trim().length < 2) {
-    return { error: 'El nombre debe tener al menos 2 caracteres' };
-  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) return { error: 'Correo inválido' };
+  if (password.length < 8) return { error: 'La contraseña debe tener al menos 8 caracteres' };
+  if (name.trim().length < 2) return { error: 'El nombre debe tener al menos 2 caracteres' };
 
-  // Check active users
-  const active = loadActiveUsers();
-  if (active.has(normalizedEmail)) {
-    return { error: 'Este correo ya está registrado' };
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
+    const token = generateConfirmToken();
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+    await setDoc(doc(db, 'admins', normalizedEmail), {
+      name: name.trim(),
+      role: 'admin',
+      status: 'pending',
+      uid: cred.user.uid,
+      createdAt: serverTimestamp(),
+    });
+
+    await setDoc(doc(db, 'confirm_tokens', token), {
+      email: normalizedEmail,
+      expiresAt,
+    });
+
+    await fbSignOut(auth);
+    return { pendingToken: token, email: normalizedEmail, name: name.trim() };
+  } catch (err: any) {
+    const code = err.code;
+    if (code === 'auth/email-already-in-use') return { error: 'Este correo ya está registrado' };
+    if (code === 'auth/weak-password') return { error: 'La contraseña es demasiado débil' };
+    return { error: 'Error al registrar. Intenta de nuevo.' };
   }
-
-  // Check pending users (remove old pending entry if exists)
-  cleanExpiredPending();
-  const pending = loadPendingUsers();
-  if (pending.has(normalizedEmail)) {
-    pending.delete(normalizedEmail);
-  }
-
-  const token = generateConfirmToken();
-  pending.set(normalizedEmail, {
-    email: normalizedEmail,
-    name: name.trim(),
-    password,
-    token,
-    createdAt: Date.now()
-  });
-  savePendingUsers(pending);
-
-  return { pendingToken: token, email: normalizedEmail, name: name.trim() };
 }
 
-export function confirmUser(token: string, email: string): { success: true; name: string } | { error: string } {
-  cleanExpiredPending();
-  const pending = loadPendingUsers();
+export async function confirmUser(token: string, email: string): Promise<{ success: true; name: string } | { error: string }> {
   const normalizedEmail = email.toLowerCase().trim();
-  const record = pending.get(normalizedEmail);
 
-  if (!record) {
-    return { error: 'Solicitud no encontrada o ya procesada' };
-  }
-  if (record.token !== token) {
-    return { error: 'Token de confirmación inválido' };
-  }
-  if (Date.now() - record.createdAt > CONFIRM_EXPIRY_MS) {
-    pending.delete(normalizedEmail);
-    savePendingUsers(pending);
-    return { error: 'El enlace ha expirado (24h). Regístrate de nuevo.' };
-  }
+  try {
+    const tokenRef = doc(db, 'confirm_tokens', token);
+    const tokenSnap = await getDoc(tokenRef);
 
-  // Move from pending to active
-  const active = loadActiveUsers();
-  if (active.has(normalizedEmail)) {
-    pending.delete(normalizedEmail);
-    savePendingUsers(pending);
-    return { error: 'Este correo ya está registrado' };
-  }
-
-  active.set(normalizedEmail, {
-    email: normalizedEmail,
-    name: record.name,
-    role: 'admin',
-    createdAt: new Date().toISOString(),
-    password: record.password
-  });
-  saveActiveUsers(active);
-  pending.delete(normalizedEmail);
-  savePendingUsers(pending);
-
-  return { success: true, name: record.name };
-}
-
-export function getPendingByToken(token: string): { email: string; name: string } | null {
-  cleanExpiredPending();
-  const pending = loadPendingUsers();
-  for (const [, record] of pending) {
-    if (record.token === token) {
-      return { email: record.email, name: record.name };
+    if (!tokenSnap.exists()) return { error: 'Enlace inválido o ya fue usado.' };
+    if (tokenSnap.data().email !== normalizedEmail) return { error: 'Token no corresponde a este correo.' };
+    if (Date.now() > tokenSnap.data().expiresAt) {
+      await deleteDoc(tokenRef);
+      return { error: 'El enlace ha expirado (24h). Regístrate de nuevo.' };
     }
+
+    const adminRef = doc(db, 'admins', normalizedEmail);
+    const adminSnap = await getDoc(adminRef);
+    if (!adminSnap.exists()) return { error: 'Cuenta no encontrada.' };
+
+    await updateDoc(adminRef, { status: 'active' });
+    await deleteDoc(tokenRef);
+
+    return { success: true, name: adminSnap.data().name };
+  } catch (err: any) {
+    console.error('[confirmUser] Error:', err);
+    const msg = err?.code ? `Error ${err.code}` : (err?.message || 'Error desconocido');
+    return { error: `Error al confirmar: ${msg}. Verifica la consola (F12) para más detalles.` };
   }
-  return null;
 }

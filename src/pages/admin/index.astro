@@ -96,14 +96,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   </div>
 
   <script>
-    import { getAuthState, requireAuth } from '../../components/admin/auth.ts';
+    import { getAuthState } from '../../components/admin/auth.ts';
 
-    const auth = requireAuth();
-
-    const greeting = document.getElementById('userGreeting');
-    if (greeting && auth.user) {
-      greeting.textContent = `Bienvenido, ${auth.user.name}`;
-    }
+    (async () => {
+      const auth = await getAuthState();
+      if (!auth.isAuthenticated) {
+        window.location.href = '/admin/login';
+        return;
+      }
+      const greeting = document.getElementById('userGreeting');
+      if (greeting && auth.user) {
+        greeting.textContent = `Bienvenido, ${auth.user.name}`;
+      }
+    })();
   </script>
 
   <style>

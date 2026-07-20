@@ -28,21 +28,31 @@ const { title } = Astro.props;
     </main>
 
     <script>
-      import { getAuthState, clearAuth } from '../components/admin/auth.ts';
+      import { auth, db } from '../lib/firebase';
+      import { onAuthStateChanged, signOut } from 'firebase/auth';
+      import { doc, getDoc } from 'firebase/firestore';
 
-      const auth = getAuthState();
-      if (!auth.isAuthenticated) {
-        const currentPath = window.location.pathname;
-        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+      const currentPath = window.location.pathname;
+      const publicPaths = ['/login', '/register', '/confirm'];
+
+      onAuthStateChanged(auth, async (user) => {
+        const isPublic = publicPaths.some(p => currentPath.includes(p));
+        if (!user && !isPublic) {
           window.location.href = '/admin/login';
         }
-      }
+        if (user && user.email && isPublic && !currentPath.includes('/confirm')) {
+          const snap = await getDoc(doc(db, 'admins', user.email.toLowerCase()));
+          if (snap.exists() && snap.data().status === 'active') {
+            window.location.href = '/admin';
+          }
+        }
+      });
 
       document.addEventListener('click', (e) => {
-        const logoutBtn = e.target.closest('[data-logout]');
-        if (logoutBtn) {
+        const btn = e.target.closest('[data-logout]');
+        if (btn) {
           e.preventDefault();
-          clearAuth();
+          signOut(auth);
           window.location.href = '/admin/login';
         }
       });
