@@ -1,0 +1,99 @@
+---
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "../assets/styles/admin.css";
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <title>{title || 'Azulia Admin'}</title>
+  </head>
+  <body>
+    <div class="admin-bg">
+      <img src="/src/assets/photos_azulia_webp/upscale_azulia_2.webp" alt="" aria-hidden="true" />
+      <div class="admin-overlay"></div>
+    </div>
+    <main class="admin-main">
+      <slot />
+    </main>
+
+    <script>
+      import { getAuthState, clearAuth } from '../components/admin/auth.ts';
+
+      const auth = getAuthState();
+      if (!auth.isAuthenticated) {
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+          window.location.href = '/admin/login';
+        }
+      }
+
+      document.addEventListener('click', (e) => {
+        const logoutBtn = e.target.closest('[data-logout]');
+        if (logoutBtn) {
+          e.preventDefault();
+          clearAuth();
+          window.location.href = '/admin/login';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .admin-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .admin-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .admin-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(10, 26, 47, 0.85) 0%,
+      rgba(10, 40, 60, 0.9) 50%,
+      rgba(5, 20, 35, 0.95) 100%
+    );
+  }
+
+  .admin-main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+</style>

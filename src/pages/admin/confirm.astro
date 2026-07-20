@@ -1,0 +1,211 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Confirmar cuenta - Azulia Admin">
+  <div class="confirm-container">
+    <div class="confirm-card" id="statusCard">
+      <div class="confirm-spinner" id="spinner">
+        <span class="material-symbols-outlined spinning">sync</span>
+        <p>Verificando enlace...</p>
+      </div>
+
+      <div id="successView" class="result-view" hidden>
+        <div class="result-icon success-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+        </div>
+        <h1 class="result-title">Cuenta confirmada</h1>
+        <p class="result-desc" id="successName"></p>
+        <p class="result-info">Ya puedes iniciar sesión con tu correo y contraseña.</p>
+        <a href="/admin/login" class="btn btn-primary">Iniciar sesión</a>
+      </div>
+
+      <div id="errorView" class="result-view" hidden>
+        <div class="result-icon error-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">cancel</span>
+        </div>
+        <h1 class="result-title">Error de confirmación</h1>
+        <p class="result-desc" id="errorMsg"></p>
+        <a href="/admin/register" class="btn btn-primary">Intentar de nuevo</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      const email = params.get('email');
+
+      const { confirmUser } = await import('../../components/admin/auth.ts');
+
+      const spinner = document.getElementById('spinner')!;
+      const successView = document.getElementById('successView')!;
+      const errorView = document.getElementById('errorView')!;
+      const successName = document.getElementById('successName')!;
+      const errorMsg = document.getElementById('errorMsg')!;
+
+      if (!token || !email) {
+        spinner.hidden = true;
+        errorView.hidden = false;
+        errorMsg.textContent = 'Enlace inválido. Falta el token o el correo.';
+        return;
+      }
+
+      // Small delay so spinner is visible
+      await new Promise(r => setTimeout(r, 600));
+
+      const result = confirmUser(token, email);
+
+      spinner.hidden = true;
+
+      if ('success' in result) {
+        successView.hidden = false;
+        successName.textContent = `¡Bienvenido, ${result.name}!`;
+      } else {
+        errorView.hidden = false;
+        errorMsg.textContent = result.error;
+      }
+    })();
+  </script>
+
+  <style>
+    .confirm-container {
+      width: 100%;
+      max-width: 440px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirm-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(10, 26, 47, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .confirm-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: #64748b;
+    }
+
+    .confirm-spinner .material-symbols-outlined {
+      font-size: 3rem;
+      color: #1c5fa8;
+    }
+
+    .confirm-spinner p {
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .result-view {
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .result-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-icon .material-symbols-outlined {
+      font-size: 2.75rem;
+    }
+
+    .success-icon {
+      background: #f0fdf4;
+    }
+
+    .success-icon .material-symbols-outlined {
+      color: #16a34a;
+    }
+
+    .error-icon {
+      background: #fef2f2;
+    }
+
+    .error-icon .material-symbols-outlined {
+      color: #dc2626;
+    }
+
+    .result-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0a1a2f;
+      margin: 0 0 0.5rem;
+    }
+
+    .result-desc {
+      font-size: 1rem;
+      color: #475569;
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+
+    .result-info {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0 0 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1c5fa8 0%, #155088 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(28, 95, 168, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(28, 95, 168, 0.45);
+    }
+
+    @media (max-width: 480px) {
+      .confirm-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .result-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</AdminLayout>

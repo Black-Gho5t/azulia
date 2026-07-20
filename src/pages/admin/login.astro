@@ -1,0 +1,548 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Iniciar Sesión - Azulia Admin">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <img src="/src/assets/Designer.png" alt="Azulia Logo" class="auth-logo-img" />
+        </div>
+        <h1>Iniciar Sesión</h1>
+        <p class="auth-subtitle">Panel de Administración</p>
+      </div>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <div class="input-wrapper">
+            <span class="material-symbols-outlined input-icon" aria-hidden="true">mail</span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tu@correo.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <span class="form-error" data-for="email">Ingresa un correo válido</span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <span class="material-symbols-outlined input-icon" aria-hidden="true">lock</span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+              minlength="8"
+            />
+            <button type="button" class="toggle-password" aria-label="Mostrar/ocultar contraseña">
+              <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+            </button>
+          </div>
+          <span class="form-error" data-for="password">Mínimo 8 caracteres</span>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" name="remember" />
+            <span class="checkmark"></span>
+            Recordarme
+          </label>
+          <a href="/admin/forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="btn-text">Iniciar sesión</span>
+          <span class="btn-loader" aria-hidden="true">
+            <span class="material-symbols-outlined spinning">refresh</span>
+          </span>
+        </button>
+
+        <div id="formError" class="form-message error" role="alert" hidden></div>
+        <div id="formSuccess" class="form-message success" role="status" hidden></div>
+      </form>
+
+      <div class="auth-footer">
+        <p>¿No tienes cuenta? <a href="/admin/register">Crear cuenta de administrador</a></p>
+        <p class="demo-hint">Demo prueba: admin@azulia.com / azulia2024</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { authenticateUser, setAuth } from '../../components/admin/auth.ts';
+    import { getAuthState } from '../../components/admin/auth.ts';
+
+    // Redirect if already authenticated
+    const auth = getAuthState();
+    if (auth.isAuthenticated) {
+      window.location.href = '/admin';
+    }
+
+    const form = document.getElementById('loginForm') as HTMLFormElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const togglePassword = form.querySelector('.toggle-password') as HTMLButtonElement;
+    const errorEl = document.getElementById('formError') as HTMLElement;
+    const successEl = document.getElementById('formSuccess') as HTMLElement;
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      togglePassword.querySelector('.material-symbols-outlined')!.textContent = 
+        type === 'password' ? 'visibility' : 'visibility_off';
+    });
+
+    // Real-time validation
+    emailInput.addEventListener('blur', () => validateEmail(emailInput));
+    passwordInput.addEventListener('blur', () => validatePassword(passwordInput));
+    emailInput.addEventListener('input', () => clearError(emailInput));
+    passwordInput.addEventListener('input', () => clearError(passwordInput));
+
+    function validateEmail(input: HTMLInputElement): boolean {
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+      toggleError(input, isValid, 'Ingresa un correo válido');
+      return isValid;
+    }
+
+    function validatePassword(input: HTMLInputElement): boolean {
+      const isValid = input.value.length >= 8;
+      toggleError(input, isValid, 'Mínimo 8 caracteres');
+      return isValid;
+    }
+
+    function toggleError(input: HTMLInputElement, isValid: boolean, message: string) {
+      const formGroup = input.closest('.form-group')!;
+      const errorEl = formGroup.querySelector('.form-error') as HTMLElement;
+      formGroup.classList.toggle('has-error', !isValid && input.value.length > 0);
+      formGroup.classList.toggle('has-success', isValid && input.value.length > 0);
+    }
+
+    function clearError(input: HTMLInputElement) {
+      const formGroup = input.closest('.form-group')!;
+      formGroup.classList.remove('has-error', 'has-success');
+    }
+
+    function showMessage(el: HTMLElement, message: string) {
+      el.textContent = message;
+      el.hidden = false;
+    }
+
+    function hideMessage(el: HTMLElement) {
+      el.hidden = true;
+      el.textContent = '';
+    }
+
+    function setLoading(loading: boolean) {
+      submitBtn.disabled = loading;
+      const btnText = submitBtn.querySelector('.btn-text');
+      const btnLoader = submitBtn.querySelector('.btn-loader');
+      if (btnText) btnText.classList.toggle('hidden', loading);
+      if (btnLoader) btnLoader.classList.toggle('hidden', !loading);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideMessage(errorEl);
+      hideMessage(successEl);
+
+      const emailValid = validateEmail(emailInput);
+      const passwordValid = validatePassword(passwordInput);
+
+      if (!emailValid || !passwordValid) {
+        showMessage(errorEl, 'Por favor corrige los errores del formulario');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const result = await authenticateUser(
+          emailInput.value.trim().toLowerCase(),
+          passwordInput.value
+        );
+
+        if (result && 'pending' in result) {
+          showMessage(errorEl, 'Esta cuenta está pendiente de confirmación. Revisa tu correo para activarla.');
+        } else if (result) {
+          setAuth(result.user, result.token);
+          showMessage(successEl, 'Inicio de sesión exitoso. Redirigiendo...');
+          
+          setTimeout(() => {
+            window.location.href = '/admin';
+          }, 1000);
+        } else {
+          showMessage(errorEl, 'Credenciales incorrectas. Verifica tu correo y contraseña.');
+        }
+      } catch (err) {
+        showMessage(errorEl, 'Error de conexión. Intenta nuevamente.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</AdminLayout>
+
+<style>
+  .auth-container {
+    width: 100%;
+    max-width: 420px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    box-shadow: 
+      0 25px 50px -12px rgba(10, 26, 47, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .auth-logo {
+    margin-bottom: 1rem;
+  }
+
+  .auth-logo-img {
+    height: 72px;
+    width: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .auth-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0a1a2f;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .auth-subtitle {
+    color: #6b7c93;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d486a;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #94a3b8;
+    font-size: 1.25rem;
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+
+  .input-wrapper:focus-within .input-icon {
+    color: #1c5fa8;
+  }
+
+  .input-wrapper input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #0a1a2f;
+    background: #fff;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+
+  .input-wrapper input::placeholder {
+    color: #94a3b8;
+  }
+
+  .input-wrapper input:hover {
+    border-color: #cbd5e1;
+  }
+
+  .input-wrapper:focus-within input {
+    border-color: #1c5fa8;
+    box-shadow: 0 0 0 3px rgba(28, 95, 168, 0.15);
+  }
+
+  .form-group.has-error input {
+    border-color: #ef4444;
+  }
+
+  .form-group.has-error:focus-within input {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  }
+
+  .form-group.has-success input {
+    border-color: #22c55e;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .toggle-password:hover {
+    color: #1c5fa8;
+  }
+
+  .form-error {
+    font-size: 0.8rem;
+    color: #ef4444;
+    min-height: 1.25rem;
+  }
+
+  .form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+  }
+
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+
+  .checkbox-wrapper input {
+    width: 18px;
+    height: 18px;
+    accent-color: #1c5fa8;
+    cursor: pointer;
+  }
+
+  .forgot-link {
+    font-size: 0.9rem;
+    color: #1c5fa8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .forgot-link:hover {
+    color: #0f4f8c;
+    text-decoration: underline;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1c5fa8 0%, #155088 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(28, 95, 168, 0.35);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(28, 95, 168, 0.45);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  .btn-loader {
+    position: absolute;
+    display: flex;
+    align-items: center;
+  }
+
+  .btn-loader.hidden {
+    display: none;
+  }
+
+  .spinning {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .btn-text.hidden {
+    display: none;
+  }
+
+  .form-message {
+    padding: 0.875rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideIn 0.3s ease;
+  }
+
+  .form-message[hidden] {
+    display: none;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-message.error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  .form-message.success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+
+  .form-message::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background-size: contain;
+    background-repeat: no-reapter;
+    background-position: center;
+  }
+
+  .form-message.error::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='15' y1='9' x2='9' y2='15'/%3E%3Cline x1='9' y1='9' x2='15' y2='15'/%3E%3C/svg%3E");
+  }
+
+  .form-message.success::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpolyline points='22 4 12 14.01 9 11.01'/%3E%3C/svg%3E");
+  }
+
+  .auth-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+  }
+
+  .auth-footer p {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0.5rem 0;
+  }
+
+  .auth-footer a {
+    color: #1c5fa8;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .auth-footer a:hover {
+    color: #0f4f8c;
+    text-decoration: underline;
+  }
+
+  .demo-hint {
+    font-size: 0.8rem !important;
+    color: #94a3b8 !important;
+    font-family: 'Monaco', 'Menlo', monospace;
+    background: #f1f5f9;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 1rem !important;
+  }
+
+  @media (max-width: 480px) {
+    .auth-card {
+      padding: 2rem 1.5rem;
+      border-radius: 20px;
+    }
+
+    .auth-header {
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo-img {
+      height: 56px;
+    }
+  }
+</style>

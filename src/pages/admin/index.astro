@@ -1,3 +1,308 @@
 ---
-
+import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
+
+<AdminLayout title="Panel - Azulia Admin">
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <div class="header-left">
+        <img src="/src/assets/Designer.png" alt="Azulia Logo" class="header-logo" />
+        <div>
+          <h1>Panel de Administración</h1>
+          <p class="header-subtitle" id="userGreeting">Bienvenido</p>
+        </div>
+      </div>
+      <button class="btn-logout" data-logout>
+        <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+        Cerrar sesión
+      </button>
+    </div>
+
+    <div class="dashboard-grid">
+      <article class="stat-card">
+        <div class="stat-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">—</span>
+          <span class="stat-label">Clientes</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">tour</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">—</span>
+          <span class="stat-label">Tours</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">hotel</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">—</span>
+          <span class="stat-label">Hoteles</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">—</span>
+          <span class="stat-label">Reservaciones</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="dashboard-sections">
+      <section class="section-card">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined" aria-hidden="true">explore</span>
+          Gestión de Tours
+        </h2>
+        <p class="section-desc">Administra paquetes turísticos, precios y disponibilidad.</p>
+      </section>
+
+      <section class="section-card">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined" aria-hidden="true">bed</span>
+          Gestión de Hoteles
+        </h2>
+        <p class="section-desc">Administra hoteles, habitaciones y tarifas.</p>
+      </section>
+
+      <section class="section-card">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span>
+          Reservaciones
+        </h2>
+        <p class="section-desc">Revisa y administra reservaciones de clientes.</p>
+      </section>
+
+      <section class="section-card">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined" aria-hidden="true">settings</span>
+          Configuración
+        </h2>
+        <p class="section-desc">Ajustes del sistema y administradores.</p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    import { getAuthState, requireAuth } from '../../components/admin/auth.ts';
+
+    const auth = requireAuth();
+
+    const greeting = document.getElementById('userGreeting');
+    if (greeting && auth.user) {
+      greeting.textContent = `Bienvenido, ${auth.user.name}`;
+    }
+  </script>
+
+  <style>
+    .dashboard {
+      width: 100%;
+      max-width: 900px;
+      animation: dashEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes dashEntrance {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo {
+      height: 48px;
+      width: auto;
+    }
+
+    .header-left h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0a1a2f;
+      margin: 0;
+    }
+
+    .header-subtitle {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0.25rem 0 0;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: #fef2f2;
+    }
+
+    .btn-logout .material-symbols-outlined {
+      font-size: 1.25rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.75rem;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: #1c5fa8;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0a1a2f;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    .dashboard-sections {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .section-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0a1a2f;
+      margin: 0 0 0.5rem;
+    }
+
+    .section-title .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: #1c5fa8;
+    }
+
+    .section-desc {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-sections {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .header-left {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</AdminLayout>
