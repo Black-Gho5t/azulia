@@ -1,0 +1,298 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/navigation.astro";
+import Footer from "../../components/footer.astro";
+import CarRentalModal from "../../components/car_rental_modal.astro";
+import {
+    carRentalBenefits,
+    carRentalFleet,
+    carRentalHeroImages,
+} from "../../components/data/transportation/car_rental_data";
+import "../../assets/styles/car_rental.css";
+---
+
+<Layout>
+    <Navbar />
+
+    <main class="car-rental-page">
+        <section class="car-hero">
+            <div class="car-hero-images" data-car-hero-track>
+                {carRentalHeroImages.map((src, index) => (
+                    <img
+                        src={src}
+                        alt={`Renta de autos en Bacalar ${index + 1}`}
+                        class:list={["car-hero-image", { active: index === 0 }]}
+                    />
+                ))}
+            </div>
+            <div class="car-hero-overlay"></div>
+            <div class="car-hero-content">
+                <span class="car-hero-tag">
+                    <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+                    Renta de autos Azulia
+                </span>
+                <h1>Conduce Bacalar con estilo, seguridad y libertad total</h1>
+                <p>
+                    Encuentra el auto ideal para tus rutas por la laguna, escapadas de fin de
+                    semana o viajes ejecutivos. Reserva facil y soporte local para todo tu trayecto.
+                </p>
+                <a href="#flota-autos" class="car-hero-cta">
+                    Ver flota disponible
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="car-benefits">
+            <div class="car-benefits-grid">
+                {carRentalBenefits.map((benefit) => (
+                    <article class="benefit-card">
+                        <span class="material-symbols-outlined" aria-hidden="true">{benefit.icon}</span>
+                        <h2>{benefit.title}</h2>
+                        <p>{benefit.description}</p>
+                    </article>
+                ))}
+            </div>
+        </section>
+
+        <section class="fleet-section" id="flota-autos">
+            <div class="fleet-inner">
+                <header class="fleet-heading">
+                    <span>Flota destacada</span>
+                    <h2>Modelos listos para tu proximo viaje</h2>
+                </header>
+
+                <div class="fleet-grid">
+                    {carRentalFleet.map((car) => (
+                        <article class="car-card" data-car-id={car.id} role="button" tabindex="0">
+                            <div class="car-card-top">
+                                <span class="car-chip">{car.highlight}</span>
+                                <img
+                                    src={car.images[0]}
+                                    alt={`${car.model} ${car.year}`}
+                                    class="car-image"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer"
+                                />
+                            </div>
+                            <div class="car-card-body">
+                                <h3>{car.model}</h3>
+                                <p class="car-model-year">Modelo {car.year} · {car.type}</p>
+                                <div class="car-rating">
+                                    <span class="stars">{"★".repeat(Math.round(car.rating))}</span>
+                                    <span class="score">{car.rating.toFixed(1)} / 5</span>
+                                </div>
+                                <div class="car-spec-row">
+                                    <span>{car.seats} pasajeros</span>
+                                    <span>{car.doors} puertas</span>
+                                    <span>{car.transmission}</span>
+                                </div>
+                                <div class="car-card-footer">
+                                    <p class="car-price">${car.pricePerDay.toLocaleString("es-MX")} <small>/ dia</small></p>
+                                    <button class="car-card-btn" type="button" data-open-car-modal={car.id}>
+                                        Ver detalle
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+
+                <div class="fleet-pagination" aria-label="Paginacion de flota">
+                    <button type="button" class="pagination-btn" data-page-prev>
+                        <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                        Anterior
+                    </button>
+                    <div class="pagination-pages" data-pagination-pages></div>
+                    <button type="button" class="pagination-btn" data-page-next>
+                        Siguiente
+                        <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                    </button>
+                </div>
+                <p class="fleet-page-status" data-page-status aria-live="polite"></p>
+            </div>
+        </section>
+
+        {carRentalFleet.map((car) => (
+            <CarRentalModal car={car} />
+        ))}
+    </main>
+
+    <Footer />
+</Layout>
+
+<script>
+    const carHeroImages = document.querySelectorAll<HTMLImageElement>(".car-hero-image");
+    const carCards = Array.from(document.querySelectorAll<HTMLElement>(".car-card"));
+    const fleetGrid = document.querySelector<HTMLElement>(".fleet-grid");
+    const pageContainer = document.querySelector<HTMLElement>("[data-pagination-pages]");
+    const prevPageBtn = document.querySelector<HTMLButtonElement>("[data-page-prev]");
+    const nextPageBtn = document.querySelector<HTMLButtonElement>("[data-page-next]");
+    const pageStatus = document.querySelector<HTMLElement>("[data-page-status]");
+    let currentPage = 1;
+    let cardsPerPage = 5;
+    let totalPages = 1;
+    let currentHero = 0;
+
+    if (carHeroImages.length > 1) {
+        setInterval(() => {
+            carHeroImages[currentHero].classList.remove("active");
+            currentHero = (currentHero + 1) % carHeroImages.length;
+            carHeroImages[currentHero].classList.add("active");
+        }, 6200);
+    }
+
+    const calculateCardsPerPage = () => {
+        if (!fleetGrid) return 5;
+
+        const minCardWidth = 250;
+        const columns = Math.max(1, Math.floor(fleetGrid.clientWidth / minCardWidth));
+        const rows = window.innerWidth < 640 ? 3 : 2;
+
+        return Math.max(1, columns * rows);
+    };
+
+    const recalculatePagination = () => {
+        cardsPerPage = calculateCardsPerPage();
+        totalPages = Math.max(1, Math.ceil(carCards.length / cardsPerPage));
+        if (currentPage > totalPages) currentPage = totalPages;
+    };
+
+    const renderPagination = () => {
+        if (!pageContainer) return;
+        pageContainer.innerHTML = "";
+
+        for (let page = 1; page <= totalPages; page += 1) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = String(page);
+            button.className = "pagination-number";
+            button.dataset.page = String(page);
+            button.classList.toggle("active", page === currentPage);
+            button.addEventListener("click", () => {
+                currentPage = page;
+                updateVisibleCards();
+            });
+            pageContainer.appendChild(button);
+        }
+    };
+
+    const updateVisibleCards = () => {
+        recalculatePagination();
+
+        const start = (currentPage - 1) * cardsPerPage;
+        const end = start + cardsPerPage;
+
+        carCards.forEach((card, index) => {
+            card.style.display = index >= start && index < end ? "block" : "none";
+        });
+
+        prevPageBtn?.toggleAttribute("disabled", currentPage === 1);
+        nextPageBtn?.toggleAttribute("disabled", currentPage === totalPages);
+
+        if (pageStatus) {
+            pageStatus.textContent = `Pagina ${currentPage} de ${totalPages} · ${cardsPerPage} autos por vista · ${carCards.length} modelos disponibles`;
+        }
+
+        renderPagination();
+    };
+
+    prevPageBtn?.addEventListener("click", () => {
+        if (currentPage <= 1) return;
+        currentPage -= 1;
+        updateVisibleCards();
+    });
+
+    nextPageBtn?.addEventListener("click", () => {
+        if (currentPage >= totalPages) return;
+        currentPage += 1;
+        updateVisibleCards();
+    });
+
+    window.addEventListener("resize", () => {
+        updateVisibleCards();
+    });
+
+    updateVisibleCards();
+
+    function openCarModal(id: string) {
+        const modal = document.getElementById(`car-modal-${id}`);
+        if (!modal) return;
+        modal.classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeCarModal(modal: HTMLElement) {
+        modal.classList.remove("open");
+        document.body.style.overflow = "";
+    }
+
+    document.querySelectorAll<HTMLElement>(".car-card").forEach((card) => {
+        const id = card.dataset.carId;
+        if (!id) return;
+
+        card.addEventListener("click", () => openCarModal(id));
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openCarModal(id);
+            }
+        });
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-open-car-modal]").forEach((button) => {
+        const id = button.dataset.openCarModal;
+        if (!id) return;
+
+        button.addEventListener("click", (event) => {
+            event.stopPropagation();
+            openCarModal(id);
+        });
+    });
+
+    document.querySelectorAll<HTMLElement>(".car-modal-overlay").forEach((modal) => {
+        const closeBtn = modal.querySelector<HTMLButtonElement>(".car-modal-close");
+        const images = modal.querySelectorAll<HTMLImageElement>(".car-modal-img");
+        const prevBtn = modal.querySelector<HTMLButtonElement>(".car-modal-prev");
+        const nextBtn = modal.querySelector<HTMLButtonElement>(".car-modal-next");
+        const counter = modal.querySelector<HTMLElement>(".car-modal-counter");
+
+        let current = 0;
+
+        const showImage = (index: number) => {
+            images.forEach((img, i) => img.classList.toggle("active", i === index));
+            if (counter) counter.textContent = `${index + 1} / ${images.length}`;
+        };
+
+        prevBtn?.addEventListener("click", () => {
+            current = current > 0 ? current - 1 : images.length - 1;
+            showImage(current);
+        });
+
+        nextBtn?.addEventListener("click", () => {
+            current = current < images.length - 1 ? current + 1 : 0;
+            showImage(current);
+        });
+
+        closeBtn?.addEventListener("click", () => {
+            current = 0;
+            showImage(0);
+            closeCarModal(modal);
+        });
+
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                current = 0;
+                showImage(0);
+                closeCarModal(modal);
+            }
+        });
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+
+        const openedModal = document.querySelector<HTMLElement>(".car-modal-overlay.open");
+        if (openedModal) closeCarModal(openedModal);
+    });
+</script>

@@ -1,0 +1,106 @@
+---
+import type { CarRentalItem } from "./data/transportation/car_rental_data";
+
+interface Props {
+    car: CarRentalItem;
+}
+
+const { car } = Astro.props;
+const stars = "★".repeat(Math.round(car.rating));
+---
+
+<div id={`car-modal-${car.id}`} class="car-modal-overlay" role="dialog" aria-modal="true" aria-labelledby={`car-modal-title-${car.id}`}>
+    <div class="car-modal-content">
+        <button class="car-modal-close" type="button" aria-label="Cerrar modal">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="car-modal-gallery">
+            {car.images.map((img, index) => (
+                <img
+                    src={img}
+                    alt={`${car.model} ${index + 1}`}
+                    class:list={["car-modal-img", { active: index === 0 }]}
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                />
+            ))}
+            {car.images.length > 1 && (
+                <div class="car-modal-nav">
+                    <button class="car-modal-prev" type="button" aria-label="Imagen anterior">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <span class="car-modal-counter">1 / {car.images.length}</span>
+                    <button class="car-modal-next" type="button" aria-label="Imagen siguiente">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            )}
+        </div>
+
+        <div class="car-modal-details">
+            <p class="car-modal-eyebrow">{car.type} {car.year}</p>
+            <h3 id={`car-modal-title-${car.id}`}>{car.model}</h3>
+            <div class="car-modal-rating">
+                <span class="stars">{stars}</span>
+                <span>{car.rating.toFixed(1)} / 5</span>
+            </div>
+
+            <p class="car-modal-description">{car.shortDescription}</p>
+
+            <div class="car-modal-spec-grid">
+                <div class="spec-item">
+                    <span>Motor</span>
+                    <strong>{car.engine}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Pasajeros</span>
+                    <strong>{car.seats}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Consumo</span>
+                    <strong>{car.consumption}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Puertas</span>
+                    <strong>{car.doors}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Tipo</span>
+                    <strong>{car.type}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Transmision</span>
+                    <strong>{car.transmission}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Traccion</span>
+                    <strong>{car.drivetrain}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Combustible</span>
+                    <strong>{car.fuel}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Equipaje</span>
+                    <strong>{car.luggage}</strong>
+                </div>
+                <div class="spec-item">
+                    <span>Velocidad maxima</span>
+                    <strong>{car.topSpeed}</strong>
+                </div>
+            </div>
+
+            <div class="car-modal-feature-list">
+                {car.features.map((feature) => (
+                    <span>{feature}</span>
+                ))}
+            </div>
+
+            <div class="car-modal-footer">
+                <p>Desde <strong>${car.pricePerDay.toLocaleString("es-MX")} MXN</strong> / dia</p>
+                <a href="/wha-options" class="car-modal-cta">Reservar este auto</a>
+            </div>
+        </div>
+    </div>
+</div>
