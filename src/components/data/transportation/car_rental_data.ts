@@ -68,8 +68,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Mas reservado en Bacalar",
         features: ["Apple CarPlay", "Camara trasera", "6 airbags", "Control crucero"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/2016/04/Volkswagen-PNG-Image.png",
-            "https://www.pngall.com/wp-content/uploads/2016/04/Volkswagen-Car-PNG-HD.png",
+            "/src/assets/autos_generic/jetta1.webp",
+            "/src/assets/autos_generic/jetta2.webp",
         ],
     },
     {
@@ -92,8 +92,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Confort ejecutivo",
         features: ["Asientos de piel", "Sensores 360", "Frenado asistido", "Cargador inalambrico"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/10/Toyota-Camry-PNG-Photo.png",
-            "https://www.pngall.com/wp-content/uploads/10/Toyota-Camry-PNG-HD-Image.png",
+            "/src/assets/autos_generic/camry1.jpg",
+            "/src/assets/autos_generic/camry2.avif",
         ],
     },
     {
@@ -116,8 +116,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Alta capacidad de carga",
         features: ["4x4", "Asistente de remolque", "Pantalla 12\"", "Camara de caja"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/5/Ford-Pickup-Truck-PNG-Free-Image.png",
-            "https://www.pngall.com/wp-content/uploads/5/Ford-Pickup-PNG-Download-Image.png",
+            "/src/assets/autos_generic/f150_1.avif",
+            "/src/assets/autos_generic/f150_2.jpg",
         ],
     },
     {
@@ -140,8 +140,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Economico y agil",
         features: ["Wifi a bordo", "6 airbags", "Pantalla tactil", "Control de estabilidad"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/2016/04/Chevrolet-PNG-HD.png",
-            "https://www.pngall.com/wp-content/uploads/2016/04/Chevrolet-Car-PNG-Clipart.png",
+            "/src/assets/autos_generic/onix1.avif",
+            "/src/assets/autos_generic/onix2.jpg",
         ],
     },
     {
@@ -164,8 +164,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "SUV recomendada",
         features: ["Asistente de carril", "Techo panoramico", "Camara 360", "Drive modes"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/13/Hyundai-Tucson-PNG-Image.png",
-            "https://www.pngall.com/wp-content/uploads/13/Hyundai-Tucson-PNG-Clipart.png",
+            "/src/assets/autos_generic/Tucson1.jpg",
+            "/src/assets/autos_generic/Tucson2.webp",
         ],
     },
     {
@@ -188,8 +188,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Amplia para familia",
         features: ["7 plazas", "Sensores perimetrales", "Climatizacion dual", "Puerta electrica"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/13/Nissan-X-Trail-PNG-Photo.png",
-            "https://www.pngall.com/wp-content/uploads/13/Nissan-X-Trail-PNG-Pic.png",
+            "/src/assets/autos_generic/x-trail1.avif",
+            "/src/assets/autos_generic/x-trail2.jpg",
         ],
     },
     {
@@ -212,8 +212,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "SUV premium",
         features: ["Head-up display", "Asientos calefactables", "Frenado autonomo", "Bose audio"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/13/Mazda-CX5-PNG-Photo.png",
-            "https://www.pngall.com/wp-content/uploads/13/Mazda-CX5-PNG-HD-Image.png",
+            "/src/assets/autos_generic/CX-5_1.jpeg",
+            "/src/assets/autos_generic/CX-5_2.jpg",
         ],
     },
     {
@@ -236,8 +236,8 @@ export const carRentalFleet: CarRentalItem[] = [
         highlight: "Espacio superior",
         features: ["Pantalla dual", "Asistente de colision", "Carga USB-C", "Control crucero adaptativo"],
         images: [
-            "https://www.pngall.com/wp-content/uploads/13/Kia-Sportage-PNG-Image.png",
-            "https://www.pngall.com/wp-content/uploads/13/Kia-Sportage-PNG-Clipart.png",
+            "/src/assets/autos_generic/sportage1.jpg",
+            "/src/assets/autos_generic/sportage2.avif",
         ],
     },
     {
