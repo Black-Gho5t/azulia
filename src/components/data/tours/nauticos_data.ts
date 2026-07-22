@@ -9,6 +9,18 @@ import pontom from "../../../assets/photos_azulia_webp/ponton/pontom_8.webp";
 import pontom2 from "../../../assets/photos_azulia_webp/ponton/pontom_2.webp";
 import kayak from "../../../assets/photos_azulia_webp/Kayak/kayak (3).webp";
 import paddle from "../../../assets/photos_azulia_webp/Paddle/paddle (4).webp";
+import velero3 from "../../../assets/photos_azulia_webp/velero/velero_3.webp";
+import velero6 from "../../../assets/photos_azulia_webp/velero/velero_6.webp";
+import kayak1 from "../../../assets/photos_azulia_webp/Kayak/kayak (1).webp";
+import kayak2 from "../../../assets/photos_azulia_webp/Kayak/kayak (2).webp";
+import paddle1 from "../../../assets/photos_azulia_webp/Paddle/paddle (1).webp";
+import paddle2 from "../../../assets/photos_azulia_webp/Paddle/paddle (2).webp";
+import moto from "../../../assets/photos_azulia_webp/upscale_azulia_1.webp";
+import moto2 from "../../../assets/photos_azulia_webp/upscale_azulia_2.webp";
+import snorkel from "../../../assets/photos_azulia_webp/Mahahual/mahahual (2).webp";
+import snorkel2 from "../../../assets/photos_azulia_webp/Mahahual/mahahual (4).webp";
+import lancha from "../../../assets/photos_azulia_webp/velero/velero_8.webp";
+import lancha2 from "../../../assets/photos_azulia_webp/ponton/pontom_3.webp";
 
 export interface Tour {
     id: string;
@@ -67,21 +79,21 @@ export const nauticosTours: Tour[] = [
         name: "Snorkel",
         description: "Explora los arrecifes del sur de Mexico, decubre un nuevo mundo en el fondo de las aguas",
         icon: "scuba_diving",
-        image: kayak,
+        image: snorkel,
     },
     {
-        id: "lancha", // Corregido ID duplicado temporalmente aquí para evitar conflictos de renderizado
+        id: "lancha",
         name: "Lancha",
         description: "Explora los arrecifes del sur de Mexico, decubre un nuevo mundo en el fondo de las aguas",
         icon: "directions_boat",
-        image: kayak,
+        image: lancha,
     },
     {
         id: "moto",
         name: "Moto acuatica",
         description: "Siente la adrenalina de conducir una increible moto acuatica por la laguna de bacalar y sus alrededores",
         icon: "snowmobile",
-        image: kayak
+        image: moto
     }
 ];
 
@@ -103,7 +115,7 @@ export const modalData: ModalData[] = [
     {
         id: "moto",
         title: "Moto Acuática",
-        images: [pontom.src, pontom2.src],
+        images: [moto.src, moto2.src],
         schedule: "9:00 AM - 12:00 AM - 4:00 PM",
         price: "$450 MXN",
         text: "Adrenalina pura con nuestros tours en moto acuática última generación. Explora calas secretas y playas paradisíacas a alta velocidad bajo supervisión de instructores certificados. Traje de baño y toalla incluidos.",
@@ -131,7 +143,7 @@ export const modalData: ModalData[] = [
     {
         id: "snorkel",
         title: "Snorkel Subacuático",
-        images: [velero5.src, velero2.src],
+        images: [snorkel.src, snorkel2.src],
         schedule: "8:00 AM - 12:00 PM",
         price: "$550 MXN",
         text: "Descubre los arrecifes de coral y la vida marina tropical. Tour guiado por especialistas en snorkel con experiencia en seguridad acuática. Equipo completo, bebidas y snacks incluidos. Profundidad máxima 5 metros.",
@@ -141,5 +153,47 @@ export const modalData: ModalData[] = [
         ageRange: "Mayor de 8 años",
         includes: ["Equipo de snorkel completo", "Guía especializado", "Bebidas", "Snacks", "Chaleco salvavidas"],
         nearby: ["Arrecife de coral - 2 km", "Isla de pájaros - 5 km", "Centro de Bacalar - 3 km"],
+    },
+    {
+        id: "kayak",
+        title: "Kayak en Bacalar",
+        images: [kayak1.src, kayak2.src],
+        schedule: "6:00 AM - 10:00 AM - 4:00 PM",
+        price: "$350 MXN",
+        text: "Explora la Laguna de los 7 Colores desde una perspectiva única. Rema a través de aguas cristalinas rodeado de naturaleza virgen. Nuestros guías te llevarán por los mejores rincones de la laguna, incluyendo el famoso Canal de los Piratas y el Estrecho de los Sueños.",
+        rating: "4.7 de 5.0",
+        duration: ["Privado: 2 - 4 horas", "Colectivo: 2 horas"],
+        capacity: "2 personas por kayak",
+        ageRange: "Todas las edades",
+        includes: ["Kayak doble o individual", "Remos", "Chaleco salvavidas", "Guía certificado", "Botella de agua"],
+        nearby: ["Laguna Bacalar - 0 km", "Canal de los Piratas - 1 km", "Cenote de la Bruja - 3 km"],
+    },
+    {
+        id: "paddle",
+        title: "Paddle Board",
+        images: [paddle1.src, paddle2.src],
+        schedule: "6:00 AM - 10:00 AM - 4:00 PM",
+        price: "$350 MXN",
+        text: "Deslízate sobre las aguas cristalinas de Bacalar en una tabla de paddle board. Una actividad perfecta para conectar con la naturaleza mientras ejercitas tu equilibrio y fuerza central. Disfruta de amaneceres y atardeceres inolvidables desde el agua.",
+        rating: "4.6 de 5.0",
+        duration: ["Privado: 1 - 2 horas", "Colectivo: 1.5 horas"],
+        capacity: "1 persona por tabla",
+        ageRange: "Todas las edades",
+        includes: ["Tabla de paddle board", "Remo", "Chaleco salvavidas", "Guía certificado", "Botella de agua"],
+        nearby: ["Laguna Bacalar - 0 km", "Canal de los Piratas - 1 km", "Centro de Bacalar - 3 km"],
+    },
+    {
+        id: "lancha",
+        title: "Lancha Privada",
+        images: [lancha.src, lancha2.src],
+        schedule: "8:00 AM - 12:00 PM - 3:00 PM",
+        price: "$600 MXN",
+        text: "Recorre la Laguna de Bacalar a bordo de una lancha privada. Descubre rincones secretos, nada en aguas cristalinas y visita los puntos más emblemáticos como el Canal de los Piratas y la Isla de los Pájaros. Ideal para grupos que buscan una experiencia personalizada.",
+        rating: "4.8 de 5.0",
+        duration: ["Privado: 2 - 4 horas"],
+        capacity: "6 personas",
+        ageRange: "Todas las edades",
+        includes: ["Lancha privada", "Capitán", "Bebidas", "Snacks", "Chalecos salvavidas", "Equipo de snorkel"],
+        nearby: ["Laguna Bacalar - 0 km", "Canal de los Piratas - 1 km", "Isla de los Pájaros - 4 km", "Cenote de la Bruja - 3 km"],
     },
 ];

@@ -38,7 +38,7 @@ import Layout from "../layouts/Layout.astro";
         <section id="cardsBlock" class="search-results cards-block" hidden>
             <div class="result-block-heading">
                 <h2>Cards encontrados</h2>
-                <span id="cardsCountBadge">0</span>
+                <span id="cardsCountBadge" class="count-badge">0</span>
             </div>
             <div id="cardsGroupsContainer"></div>
         </section>
@@ -46,7 +46,7 @@ import Layout from "../layouts/Layout.astro";
         <section id="photosBlock" class="search-results photos-block" hidden>
             <div class="result-block-heading">
                 <h2>Fotos por palabra clave</h2>
-                <span id="photosCountBadge">0</span>
+                <span id="photosCountBadge" class="count-badge">0</span>
             </div>
             <div id="photosGroupsContainer"></div>
         </section>
@@ -149,61 +149,73 @@ import Layout from "../layouts/Layout.astro";
                 ? cardGroups
                       .map(
                           (group) => `
-                        <article class="result-group">
+                        <div class="result-group">
                             <header class="result-group-head">
                                 <h3>${escapeHtml(group.area)}</h3>
-                                <span>${group.count} resultado(s)</span>
+                                <span class="group-count">${group.count} resultado(s)</span>
                             </header>
-                            <div class="result-card-grid">
+                            <div class="search-card-grid">
                                 ${group.values
                                     .map(
                                         (item) => `
                                     <button type="button" class="search-card-item" data-card-id="${escapeHtml(item.id)}">
-                                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" />
-                                        <div class="search-card-body">
-                                            <span class="search-card-kicker">${escapeHtml(item.area)}</span>
-                                            <h4>${escapeHtml(item.title)}</h4>
-                                            <p>${escapeHtml(item.description)}</p>
-                                            <span class="search-card-action">Ver detalle</span>
+                                        <div class="sci-image">
+                                            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" />
+                                        </div>
+                                        <div class="sci-body">
+                                            <span class="sci-kicker">${escapeHtml(item.area)}</span>
+                                            <h4 class="sci-title">${escapeHtml(item.title)}</h4>
+                                            <p class="sci-desc">${escapeHtml(item.description)}</p>
+                                            <span class="sci-action">Ver detalle &rarr;</span>
                                         </div>
                                     </button>
                                 `,
                                     )
                                     .join("")}
                             </div>
-                        </article>
+                        </div>
                     `,
                       )
                       .join("")
                 : '<p class="result-empty">No hay cards que coincidan con tu búsqueda.</p>';
         }
 
+        const getCollageSpan = (i, total) => {
+            if (total === 1) return "normal";
+            if (i === 0) return "wide";
+            if (i === total - 1 && total > 3) return "wide";
+            if (i % 4 === 1 || i % 4 === 3) return "tall";
+            return "normal";
+        };
+
         if (photosGroupsEl) {
             photosGroupsEl.innerHTML = photoGroups.length
                 ? photoGroups
                       .map(
                           (group) => `
-                        <article class="result-group">
+                        <div class="result-group">
                             <header class="result-group-head">
                                 <h3>${escapeHtml(group.area)}</h3>
-                                <span>${group.count} foto(s)</span>
+                                <span class="group-count">${group.count} foto(s)</span>
                             </header>
-                            <div class="result-photo-grid">
+                            <div class="collage-grid">
                                 ${group.values
                                     .map(
-                                        (item) => `
-                                    <a href="${escapeHtml(item.href)}" class="photo-item">
-                                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" />
-                                        <div class="photo-caption">
-                                            <h4>${escapeHtml(item.title)}</h4>
-                                            <p>${escapeHtml(item.description)}</p>
+                                        (item, i) => `
+                                    <a
+                                        href="${escapeHtml(item.href)}"
+                                        class="collage-cell collage-cell--${getCollageSpan(i, group.values.length)}"
+                                    >
+                                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" referrerpolicy="no-referrer" class="collage-img" />
+                                        <div class="collage-overlay">
+                                            <span class="collage-caption">${escapeHtml(item.title)}</span>
                                         </div>
                                     </a>
                                 `,
                                     )
                                     .join("")}
                             </div>
-                        </article>
+                        </div>
                     `,
                       )
                       .join("")
@@ -339,7 +351,7 @@ import Layout from "../layouts/Layout.astro";
         color: #113a57;
     }
 
-    .result-block-heading span {
+    .count-badge {
         background: #dff2fb;
         color: #1c688b;
         border: 1px solid #b7deef;
@@ -370,15 +382,15 @@ import Layout from "../layouts/Layout.astro";
         color: #194d70;
     }
 
-    .result-group-head span {
+    .group-count {
         font-size: 0.8rem;
         color: #4d6d84;
     }
 
-    .result-card-grid {
+    .search-card-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 0.9rem;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
     }
 
     .search-card-item {
@@ -388,109 +400,156 @@ import Layout from "../layouts/Layout.astro";
         width: 100%;
         padding: 0;
         cursor: pointer;
-        border: 1px solid #c9dff0;
+        border: none;
         border-radius: 14px;
         overflow: hidden;
-        background: linear-gradient(180deg, #153a56 0%, #1e587d 42%, #ffffff 42%, #f8fcff 100%);
-        box-shadow: 0 14px 26px rgba(21, 62, 90, 0.12);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #fff;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .search-card-item:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 30px rgba(14, 52, 78, 0.2);
+        transform: translateY(-6px);
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
     }
 
-    .search-card-item img {
+    .sci-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: #f0f4f8;
+    }
+
+    .sci-image img {
         width: 100%;
-        height: 162px;
+        height: 100%;
         object-fit: cover;
         display: block;
+        transition: transform 0.5s ease;
     }
 
-    .search-card-body {
-        padding: 0.85rem;
+    .search-card-item:hover .sci-image img {
+        transform: scale(1.08);
     }
 
-    .search-card-kicker {
+    .sci-body {
+        padding: 1rem 1.1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .sci-kicker {
         display: inline-block;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         border-radius: 999px;
         background: #dff3fb;
         color: #1e688c;
         border: 1px solid #b9def0;
-        padding: 0.2rem 0.55rem;
-        margin-bottom: 0.45rem;
+        padding: 0.18rem 0.55rem;
+        margin-bottom: 0.5rem;
         font-weight: 700;
+        align-self: flex-start;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
-    .search-card-body h4 {
+    .sci-title {
         margin: 0;
-        color: #153f5e;
-        font-size: 1.02rem;
+        color: #0f2d42;
+        font-size: 1.05rem;
+        font-weight: 700;
         line-height: 1.3;
     }
 
-    .search-card-body p {
-        margin: 0.45rem 0 0;
-        color: #486479;
-        font-size: 0.86rem;
-        line-height: 1.5;
+    .sci-desc {
+        margin: 0.4rem 0 0;
+        color: #6b7280;
+        font-size: 0.85rem;
+        line-height: 1.55;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        min-height: 3.9em;
+        flex: 1;
     }
 
-    .search-card-action {
+    .sci-action {
         display: inline-flex;
-        margin-top: 0.55rem;
+        align-items: center;
+        margin-top: 0.7rem;
         font-size: 0.82rem;
-        color: #1f6f8f;
+        color: #217b96;
         font-weight: 700;
+        gap: 0.25rem;
+        transition: gap 0.2s;
     }
 
-    .result-photo-grid {
+    .search-card-item:hover .sci-action {
+        gap: 0.5rem;
+    }
+
+    /* ── Collage grid ── */
+    .collage-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 0.75rem;
-    }
-
-    .photo-item {
-        text-decoration: none;
-        border-radius: 14px;
-        border: 1px solid #cde3f1;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 180px;
+        gap: 8px;
+        border-radius: 12px;
         overflow: hidden;
-        background: #fff;
-        box-shadow: 0 12px 22px rgba(14, 59, 87, 0.08);
     }
 
-    .photo-item img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
+    .collage-cell {
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
         display: block;
     }
 
-    .photo-caption {
-        padding: 0.7rem;
+    .collage-cell--normal { grid-column: span 1; grid-row: span 1; }
+    .collage-cell--tall   { grid-column: span 1; grid-row: span 2; }
+    .collage-cell--wide   { grid-column: span 2; grid-row: span 1; }
+
+    .collage-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
     }
 
-    .photo-caption h4 {
-        margin: 0;
-        color: #123d5c;
+    .collage-cell:hover .collage-img {
+        transform: scale(1.07);
     }
 
-    .photo-caption p {
-        margin: 0.45rem 0 0;
-        color: #4c6a80;
-        font-size: 0.86rem;
-        line-height: 1.45;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    .collage-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.72) 0%,
+            rgba(10, 26, 47, 0.15) 55%,
+            transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 14px 16px;
+    }
+
+    .collage-cell:hover .collage-overlay {
+        opacity: 1;
+    }
+
+    .collage-caption {
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        line-height: 1.3;
     }
 
     .result-empty {
@@ -499,6 +558,22 @@ import Layout from "../layouts/Layout.astro";
         padding: 0.85rem;
         background: #fbfdff;
         color: #4c6d84;
+    }
+
+    @media (max-width: 1024px) {
+        .collage-grid { grid-template-columns: repeat(2, 1fr); }
+        .collage-cell--wide { grid-column: span 2; }
+        .collage-cell--tall { grid-row: span 2; }
+    }
+
+    @media (max-width: 768px) {
+        .collage-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; }
+        .collage-cell--tall { grid-row: span 1; }
+    }
+
+    @media (max-width: 480px) {
+        .collage-grid { grid-template-columns: 1fr; }
+        .collage-cell--wide { grid-column: span 1; }
     }
 
     @media (max-width: 700px) {
@@ -516,6 +591,10 @@ import Layout from "../layouts/Layout.astro";
 
         .search-form button {
             width: 100%;
+        }
+
+        .sci-image {
+            height: 170px;
         }
     }
 </style>
