@@ -1,0 +1,83 @@
+
+    .terms-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1.25rem;
+    }
+
+    .terms-header {
+        margin-bottom: 1rem;
+    }
+
+    .terms-header h1 {
+        margin: 0;
+        font-size: clamp(1.4rem, 1.7vw, 2rem);
+    }
+
+    .terms-header p {
+        margin: 0.45rem 0 0;
+        color: #4b5563;
+    }
+
+    .pdf-frame {
+        min-height: 78vh;
+        background: linear-gradient(180deg, #f8fbff 0%, #edf2f7 100%);
+        border: 1px solid #d9e2ec;
+        border-radius: 14px;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+        padding: 1rem;
+    }
+
+    .pdf-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        background: #ffffff;
+        border: 1px solid #dbe4ee;
+        border-radius: 999px;
+        padding: 0.4rem 0.9rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .pdf-pages {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .pdf-page {
+        background: #ffffff;
+        border: 1px solid #dbe4ee;
+        border-radius: 10px;
+        padding: 0.8rem;
+    }
+
+    .pdf-page-label {
+        margin: 0 0 0.5rem;
+        font-size: 0.86rem;
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .pdf-canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+    }
+
+    .pdf-fallback {
+        margin-top: 0.85rem;
+    }
+
+    @media (max-width: 720px) {
+        .terms-page {
+            padding: 0.9rem;
+        }
+
+        .pdf-frame {
+            padding: 0.65rem;
+            min-height: 70vh;
+        }
+    }

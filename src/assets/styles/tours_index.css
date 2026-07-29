@@ -1,0 +1,720 @@
+
+    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+    
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    
+    html{
+            scroll-behavior: smooth;
+        }
+    /* ── Shared ── */
+    .material-symbols-outlined {
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 40px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        color: #217b96;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #217b96;
+        margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0a1a2f;
+        margin: 0 0 0.6rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.05rem;
+        color: #666;
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* ─────────────────────────────────────
+        HERO CAROUSEL (unchanged)
+    ───────────────────────────────────── */
+    .tours-carousel {
+        position: relative;
+        width: 100%;
+        height: 80vh;
+        overflow: hidden;
+    }
+
+    .carousel-images {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #f0f0f0;
+        filter: brightness(0.8);
+    }
+
+    .carousel-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        filter: brightness(0.65);
+    }
+
+    .carousel-img.active {
+        opacity: 1;
+        z-index: 1;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(10, 26, 47, 0.45),
+            rgba(10, 26, 47, 0.78)
+        );
+    }
+
+    .carousel-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        text-align: center;
+        color: white;
+        width: 100%;
+        max-width: 800px;
+        padding: 2rem;
+    }
+
+    .carousel-content h1 {
+        font-size: 4rem;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .carousel-content p {
+        font-size: 1.3rem;
+        color: white;
+        line-height: 1.6;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─────────────────────────────────────
+        TOUR CARDS (unchanged)
+    ───────────────────────────────────── */
+    .tours-section {
+        padding: 4rem 2rem;
+        background: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .tours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 0;
+    }
+
+    .title-card {
+        display: flex;
+        align-items: center;
+    }
+
+    .tour-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .tour-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .tour-card-image {
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .tour-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .tour-card:hover .tour-card-image img {
+        transform: scale(1.05);
+    }
+
+    .tour-card h3 {
+        color: #217b96;
+        font-size: 1.5rem;
+        padding-left: 15px;
+    }
+
+    .title-card span {
+        padding-left: 10px;
+    }
+
+    .tour-card p {
+        color: #555;
+        line-height: 1.6;
+        padding: 0 1.5rem 1.5rem 1.5rem;
+        margin: 0;
+    }
+
+    /* ─────────────────────────────────────
+        PAQUETES – carrusel
+    ───────────────────────────────────── */
+    .packages-section {
+        padding: 5rem 2rem;
+        background: #f4f9fb;
+    }
+
+    .pkg-track-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .pkg-track {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding: 0.5rem 0.25rem 1rem;
+        flex: 1;
+        scroll-behavior: smooth;
+    }
+
+    .pkg-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Nav arrows */
+    .pkg-nav {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid #217b96;
+        background: white;
+        color: #217b96;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition:
+            background 0.2s,
+            color 0.2s;
+        z-index: 2;
+    }
+
+    .pkg-nav .material-symbols-outlined {
+        font-size: 24px;
+        color: inherit;
+    }
+
+    .pkg-nav:hover {
+        background: #217b96;
+        color: white;
+    }
+
+    .pkg-nav:hover .material-symbols-outlined {
+        color: white;
+    }
+
+    /* Dots */
+    .pkg-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 1.2rem;
+    }
+
+    .pkg-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: none;
+        background: #b8d9e4;
+        cursor: pointer;
+        transition:
+            background 0.2s,
+            transform 0.2s;
+        padding: 0;
+    }
+
+    .pkg-dot.active {
+        background: #217b96;
+        transform: scale(1.3);
+    }
+
+    /* Card */
+    .pkg-card {
+        flex: 0 0 calc(33.333% - 1rem);
+        min-width: 300px;
+        max-width: 400px;
+        scroll-snap-align: start;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(33, 123, 150, 0.1);
+        position: relative;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pkg-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 36px rgba(33, 123, 150, 0.18);
+    }
+
+    /* Badge */
+    .pkg-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 4;
+        background: #f0a500;
+        color: #5a3a00;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .pkg-badge .material-symbols-outlined {
+        font-size: 14px;
+        color: #5a3a00;
+    }
+
+    /* Image */
+    .pkg-image-wrap {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .pkg-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .pkg-card:hover .pkg-image {
+        transform: scale(1.06);
+    }
+
+    .pkg-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.55) 0%,
+            transparent 60%
+        );
+    }
+
+    .pkg-meta-pill {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #217b96;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        backdrop-filter: blur(4px);
+    }
+
+    .pkg-meta-pill .material-symbols-outlined {
+        font-size: 15px;
+        color: #217b96;
+    }
+
+    .pkg-meta-sep {
+        color: #aaa;
+        margin: 0 2px;
+    }
+
+    /* Body */
+    .pkg-body {
+        padding: 1.4rem 1.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .pkg-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0a1a2f;
+        margin: 0 0 0.35rem;
+    }
+
+    .pkg-subtitle {
+        font-size: 0.88rem;
+        color: #777;
+        line-height: 1.5;
+        margin: 0 0 1.1rem;
+    }
+
+    /* Inclusions list */
+    .pkg-inclusions {
+        list-style: none;
+        margin: 0 0 1.4rem;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .pkg-inclusion-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #444;
+    }
+
+    .pkg-inc-icon {
+        font-size: 18px !important;
+        color: #217b96;
+    }
+
+    /* Footer */
+    .pkg-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        border-top: 1px solid #e8f2f6;
+        padding-top: 1rem;
+    }
+
+    .pkg-price-block {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+    }
+
+    .pkg-price-label {
+        font-size: 0.72rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .pkg-price {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #217b96;
+    }
+
+    .pkg-price small {
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #888;
+        margin-left: 2px;
+    }
+
+    .pkg-price-note {
+        font-size: 0.72rem;
+        color: #aaa;
+    }
+
+    .pkg-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #217b96;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 30px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+            background 0.2s,
+            transform 0.2s;
+    }
+
+    .pkg-cta .material-symbols-outlined {
+        font-size: 18px;
+        color: white;
+    }
+
+    .pkg-cta:hover {
+        background: #155f74;
+        transform: translateX(2px);
+    }
+
+    /* ─────────────────────────────────────
+        GALERÍA COLLAGE
+    ───────────────────────────────────── */
+    .gallery-section {
+        padding: 5rem 2rem 6rem;
+        background: white;
+    }
+
+    .collage-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 200px);
+        gap: 10px;
+    }
+
+    .collage-cell {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .collage-cell--normal {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+
+    .collage-cell--tall {
+        grid-column: span 1;
+        grid-row: span 2;
+    }
+
+    .collage-cell--wide {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+
+    .collage-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+        display: block;
+    }
+
+    .collage-cell:hover .collage-img {
+        transform: scale(1.07);
+    }
+
+    .collage-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(10, 26, 47, 0.65) 0%,
+            transparent 50%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 14px 16px;
+    }
+
+    .collage-cell:hover .collage-overlay {
+        opacity: 1;
+    }
+
+    .collage-caption {
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ─────────────────────────────────────
+        RESPONSIVE
+    ───────────────────────────────────── */
+    @media (max-width: 1024px) {
+        .pkg-card {
+            flex: 0 0 80%;
+        }
+
+        .collage-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 200px);
+        }
+
+        .collage-cell--wide {
+            grid-column: span 2;
+        }
+
+        .collage-cell--tall {
+            grid-row: span 2;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tours-carousel {
+            height: 50vh;
+        }
+
+        .carousel-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .carousel-content p {
+            font-size: 1rem;
+        }
+
+        .tour-card h3 {
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.7rem;
+        }
+
+        .pkg-nav {
+            display: none;
+        }
+
+        .pkg-card {
+            flex: 0 0 88%;
+        }
+
+        .collage-grid {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 160px);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tours-carousel {
+            height: 40vh;
+        }
+
+        .carousel-content h1 {
+            font-size: 1.8rem;
+        }
+
+        .carousel-content p {
+            font-size: 0.9rem;
+        }
+
+        .tour-card-image {
+            height: 200px;
+        }
+
+        .tour-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .tour-card p {
+            font-size: 0.9rem;
+        }
+
+        .pkg-card {
+            flex: 0 0 92%;
+            min-width: unset;
+        }
+
+        .collage-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+        }
+
+        .collage-cell,
+        .collage-cell--tall,
+        .collage-cell--wide,
+        .collage-cell--normal {
+            grid-column: span 1;
+            grid-row: span 1;
+            height: 200px;
+        }
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 1rem 1.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(20, 50, 85, 0.18);
+    }
+
+    .btn-primary {
+        background: #1c5fa8;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+    }

@@ -1,117 +1,4 @@
----
-import AdminLayout from "../../layouts/AdminLayout.astro";
----
 
-<AdminLayout title="Panel - Azulia Admin">
-  <div class="dashboard">
-    <div class="dashboard-header">
-      <div class="header-left">
-        <img src="/src/assets/Designer.png" alt="Azulia Logo" class="header-logo" />
-        <div>
-          <h1>Panel de Administración</h1>
-          <p class="header-subtitle" id="userGreeting">Bienvenido</p>
-        </div>
-      </div>
-      <button class="btn-logout" data-logout>
-        <span class="material-symbols-outlined" aria-hidden="true">logout</span>
-        Cerrar sesión
-      </button>
-    </div>
-
-    <div class="dashboard-grid">
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">groups</span>
-        </div>
-        <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Clientes</span>
-        </div>
-      </article>
-
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">tour</span>
-        </div>
-        <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Tours</span>
-        </div>
-      </article>
-
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">hotel</span>
-        </div>
-        <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Hoteles</span>
-        </div>
-      </article>
-
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
-        </div>
-        <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Reservaciones</span>
-        </div>
-      </article>
-    </div>
-
-    <div class="dashboard-sections">
-      <a href="/admin/mensajes" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">mail</span>
-          Mensajes
-        </h2>
-        <p class="section-desc">Bandeja de entrada con mensajes de clientes.</p>
-      </a>
-
-      <a href="/admin/perfiles" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">badge</span>
-          Perfiles
-        </h2>
-        <p class="section-desc">Administradores del sistema y sus permisos.</p>
-      </a>
-
-      <a href="/admin/galeria" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">wallpaper</span>
-          Galería
-        </h2>
-        <p class="section-desc">Sube y administra imágenes promocionales.</p>
-      </a>
-
-      <a href="/admin/papeleria" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-          Papelera
-        </h2>
-        <p class="section-desc">Elementos eliminados con retención de 30 días.</p>
-      </a>
-    </div>
-  </div>
-
-  <script>
-    import { getAuthState } from '../../components/admin/auth.ts';
-
-    (async () => {
-      const auth = await getAuthState();
-      if (!auth.isAuthenticated) {
-        window.location.href = '/admin/login';
-        return;
-      }
-      const greeting = document.getElementById('userGreeting');
-      if (greeting && auth.user) {
-        greeting.textContent = `Bienvenido, ${auth.user.name}`;
-      }
-    })();
-  </script>
-
-  <style>
     .dashboard {
       width: 100%;
       max-width: 900px;
@@ -246,7 +133,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
 
     .section-card {
-      display: block;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
@@ -254,8 +140,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
       cursor: pointer;
-      text-decoration: none;
-      color: inherit;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
@@ -312,5 +196,4 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         grid-template-columns: 1fr;
       }
     }
-  </style>
-</AdminLayout>
+  

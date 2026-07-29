@@ -1,0 +1,129 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Papelera - Azulia Admin">
+  <div class="trash-page">
+    <header class="trash-header">
+      <div>
+        <h1 class="trash-title">Papelera</h1>
+        <p class="trash-subtitle">Elementos eliminados recientemente · Se purgan automáticamente después de 30 días</p>
+      </div>
+    </header>
+
+    <div class="trash-card">
+      <table class="trash-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Contenido</th>
+            <th>Eliminado</th>
+            <th>Expira</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="trashBody">
+          <tr><td colspan="5" class="trash-loading">Cargando papelera...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    import { getTrashItems, restoreFromTrash } from '../../lib/admin';
+    import type { TrashItem } from '../../lib/admin';
+
+    const typeLabels: Record<string, string> = { message: 'Mensaje', admin: 'Perfil', poster: 'Poster' };
+    const typeIcons: Record<string, string> = { message: 'mail', admin: 'badge', poster: 'wallpaper' };
+
+    let items: TrashItem[] = [];
+
+    function daysRemaining(expiresAt: Date | null): string {
+      if (!expiresAt) return '—';
+      const diff = expiresAt.getTime() - Date.now();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (days <= 0) return 'Hoy expira';
+      if (days === 1) return '1 día';
+      return `${days} días`;
+    }
+
+    function render() {
+      const tbody = document.getElementById('trashBody')!;
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="trash-loading">La papelera está vacía.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map((item) => {
+        const deletedDate = item.deletedAt
+          ? new Date(item.deletedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
+          : '—';
+        let summary = '—';
+        if (item.type === 'message') summary = (item.data as any)?.name || (item.data as any)?.contact || 'Mensaje';
+        else if (item.type === 'admin') summary = (item.data as any)?.originalId || item.originalId;
+        else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
+        return `<tr>
+          <td><span class="trash-type"><span class="material-symbols-outlined trash-type-icon">${typeIcons[item.type] || 'help'}</span>${typeLabels[item.type] || item.type}</span></td>
+          <td>${summary}</td>
+          <td class="trash-date">${deletedDate}</td>
+          <td><span class="trash-expire ${daysRemaining(item.expiresAt).includes('Hoy') ? 'trash-expire--urgent' : ''}">${daysRemaining(item.expiresAt)}</span></td>
+          <td class="trash-actions">
+            <button class="trash-restore-btn" data-id="${item.id}" data-type="${item.type}" data-original="${item.originalId}" data-json='${JSON.stringify(item.data).replace(/'/g, '&#39;')}'>Restaurar</button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('.trash-restore-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const el = e.currentTarget as HTMLButtonElement;
+          const id = el.dataset.id!;
+          const type = el.dataset.type!;
+          const originalId = el.dataset.original!;
+          let data: Record<string, unknown>;
+          try { data = JSON.parse(el.dataset.json!.replace(/&#39;/g, "'")); } catch { data = {}; }
+          if (!confirm('¿Restaurar este elemento?')) return;
+          await restoreFromTrash(id, type, originalId, data);
+          items = await getTrashItems();
+          render();
+        });
+      });
+    }
+
+    (async () => {
+      items = await getTrashItems();
+      render();
+    })();
+  </script>
+
+  <style>
+    .trash-page { width: 100%; max-width: 1000px; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .trash-header { margin-bottom: 1.5rem; }
+    .trash-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+    .trash-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin: 0.25rem 0 0; }
+
+    .trash-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+
+    .trash-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .trash-table th { text-align: left; padding: 1rem 1rem; background: rgba(15,30,50,0.04); color: #475569; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e2e8f0; }
+    .trash-table td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+
+    .trash-type { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+    .trash-type-icon { font-size: 1.1rem; color: #64748b; }
+    .trash-date { color: #64748b; font-size: 0.8rem; white-space: nowrap; }
+    .trash-expire { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: #f1f5f9; color: #475569; }
+    .trash-expire--urgent { background: #fef2f2; color: #dc2626; }
+
+    .trash-restore-btn { padding: 0.35rem 0.85rem; border-radius: 8px; border: none; background: #eff6ff; color: #1c5fa8; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .trash-restore-btn:hover { background: #dbeafe; }
+
+    .trash-loading { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-style: italic; }
+
+    @media (max-width: 768px) {
+      .trash-table thead { display: none; }
+      .trash-table, .trash-table tbody, .trash-table tr, .trash-table td { display: block; }
+      .trash-table tr { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
+      .trash-table td { padding: 0.35rem 0; border: none; }
+    }
+  </style>
+</AdminLayout>

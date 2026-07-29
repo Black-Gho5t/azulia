@@ -1,0 +1,213 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Galería - Azulia Admin">
+  <div class="gal-page">
+    <header class="gal-header">
+      <div>
+        <h1 class="gal-title">Galería de Posters</h1>
+        <p class="gal-subtitle">Sube y administra imágenes promocionales</p>
+      </div>
+    </header>
+
+    <div class="gal-upload-card" id="uploadZone">
+      <div class="gal-dropzone" id="dropZone">
+        <span class="material-symbols-outlined gal-drop-icon">cloud_upload</span>
+        <p class="gal-drop-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
+        <p class="gal-drop-hint">PNG, JPG o WebP · Máx 5 MB</p>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden />
+        <button class="gal-select-btn" id="selectBtn">Seleccionar archivo</button>
+      </div>
+      <div class="gal-preview" id="previewArea" hidden>
+        <img id="previewImg" alt="Vista previa" />
+        <div class="gal-preview-info">
+          <input class="gal-name-input" id="nameInput" placeholder="Nombre del poster..." maxlength="60" />
+          <div class="gal-progress-wrap" id="progressWrap" hidden>
+            <div class="gal-progress-bar"><div class="gal-progress-fill" id="progressFill"></div></div>
+            <span class="gal-progress-text" id="progressText">0%</span>
+          </div>
+          <div class="gal-preview-actions">
+            <button class="gal-upload-btn" id="uploadBtn">Subir a galería</button>
+            <button class="gal-cancel-btn" id="cancelBtn">Cancelar</button>
+          </div>
+        </div>
+      </div>
+      <div class="gal-error" id="uploadError" hidden></div>
+    </div>
+
+    <div class="gal-grid" id="galleryGrid">
+      <p class="gal-loading">Cargando posters...</p>
+    </div>
+  </div>
+
+  <script>
+    import { uploadPoster, deletePoster } from '../../lib/galeria';
+    import { getPosters, trashPoster } from '../../lib/admin';
+    import type { PosterData } from '../../lib/admin';
+
+    let selectedFile: File | null = null;
+    let uploadTask: { cancel: () => void } | null = null;
+    let posters: PosterData[] = [];
+
+    const dropZone = document.getElementById('dropZone')!;
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const selectBtn = document.getElementById('selectBtn')!;
+    const previewArea = document.getElementById('previewArea')!;
+    const previewImg = document.getElementById('previewImg') as HTMLImageElement;
+    const nameInput = document.getElementById('nameInput') as HTMLInputElement;
+    const uploadBtn = document.getElementById('uploadBtn')!;
+    const cancelBtn = document.getElementById('cancelBtn')!;
+    const progressWrap = document.getElementById('progressWrap')!;
+    const progressFill = document.getElementById('progressFill')!;
+    const progressText = document.getElementById('progressText')!;
+    const uploadError = document.getElementById('uploadError')!;
+    const galleryGrid = document.getElementById('galleryGrid')!;
+
+    function showError(msg: string) {
+      uploadError.textContent = msg;
+      uploadError.hidden = false;
+    }
+
+    function hideError() { uploadError.hidden = true; }
+
+    function resetUpload() {
+      selectedFile = null;
+      uploadTask = null;
+      previewArea.hidden = true;
+      dropZone.hidden = false;
+      progressWrap.hidden = true;
+      nameInput.value = '';
+      hideError();
+    }
+
+    function handleFile(file: File) {
+      hideError();
+      if (!file.type.match(/^image\/(png|jpeg|webp)$/)) { showError('Formato no soportado. Usa PNG, JPG o WebP.'); return; }
+      if (file.size > 5 * 1024 * 1024) { showError('La imagen supera los 5 MB.'); return; }
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => { previewImg.src = e.target!.result as string; };
+      reader.readAsDataURL(file);
+      dropZone.hidden = true;
+      previewArea.hidden = false;
+      const base = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).slice(0, 60);
+      nameInput.value = base;
+    }
+
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('gal-dropzone--over'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('gal-dropzone--over'); });
+    dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('gal-dropzone--over'); if (e.dataTransfer?.files[0]) handleFile(e.dataTransfer.files[0]); });
+    selectBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => { if (fileInput.files?.[0]) handleFile(fileInput.files[0]); });
+    cancelBtn.addEventListener('click', resetUpload);
+
+    uploadBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      const name = nameInput.value.trim() || selectedFile.name;
+      hideError();
+      progressWrap.hidden = false;
+      progressFill.style.width = '0%';
+      progressText.textContent = '0%';
+      uploadBtn.disabled = true;
+
+      uploadTask = uploadPoster(selectedFile, name, (state) => {
+        if (state.error) { showError(state.error); uploadBtn.disabled = false; return; }
+        progressFill.style.width = state.progress + '%';
+        progressText.textContent = state.progress + '%';
+        if (state.url) {
+          setTimeout(() => { resetUpload(); loadPosters(); }, 600);
+        }
+      });
+    });
+
+    async function loadPosters() {
+      galleryGrid.innerHTML = '<p class="gal-loading">Cargando posters...</p>';
+      posters = await getPosters();
+      if (posters.length === 0) {
+        galleryGrid.innerHTML = '<p class="gal-empty">Aún no hay posters. Sube el primero.</p>';
+        return;
+      }
+      galleryGrid.innerHTML = posters.map((p) => `
+        <div class="gal-item" data-id="${p.id}" data-path="${p.storagePath}">
+          <img src="${p.url}" alt="${p.name}" loading="lazy" />
+          <div class="gal-item-overlay">
+            <span class="gal-item-name">${p.name}</span>
+            <button class="gal-del-btn" data-del="${p.id}" data-path="${p.storagePath}" title="Eliminar">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      galleryGrid.querySelectorAll('[data-del]').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const el = e.currentTarget as HTMLElement;
+          const id = el.dataset.del!;
+          const path = el.dataset.path!;
+          if (!confirm('¿Eliminar este poster? Se moverá a la papelera.')) return;
+          await trashPoster(id);
+          loadPosters();
+        });
+      });
+    }
+
+    loadPosters();
+  </script>
+
+  <style>
+    .gal-page { width: 100%; max-width: 1100px; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .gal-header { margin-bottom: 1.5rem; }
+    .gal-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+    .gal-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0.25rem 0 0; }
+
+    .gal-upload-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+
+    .gal-dropzone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .gal-dropzone:hover, .gal-dropzone--over { border-color: #1c5fa8; background: rgba(28,95,168,0.04); }
+    .gal-drop-icon { font-size: 2.5rem; color: #94a3b8; }
+    .gal-drop-text { font-size: 1rem; color: #475569; margin: 0.5rem 0 0.25rem; }
+    .gal-drop-hint { font-size: 0.8rem; color: #94a3b8; margin: 0 0 1rem; }
+    .gal-select-btn { padding: 0.6rem 1.5rem; border: none; border-radius: 10px; background: #1c5fa8; color: #fff; font-size: 0.9rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.2s; }
+    .gal-select-btn:hover { background: #155088; }
+
+    .gal-preview { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .gal-preview img { width: 180px; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid #e2e8f0; flex-shrink: 0; }
+    .gal-preview-info { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+    .gal-name-input { width: 100%; padding: 0.6rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.9rem; font-family: inherit; color: #1e293b; transition: border-color 0.2s; box-sizing: border-box; }
+    .gal-name-input:focus { outline: none; border-color: #1c5fa8; box-shadow: 0 0 0 3px rgba(28,95,168,0.1); }
+    .gal-progress-wrap { display: flex; align-items: center; gap: 0.75rem; }
+    .gal-progress-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+    .gal-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1c5fa8, #217b96); border-radius: 3px; transition: width 0.3s ease; }
+    .gal-progress-text { font-size: 0.8rem; font-weight: 600; color: #1c5fa8; min-width: 2.5rem; }
+    .gal-preview-actions { display: flex; gap: 0.5rem; }
+    .gal-upload-btn { padding: 0.55rem 1.2rem; border: none; border-radius: 10px; background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .gal-upload-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(28,95,168,0.3); }
+    .gal-upload-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .gal-cancel-btn { padding: 0.55rem 1.2rem; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; color: #64748b; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .gal-cancel-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+    .gal-error { margin-top: 1rem; padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #dc2626; font-size: 0.85rem; font-weight: 500; }
+
+    .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .gal-loading, .gal-empty { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.6); font-style: italic; background: rgba(255,255,255,0.06); border-radius: 12px; }
+
+    .gal-item { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 9; background: #1e293b; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+    .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+    .gal-item:hover img { transform: scale(1.05); }
+    .gal-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%); opacity: 0; transition: opacity 0.25s; display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem; }
+    .gal-item:hover .gal-item-overlay { opacity: 1; }
+    .gal-item-name { color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+    .gal-del-btn { position: absolute; top: 0.5rem; right: 0.5rem; width: 34px; height: 34px; border: none; border-radius: 8px; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.2s; }
+    .gal-del-btn:hover { background: rgba(220,38,38,0.7); color: #fff; }
+    .gal-del-btn .material-symbols-outlined { font-size: 1.15rem; }
+
+    @media (max-width: 768px) {
+      .gal-preview { flex-direction: column; align-items: stretch; }
+      .gal-preview img { width: 100%; height: 180px; }
+      .gal-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</AdminLayout>

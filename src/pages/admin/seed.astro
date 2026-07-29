@@ -1,0 +1,68 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Seed - Azulia Admin" hideNav={true}>
+  <div class="seed-page">
+    <div class="seed-card">
+      <h1>Seed de Mensajes</h1>
+      <p>Esta página inserta 6 mensajes de ejemplo en Firestore para probar la bandeja de entrada.</p>
+      <button id="seedBtn" class="seed-btn">Insertar mensajes de ejemplo</button>
+      <div id="seedResult" class="seed-result" hidden></div>
+    </div>
+  </div>
+
+  <script>
+    import { collection, addDoc, Timestamp } from 'firebase/firestore';
+    import { db } from '../../lib/firebase';
+
+    const samples = [
+      { name: 'María Fernández', contact: 'maria@ejemplo.com', interests: ['Tours náuticos', 'Hoteles'], message: 'Hola, me interesa conocer los paquetes de tours en velero para 4 personas. ¿Tienen disponibilidad para la próxima semana? Me gustaría recibir información sobre precios y horarios.', status: 'nuevo' },
+      { name: 'Carlos López', contact: '+52 998 123 4567', interests: ['Transportación'], message: 'Buen día, requiero transporte del aeropuerto de Cancún a Bacalar para 3 personas el 15 de agosto. ¿Podrían cotizarme el servicio? Saludos.', status: 'nuevo' },
+      { name: 'Ana Martínez', contact: 'ana.mtz@correo.com', interests: ['Tours', 'Transportación', 'Hoteles'], message: 'Estamos planeando un viaje grupal de 10 personas a Bacalar en septiembre. Nos interesaría un paquete completo que incluya hospedaje, tours y transporte desde Cancún. ¿Manejan descuentos por grupo?', status: 'pendiente' },
+      { name: 'Roberto Sánchez', contact: '+52 555 987 6543', interests: ['Tours terrestres'], message: 'Hola, quisiera información sobre el tour a las ruinas de Calakmul. ¿Cuál es la duración del tour? ¿Incluye entrada y guía? Vamos 2 adultos.', status: 'pendiente' },
+      { name: 'Laura Castillo', contact: 'laura.castillo@mail.com', interests: ['Hoteles'], message: 'Muchas gracias por la atención. Ya revisé las opciones de hotel y me decidí por uno. En unos días confirmo la reservación. Quedo atenta.', status: 'leido' },
+      { name: 'Pedro Gómez', contact: '+52 998 111 2233', interests: ['Tours náuticos'], message: 'Excelente experiencia en el tour de paddle board. Todo muy bien organizado y el guía excelente. Definitivamente volveremos. Gracias por todo.', status: 'leido' },
+    ];
+
+    document.getElementById('seedBtn')!.addEventListener('click', async () => {
+      const btn = document.getElementById('seedBtn') as HTMLButtonElement;
+      const result = document.getElementById('seedResult')!;
+      btn.disabled = true;
+      btn.textContent = 'Insertando...';
+      result.hidden = true;
+
+      try {
+        for (const s of samples) {
+          await addDoc(collection(db, 'messages'), {
+            ...s,
+            createdAt: Timestamp.fromDate(new Date(Date.now() - Math.random() * 7 * 86400000)),
+          });
+        }
+        result.className = 'seed-result seed-result--ok';
+        result.textContent = '¡6 mensajes insertados correctamente! Puedes ir a la bandeja de entrada.';
+        result.hidden = false;
+        btn.textContent = '✅ Insertado';
+      } catch (err: any) {
+        result.className = 'seed-result seed-result--err';
+        result.textContent = 'Error: ' + (err?.message || 'desconocido');
+        result.hidden = false;
+        btn.disabled = false;
+        btn.textContent = 'Reintentar';
+      }
+    });
+  </script>
+
+  <style>
+    .seed-page { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 60vh; }
+    .seed-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 20px; padding: 3rem; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+    .seed-card h1 { font-size: 1.5rem; font-weight: 700; color: #0a1a2f; margin: 0 0 0.75rem; }
+    .seed-card p { font-size: 0.9rem; color: #64748b; margin: 0 0 2rem; line-height: 1.6; }
+    .seed-btn { padding: 0.8rem 2rem; border: none; border-radius: 12px; background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; font-size: 1rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .seed-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(28,95,168,0.3); }
+    .seed-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .seed-result { margin-top: 1.5rem; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 500; }
+    .seed-result--ok { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .seed-result--err { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  </style>
+</AdminLayout>

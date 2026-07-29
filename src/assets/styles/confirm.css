@@ -1,0 +1,179 @@
+
+    .confirm-container {
+      width: 100%;
+      max-width: 440px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirm-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(10, 26, 47, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .confirm-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: #64748b;
+    }
+
+    .confirm-spinner .material-symbols-outlined {
+      font-size: 3rem;
+      color: #1c5fa8;
+    }
+
+    .confirm-spinner p { margin: 0; }
+
+    .spinning { animation: spin 1s linear infinite; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .result-view { animation: fadeInUp 0.4s ease; }
+
+    .result-icon {
+      width: 72px; height: 72px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-icon .material-symbols-outlined { font-size: 2.75rem; }
+
+    .success-icon { background: #f0fdf4; }
+    .success-icon .material-symbols-outlined { color: #16a34a; }
+
+    .error-icon { background: #fef2f2; }
+    .error-icon .material-symbols-outlined { color: #dc2626; }
+
+    .lock-icon { background: #eff6ff; }
+    .lock-icon .material-symbols-outlined { color: #1c5fa8; }
+
+    .result-title {
+      font-size: 1.5rem; font-weight: 700;
+      color: #0a1a2f; margin: 0 0 0.5rem;
+    }
+
+    .result-desc { font-size: 0.95rem; color: #475569; margin: 0 0 0.5rem; }
+    .result-info { font-size: 0.9rem; color: #64748b; margin: 0 0 2rem; }
+
+    /* Auth form */
+    .auth-form {
+      text-align: left;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem; font-weight: 600;
+      color: #2d486a;
+    }
+
+    .form-input {
+      width: 100%; height: 48px;
+      padding: 0 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      color: #0a1a2f;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      border-color: #1c5fa8;
+      box-shadow: 0 0 0 3px rgba(28, 95, 168, 0.15);
+    }
+
+    .form-input[readonly] {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .password-wrapper { position: relative; }
+
+    .password-toggle {
+      position: absolute; right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: #94a3b8;
+      padding: 0.5rem;
+      display: flex;
+    }
+
+    .password-toggle:hover { color: #1c5fa8; }
+
+    .form-message {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .form-message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .form-message[hidden] { display: none; }
+
+    .btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 0.5rem;
+      padding: 1rem 1.5rem; border-radius: 12px;
+      font-size: 1rem; font-weight: 600;
+      text-decoration: none; border: none;
+      cursor: pointer; transition: all 0.25s ease;
+      position: relative; font-family: inherit;
+    }
+
+    .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1c5fa8 0%, #155088 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(28, 95, 168, 0.35);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(28, 95, 168, 0.45);
+    }
+
+    .btn-block { width: 100%; }
+
+    .btn-loader { position: absolute; display: flex; }
+    .btn-loader[hidden] { display: none; }
+    .btn-text[hidden] { display: none; }
+
+    @media (max-width: 480px) {
+      .confirm-card { padding: 2rem 1.5rem; }
+    }
+  

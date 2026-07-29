@@ -1,0 +1,41 @@
+
+    .wha-options-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .wha-options-content {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #25d366;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    p {
+        color: #666;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .wha-options-container {
+            min-height: auto;
+            padding: 15px;
+        }
+
+        .wha-options-content {
+            padding: 30px 20px;
+        }
+    }
