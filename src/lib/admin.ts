@@ -36,8 +36,8 @@ export interface AdminProfile {
 export interface PosterData {
   id?: string;
   name: string;
+  filename: string;
   url: string;
-  storagePath: string;
   createdAt: Date | null;
 }
 

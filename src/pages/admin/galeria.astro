@@ -9,14 +9,17 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <h1 class="gal-title">Galería de Posters</h1>
         <p class="gal-subtitle">Sube y administra imágenes promocionales</p>
       </div>
+      <div class="gal-counter" id="counterBadge">
+        <span id="counterText">0</span> / 10 posters
+      </div>
     </header>
 
     <div class="gal-upload-card" id="uploadZone">
       <div class="gal-dropzone" id="dropZone">
         <span class="material-symbols-outlined gal-drop-icon">cloud_upload</span>
         <p class="gal-drop-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
-        <p class="gal-drop-hint">PNG, JPG o WebP · Máx 5 MB</p>
-        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden />
+        <p class="gal-drop-hint">Todos los formatos de imagen · Máx 20 MB</p>
+        <input type="file" id="fileInput" accept="image/*" hidden />
         <button class="gal-select-btn" id="selectBtn">Seleccionar archivo</button>
       </div>
       <div class="gal-preview" id="previewArea" hidden>
@@ -41,14 +44,53 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     </div>
   </div>
 
+  <div class="modal-overlay" id="posterModal" hidden>
+    <div class="modal-card poster-modal-card">
+      <button class="modal-close" id="modalClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="poster-modal-body">
+        <img id="modalImg" alt="Poster" class="poster-modal-img" />
+        <div class="poster-modal-info">
+          <label class="poster-modal-label">Nombre</label>
+          <input class="poster-modal-input" id="modalNameInput" maxlength="60" />
+          <p class="poster-modal-file" id="modalFilename"></p>
+          <p class="poster-modal-date" id="modalDate"></p>
+          <div class="poster-modal-actions">
+            <button class="modal-btn modal-btn-primary" id="modalSave">Guardar</button>
+            <button class="modal-btn modal-btn-danger" id="modalDelete">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal" hidden>
+    <div class="modal-card confirm-modal-card">
+      <button class="modal-close" id="confirmClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <span class="material-symbols-outlined confirm-icon">warning</span>
+      <h3 class="confirm-title" id="confirmTitle">¿Eliminar poster?</h3>
+      <p class="confirm-text" id="confirmText">Se moverá a la papelera por 30 días.</p>
+      <div class="confirm-actions">
+        <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
+        <button class="modal-btn modal-btn-danger" id="confirmOk">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    import { uploadPoster, deletePoster } from '../../lib/galeria';
-    import { getPosters, trashPoster } from '../../lib/admin';
-    import type { PosterData } from '../../lib/admin';
+    import { uploadPoster, deletePoster, renamePoster, getPostersFromDisk } from '../../lib/galeria';
+    import type { UploadProgress } from '../../lib/galeria';
 
     let selectedFile: File | null = null;
     let uploadTask: { cancel: () => void } | null = null;
-    let posters: PosterData[] = [];
+    let posterList: { id: string; name: string; filename: string; url: string; createdAt: Date | null }[] = [];
+    let confirmResolve: ((ok: boolean) => void) | null = null;
+    let currentEditId: string | null = null;
+
+    const MAX_POSTERS = 10;
 
     const dropZone = document.getElementById('dropZone')!;
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -63,6 +105,23 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const progressText = document.getElementById('progressText')!;
     const uploadError = document.getElementById('uploadError')!;
     const galleryGrid = document.getElementById('galleryGrid')!;
+    const counterText = document.getElementById('counterText')!;
+
+    const posterModal = document.getElementById('posterModal')!;
+    const modalClose = document.getElementById('modalClose')!;
+    const modalImg = document.getElementById('modalImg') as HTMLImageElement;
+    const modalNameInput = document.getElementById('modalNameInput') as HTMLInputElement;
+    const modalFilename = document.getElementById('modalFilename')!;
+    const modalDate = document.getElementById('modalDate')!;
+    const modalSave = document.getElementById('modalSave')!;
+    const modalDelete = document.getElementById('modalDelete')!;
+
+    const confirmModal = document.getElementById('confirmModal')!;
+    const confirmClose = document.getElementById('confirmClose')!;
+    const confirmTitle = document.getElementById('confirmTitle')!;
+    const confirmText = document.getElementById('confirmText')!;
+    const confirmCancel = document.getElementById('confirmCancel')!;
+    const confirmOk = document.getElementById('confirmOk')!;
 
     function showError(msg: string) {
       uploadError.textContent = msg;
@@ -77,14 +136,17 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       previewArea.hidden = true;
       dropZone.hidden = false;
       progressWrap.hidden = true;
+      uploadBtn.disabled = false;
       nameInput.value = '';
+      fileInput.value = '';
+      previewImg.src = '';
       hideError();
     }
 
     function handleFile(file: File) {
       hideError();
-      if (!file.type.match(/^image\/(png|jpeg|webp)$/)) { showError('Formato no soportado. Usa PNG, JPG o WebP.'); return; }
-      if (file.size > 5 * 1024 * 1024) { showError('La imagen supera los 5 MB.'); return; }
+      if (!file.type.startsWith('image/')) { showError('Formato no soportado. Se aceptan todos los formatos de imagen.'); return; }
+      if (file.size > 20 * 1024 * 1024) { showError('La imagen supera los 20 MB.'); return; }
       selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e) => { previewImg.src = e.target!.result as string; };
@@ -111,43 +173,86 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       progressText.textContent = '0%';
       uploadBtn.disabled = true;
 
-      uploadTask = uploadPoster(selectedFile, name, (state) => {
-        if (state.error) { showError(state.error); uploadBtn.disabled = false; return; }
+      uploadTask = uploadPoster(selectedFile, name, (state: UploadProgress) => {
+        if (state.error) {
+          showError(state.error);
+          uploadBtn.disabled = false;
+          progressWrap.hidden = true;
+          return;
+        }
         progressFill.style.width = state.progress + '%';
         progressText.textContent = state.progress + '%';
-        if (state.url) {
+        if (state.id) {
           setTimeout(() => { resetUpload(); loadPosters(); }, 600);
         }
       });
     });
 
+    function showConfirm(title: string, text: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        confirmTitle.textContent = title;
+        confirmText.textContent = text;
+        confirmResolve = resolve;
+        confirmModal.hidden = false;
+      });
+    }
+
+    confirmOk.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(true); });
+    confirmCancel.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
+    confirmClose.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
+
+    modalClose.addEventListener('click', () => { posterModal.hidden = true; });
+    posterModal.addEventListener('click', (e) => { if (e.target === posterModal) posterModal.hidden = true; });
+
+    modalSave.addEventListener('click', async () => {
+      if (!currentEditId) return;
+      const name = modalNameInput.value.trim();
+      if (!name) return;
+      await renamePoster(currentEditId, name);
+      posterModal.hidden = true;
+      loadPosters();
+    });
+
+    modalDelete.addEventListener('click', async () => {
+      if (!currentEditId) return;
+      const ok = await showConfirm('¿Eliminar este poster?', 'Se moverá a la papelera por 30 días.');
+      if (ok) {
+        await deletePoster(currentEditId);
+        posterModal.hidden = true;
+        loadPosters();
+      }
+    });
+
     async function loadPosters() {
       galleryGrid.innerHTML = '<p class="gal-loading">Cargando posters...</p>';
-      posters = await getPosters();
-      if (posters.length === 0) {
+      posterList = await getPostersFromDisk();
+      counterText.textContent = String(posterList.length);
+
+      if (posterList.length === 0) {
         galleryGrid.innerHTML = '<p class="gal-empty">Aún no hay posters. Sube el primero.</p>';
         return;
       }
-      galleryGrid.innerHTML = posters.map((p) => `
-        <div class="gal-item" data-id="${p.id}" data-path="${p.storagePath}">
-          <img src="${p.url}" alt="${p.name}" loading="lazy" />
+
+      galleryGrid.innerHTML = posterList.map((p) => `
+        <div class="gal-item" data-id="${p.id}">
+          <img src="${p.url || '/api/posters/image/' + p.filename}" alt="${p.name}" loading="lazy" />
           <div class="gal-item-overlay">
             <span class="gal-item-name">${p.name}</span>
-            <button class="gal-del-btn" data-del="${p.id}" data-path="${p.storagePath}" title="Eliminar">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
           </div>
         </div>
       `).join('');
 
-      galleryGrid.querySelectorAll('[data-del]').forEach((btn) => {
-        btn.addEventListener('click', async (e) => {
-          const el = e.currentTarget as HTMLElement;
-          const id = el.dataset.del!;
-          const path = el.dataset.path!;
-          if (!confirm('¿Eliminar este poster? Se moverá a la papelera.')) return;
-          await trashPoster(id);
-          loadPosters();
+      galleryGrid.querySelectorAll('.gal-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const id = (item as HTMLElement).dataset.id!;
+          const poster = posterList.find(p => p.id === id);
+          if (!poster) return;
+          currentEditId = id;
+          modalImg.src = poster.url || '/api/posters/image/' + poster.filename;
+          modalNameInput.value = poster.name;
+          modalFilename.textContent = poster.filename;
+          modalDate.textContent = poster.createdAt ? `Subido: ${poster.createdAt.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}` : '';
+          posterModal.hidden = false;
         });
       });
     }
@@ -159,9 +264,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     .gal-page { width: 100%; max-width: 1100px; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-    .gal-header { margin-bottom: 1.5rem; }
+    .gal-header { margin-bottom: 1.5rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .gal-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
     .gal-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0.25rem 0 0; }
+    .gal-counter { background: rgba(255,255,255,0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; }
 
     .gal-upload-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
 
@@ -191,23 +297,55 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     .gal-error { margin-top: 1rem; padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #dc2626; font-size: 0.85rem; font-weight: 500; }
 
-    .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
-    .gal-loading, .gal-empty { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.6); font-style: italic; background: rgba(255,255,255,0.06); border-radius: 12px; }
+    .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+    .gal-loading, .gal-empty { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.6); font-style: italic; background: rgba(255,255,255,0.06); border-radius: 16px; }
 
-    .gal-item { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 9; background: #1e293b; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
-    .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
-    .gal-item:hover img { transform: scale(1.05); }
-    .gal-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%); opacity: 0; transition: opacity 0.25s; display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem; }
+    .gal-item { position: relative; border-radius: 14px; overflow: hidden; background: #1e293b; box-shadow: 0 4px 16px rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+    .gal-item:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); border-color: rgba(28,95,168,0.4); }
+    .gal-item img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .gal-item:hover img { transform: scale(1.08); }
+    .gal-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 40%, transparent 60%); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.25rem; }
     .gal-item:hover .gal-item-overlay { opacity: 1; }
-    .gal-item-name { color: #fff; font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
-    .gal-del-btn { position: absolute; top: 0.5rem; right: 0.5rem; width: 34px; height: 34px; border: none; border-radius: 8px; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.2s; }
-    .gal-del-btn:hover { background: rgba(220,38,38,0.7); color: #fff; }
-    .gal-del-btn .material-symbols-outlined { font-size: 1.15rem; }
+    .gal-item-name { color: #fff; font-size: 0.9rem; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.5); letter-spacing: 0.01em; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem; }
+    .modal-overlay[hidden] { display: none !important; }
+    .modal-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 2rem; max-width: 100%; position: relative; animation: modalIn 0.2s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,0.06); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { background: rgba(0,0,0,0.1); color: #1e293b; }
+
+    .poster-modal-card { width: 520px; max-width: 95vw; }
+    .poster-modal-body { display: flex; flex-direction: column; gap: 1.25rem; padding-right: 2rem; }
+    .poster-modal-img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .poster-modal-label { font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.35rem; display: block; }
+    .poster-modal-input { width: 100%; padding: 0.65rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.9rem; font-family: inherit; color: #1e293b; box-sizing: border-box; transition: border-color 0.2s; }
+    .poster-modal-input:focus { outline: none; border-color: #1c5fa8; box-shadow: 0 0 0 3px rgba(28,95,168,0.1); }
+    .poster-modal-file { font-size: 0.8rem; color: #94a3b8; margin: 0.5rem 0 0; }
+    .poster-modal-date { font-size: 0.8rem; color: #94a3b8; margin: 0.25rem 0 0; }
+    .poster-modal-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+    .confirm-modal-card { width: 360px; text-align: center; }
+    .confirm-icon { font-size: 3rem; color: #dc2626; }
+    .confirm-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0.5rem 0 0.25rem; }
+    .confirm-text { font-size: 0.9rem; color: #64748b; margin: 0 0 1.25rem; }
+    .confirm-actions { display: flex; gap: 0.5rem; justify-content: center; }
+
+    .modal-btn { padding: 0.55rem 1.2rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
+    .modal-btn-primary { background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; }
+    .modal-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(28,95,168,0.3); }
+    .modal-btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; }
+    .modal-btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    .modal-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .modal-btn-cancel:hover { background: #e2e8f0; }
 
     @media (max-width: 768px) {
+      .gal-header { flex-direction: column; }
       .gal-preview { flex-direction: column; align-items: stretch; }
       .gal-preview img { width: 100%; height: 180px; }
-      .gal-grid { grid-template-columns: repeat(2, 1fr); }
+      .gal-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+      .gal-item-name { font-size: 0.8rem; }
+      .poster-modal-body { padding-right: 0; }
     }
   </style>
 </AdminLayout>

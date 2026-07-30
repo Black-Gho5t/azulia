@@ -29,6 +29,21 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     </div>
   </div>
 
+  <div class="modal-overlay" id="confirmModal" hidden>
+    <div class="modal-card confirm-modal-card">
+      <button class="modal-close" id="confirmClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <span class="material-symbols-outlined confirm-icon">help</span>
+      <h3 class="confirm-title" id="confirmTitle">¿Restaurar?</h3>
+      <p class="confirm-text" id="confirmText"></p>
+      <div class="confirm-actions">
+        <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
+        <button class="modal-btn modal-btn-primary" id="confirmOk">Restaurar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     import { getTrashItems, restoreFromTrash } from '../../lib/admin';
     import type { TrashItem } from '../../lib/admin';
@@ -37,6 +52,27 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const typeIcons: Record<string, string> = { message: 'mail', admin: 'badge', poster: 'wallpaper' };
 
     let items: TrashItem[] = [];
+    let confirmResolve: ((ok: boolean) => void) | null = null;
+
+    const confirmModal = document.getElementById('confirmModal')!;
+    const confirmClose = document.getElementById('confirmClose')!;
+    const confirmTitle = document.getElementById('confirmTitle')!;
+    const confirmText = document.getElementById('confirmText')!;
+    const confirmCancel = document.getElementById('confirmCancel')!;
+    const confirmOk = document.getElementById('confirmOk')!;
+
+    function showConfirm(title: string, text: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        confirmTitle.textContent = title;
+        confirmText.textContent = text;
+        confirmResolve = resolve;
+        confirmModal.hidden = false;
+      });
+    }
+
+    confirmOk.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(true); });
+    confirmCancel.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
+    confirmClose.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
 
     function daysRemaining(expiresAt: Date | null): string {
       if (!expiresAt) return '—';
@@ -59,7 +95,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           : '—';
         let summary = '—';
         if (item.type === 'message') summary = (item.data as any)?.name || (item.data as any)?.contact || 'Mensaje';
-        else if (item.type === 'admin') summary = (item.data as any)?.originalId || item.originalId;
+        else if (item.type === 'admin') summary = (item.data as any)?.email || item.originalId;
         else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
         return `<tr>
           <td><span class="trash-type"><span class="material-symbols-outlined trash-type-icon">${typeIcons[item.type] || 'help'}</span>${typeLabels[item.type] || item.type}</span></td>
@@ -67,7 +103,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <td class="trash-date">${deletedDate}</td>
           <td><span class="trash-expire ${daysRemaining(item.expiresAt).includes('Hoy') ? 'trash-expire--urgent' : ''}">${daysRemaining(item.expiresAt)}</span></td>
           <td class="trash-actions">
-            <button class="trash-restore-btn" data-id="${item.id}" data-type="${item.type}" data-original="${item.originalId}" data-json='${JSON.stringify(item.data).replace(/'/g, '&#39;')}'>Restaurar</button>
+            <button class="trash-restore-btn" data-id="${item.id}" data-type="${item.type}" data-original="${item.originalId}" data-json='${JSON.stringify(item.data).replace(/'/g, "&#39;")}'>Restaurar</button>
           </td>
         </tr>`;
       }).join('');
@@ -80,8 +116,26 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           const originalId = el.dataset.original!;
           let data: Record<string, unknown>;
           try { data = JSON.parse(el.dataset.json!.replace(/&#39;/g, "'")); } catch { data = {}; }
-          if (!confirm('¿Restaurar este elemento?')) return;
-          await restoreFromTrash(id, type, originalId, data);
+
+          const ok = await showConfirm(
+            `¿Restaurar ${typeLabels[type] || type}?`,
+            type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' : 'El elemento volverá a su ubicación original.'
+          );
+          if (!ok) return;
+
+          if (type === 'poster') {
+            try {
+              const resp = await fetch(`/api/posters/restore/${id}`, { method: 'POST' });
+              if (!resp.ok) {
+                const result = await resp.json();
+                alert(result.error || 'No se pudo restaurar');
+              }
+            } catch (err) {
+              alert('Error al restaurar poster');
+            }
+          } else {
+            await restoreFromTrash(id, type, originalId, data);
+          }
           items = await getTrashItems();
           render();
         });
@@ -118,6 +172,25 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     .trash-restore-btn:hover { background: #dbeafe; }
 
     .trash-loading { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-style: italic; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem; }
+    .modal-overlay[hidden] { display: none !important; }
+    .modal-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 2rem; max-width: 100%; position: relative; animation: modalIn 0.2s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,0.06); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { background: rgba(0,0,0,0.1); color: #1e293b; }
+
+    .confirm-modal-card { width: 360px; text-align: center; }
+    .confirm-icon { font-size: 3rem; color: #1c5fa8; }
+    .confirm-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0.5rem 0 0.25rem; }
+    .confirm-text { font-size: 0.9rem; color: #64748b; margin: 0 0 1.25rem; }
+    .confirm-actions { display: flex; gap: 0.5rem; justify-content: center; }
+
+    .modal-btn { padding: 0.55rem 1.2rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
+    .modal-btn-primary { background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; }
+    .modal-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(28,95,168,0.3); }
+    .modal-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .modal-btn-cancel:hover { background: #e2e8f0; }
 
     @media (max-width: 768px) {
       .trash-table thead { display: none; }
