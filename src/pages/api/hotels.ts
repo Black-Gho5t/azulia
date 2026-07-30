@@ -27,7 +27,7 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { name, zone, price, score, description, image, perks } = body;
+    const { name, zone, price, score, description, images, coverIndex, perks } = body;
 
     if (!name || !zone || price == null || !description) {
       return new Response(JSON.stringify({ ok: false, error: 'Faltan campos requeridos' }), { status: 400 });
@@ -41,7 +41,8 @@ export const POST: APIRoute = async ({ request }) => {
       price: Number(price),
       score: Number(score) || 0,
       description,
-      image: image || '',
+      images: Array.isArray(images) ? images : [],
+      coverIndex: Number(coverIndex) || 0,
       perks: Array.isArray(perks) ? perks : [],
       createdAt: new Date(),
     });

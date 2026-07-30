@@ -29,7 +29,8 @@ export const POST: APIRoute = async () => {
         price: hotel.price,
         score: hotel.score,
         description: hotel.description,
-        image: hotel.image,
+        images: hotel.images,
+        coverIndex: hotel.coverIndex,
         perks: hotel.perks,
         createdAt: new Date(),
       });

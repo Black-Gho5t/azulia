@@ -10,7 +10,8 @@ export interface HotelEntry {
     price: number;
     score: number;
     description: string;
-    image: string;
+    images: string[];
+    coverIndex: number;
     perks: HotelPerk[];
 }
 
@@ -22,7 +23,8 @@ export const hotelsData: HotelEntry[] = [
         price: 3250,
         score: 4.9,
         description: "Suites boutique frente a la laguna, muelle privado y desayuno artesanal incluido.",
-        image: "/src/assets/photos_azulia_webp/ponton/pontom_8.webp",
+        images: ["/src/assets/photos_azulia_webp/ponton/pontom_8.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "water", label: "Vista laguna" },
             { icon: "free_breakfast", label: "Desayuno" },
@@ -36,7 +38,8 @@ export const hotelsData: HotelEntry[] = [
         price: 1890,
         score: 4.7,
         description: "Hospedaje eco-chic rodeado de naturaleza con actividades de kayak y zona de fogata nocturna.",
-        image: "/src/assets/photos_azulia_webp/upscale_azulia_1.webp",
+        images: ["/src/assets/photos_azulia_webp/upscale_azulia_1.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "park", label: "Naturaleza" },
             { icon: "kayaking", label: "Kayak" },
@@ -50,7 +53,8 @@ export const hotelsData: HotelEntry[] = [
         price: 2490,
         score: 4.8,
         description: "Habitaciones premium con rooftop, cocteleria al atardecer y traslados a puntos clave.",
-        image: "/src/assets/photos_azulia_webp/velero/velero_4.webp",
+        images: ["/src/assets/photos_azulia_webp/velero/velero_4.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "roofing", label: "Rooftop" },
             { icon: "airport_shuttle", label: "Traslados" },
@@ -64,7 +68,8 @@ export const hotelsData: HotelEntry[] = [
         price: 2790,
         score: 4.6,
         description: "Ideal para familias, con club infantil, alberca y paquetes de tours personalizados.",
-        image: "/src/assets/photos_azulia_webp/velero/velero_5.webp",
+        images: ["/src/assets/photos_azulia_webp/velero/velero_5.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "pool", label: "Alberca" },
             { icon: "child_care", label: "Club infantil" },
@@ -78,7 +83,8 @@ export const hotelsData: HotelEntry[] = [
         price: 3590,
         score: 5.0,
         description: "Concepto adults only con experiencias privadas en velero y cenas romanticas junto al agua.",
-        image: "/src/assets/photos_azulia_webp/velero/velero_3.webp",
+        images: ["/src/assets/photos_azulia_webp/velero/velero_3.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "sailing", label: "Velero privado" },
             { icon: "restaurant", label: "Cena gourmet" },
@@ -92,7 +98,8 @@ export const hotelsData: HotelEntry[] = [
         price: 2140,
         score: 4.5,
         description: "Suites amplias para estancias largas, coworking y excelente ubicacion para explorar Bacalar.",
-        image: "/src/assets/photos_azulia_webp/ponton/pontom_2.webp",
+        images: ["/src/assets/photos_azulia_webp/ponton/pontom_2.webp"],
+        coverIndex: 0,
         perks: [
             { icon: "wifi", label: "Wifi rápido" },
             { icon: "luggage", label: "Estancias largas" },

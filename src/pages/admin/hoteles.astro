@@ -38,7 +38,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <!-- Formulario -->
         <form id="hotelForm" class="hotel-form">
           <input type="hidden" id="hotelId" />
-          <input type="hidden" id="hotelImageUrl" />
 
           <div class="form-row">
             <div class="form-group">
@@ -63,27 +62,82 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           </div>
 
           <div class="form-group">
-            <label>Imagen del hotel</label>
-            <div class="upload-zone" id="hotelDropZone">
-              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
-              <p class="upload-text">Arrastra una imagen o haz clic</p>
-              <p class="upload-hint">Todos los formatos · Máx 20 MB</p>
-              <input type="file" id="hotelFileInput" accept="image/*" hidden />
-              <button type="button" class="upload-select-btn" id="hotelSelectBtn">Seleccionar</button>
-            </div>
-            <div class="upload-preview" id="hotelPreview" hidden>
-              <img id="hotelPreviewImg" alt="Vista previa" />
-              <div class="upload-preview-info">
-                <span class="upload-filename" id="hotelPreviewName"></span>
-                <div class="upload-progress-wrap" id="hotelProgressWrap" hidden>
-                  <div class="upload-progress-bar"><div class="upload-progress-fill" id="hotelProgressFill"></div></div>
-                  <span class="upload-progress-text" id="hotelProgressText">0%</span>
+            <label>Fotos del hotel (máx. 4)</label>
+            <div class="photo-grid" id="photoGrid">
+              <div class="photo-slot" data-slot="0" id="photoSlot0">
+                <div class="photo-slot-empty">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  <span class="photo-slot-label">Foto 1</span>
                 </div>
-                <div class="upload-preview-actions">
-                  <button type="button" class="upload-remove-btn" id="hotelRemoveImg">Quitar imagen</button>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" alt="" />
+                  <div class="photo-slot-cover" id="photoCover0" data-cover="0">
+                    <span class="material-symbols-outlined">photo_camera_back</span> Portada
+                  </div>
+                  <div class="photo-slot-progress" hidden>
+                    <div class="photo-slot-progress-bar"><div class="photo-slot-progress-fill" id="photoProgressFill0"></div></div>
+                  </div>
+                  <button type="button" class="photo-slot-remove" data-remove="0">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </div>
+              <div class="photo-slot" data-slot="1" id="photoSlot1">
+                <div class="photo-slot-empty">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  <span class="photo-slot-label">Foto 2</span>
+                </div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" alt="" />
+                  <div class="photo-slot-cover" id="photoCover1" data-cover="1">
+                    <span class="material-symbols-outlined">photo_camera_back</span> Portada
+                  </div>
+                  <div class="photo-slot-progress" hidden>
+                    <div class="photo-slot-progress-bar"><div class="photo-slot-progress-fill" id="photoProgressFill1"></div></div>
+                  </div>
+                  <button type="button" class="photo-slot-remove" data-remove="1">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </div>
+              <div class="photo-slot" data-slot="2" id="photoSlot2">
+                <div class="photo-slot-empty">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  <span class="photo-slot-label">Foto 3</span>
+                </div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" alt="" />
+                  <div class="photo-slot-cover" id="photoCover2" data-cover="2">
+                    <span class="material-symbols-outlined">photo_camera_back</span> Portada
+                  </div>
+                  <div class="photo-slot-progress" hidden>
+                    <div class="photo-slot-progress-bar"><div class="photo-slot-progress-fill" id="photoProgressFill2"></div></div>
+                  </div>
+                  <button type="button" class="photo-slot-remove" data-remove="2">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </div>
+              <div class="photo-slot" data-slot="3" id="photoSlot3">
+                <div class="photo-slot-empty">
+                  <span class="material-symbols-outlined">add_photo_alternate</span>
+                  <span class="photo-slot-label">Foto 4</span>
+                </div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" alt="" />
+                  <div class="photo-slot-cover" id="photoCover3" data-cover="3">
+                    <span class="material-symbols-outlined">photo_camera_back</span> Portada
+                  </div>
+                  <div class="photo-slot-progress" hidden>
+                    <div class="photo-slot-progress-bar"><div class="photo-slot-progress-fill" id="photoProgressFill3"></div></div>
+                  </div>
+                  <button type="button" class="photo-slot-remove" data-remove="3">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
                 </div>
               </div>
             </div>
+            <input type="file" id="hotelFileInput" accept="image/*" hidden />
             <div class="upload-error" id="hotelUploadError" hidden></div>
           </div>
 
@@ -285,107 +339,114 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem; }
     .modal-overlay[hidden] { display: none !important; }
-    .modal-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 1.75rem; width: min(580px, 100%); max-height: 85vh; overflow-y: auto; position: relative; animation: modalIn 0.2s ease; }
-    .modal-card-wide { width: min(960px, 95vw); }
+    .modal-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 1.5rem; width: min(1100px, 95vw); max-height: 85vh; position: relative; animation: modalIn 0.2s ease; display: flex; flex-direction: column; }
+    .modal-card-wide { width: min(1100px, 95vw); }
     @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,0.06); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2; }
     .modal-close:hover { background: rgba(0,0,0,0.1); color: #1e293b; }
-    .modal-title { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin: 0 0 1.25rem; }
+    .modal-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0 0 1rem; flex-shrink: 0; }
 
-    .modal-split { display: flex; gap: 1.5rem; align-items: flex-start; }
-    .modal-split > .hotel-form { flex: 1; min-width: 0; }
+    .modal-split { display: flex; gap: 1.25rem; align-items: stretch; flex: 1; min-height: 0; }
 
-    /* Preview panel */
-    .preview-panel { flex: 0 0 280px; display: flex; flex-direction: column; gap: 0.5rem; position: sticky; top: 0; }
-    .preview-label { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .hotel-form { display: flex; flex-direction: column; gap: 0.7rem; flex: 1; min-width: 0; overflow-y: auto; padding-right: 0.5rem; scrollbar-width: none; -ms-overflow-style: none; }
+    .hotel-form::-webkit-scrollbar { display: none; }
 
-    .preview-card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid rgba(38,117,165,0.16); box-shadow: 0 4px 16px rgba(21,71,117,0.1); transition: all 0.3s; width: 100%; }
-    .preview-card-img { position: relative; width: 100%; height: 160px; overflow: hidden; background: #f1f5f9; }
-    .preview-card-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .preview-card-img img[data-visible] { display: block; }
-    .preview-card-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #cbd5e1; }
-    .preview-card-placeholder .material-symbols-outlined { font-size: 3rem; }
-    .preview-card-placeholder[data-hidden] { display: none; }
-    .preview-card-rating { position: absolute; top: 0.5rem; right: 0.5rem; display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.5rem; border-radius: 999px; background: rgba(22,50,79,0.78); color: #fff; font-size: 0.78rem; font-weight: 700; backdrop-filter: blur(4px); }
-    .preview-card-rating .material-symbols-outlined { font-size: 0.85rem; color: #ffd35f; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.2rem; }
+    .form-group label { font-size: 0.75rem; font-weight: 700; color: #475569; }
+    .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select { padding: 0.45rem 0.65rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; font-family: inherit; color: #1e293b; background: #fff; transition: border-color 0.2s; box-sizing: border-box; width: 100%; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #217b96; box-shadow: 0 0 0 2px rgba(33,123,150,0.1); }
+    .form-group textarea { resize: vertical; min-height: 50px; }
 
-    .preview-card-body { padding: 0.75rem 0.85rem 0.85rem; }
-    .preview-card-name { margin: 0; color: #1c5fa8; font-size: 0.95rem; line-height: 1.3; }
-    .preview-card-zone { display: inline-flex; align-items: center; gap: 0.15rem; color: #217b96; font-size: 0.78rem; font-weight: 600; margin-top: 0.15rem; }
-    .preview-card-zone .material-symbols-outlined { font-size: 0.9rem; }
-    .preview-card-desc { color: #4e6278; font-size: 0.82rem; line-height: 1.5; margin: 0.4rem 0 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .preview-card-perks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
-    .preview-card-perks li { display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.22rem 0.5rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.7rem; font-weight: 600; }
-    .preview-card-perks li .material-symbols-outlined { font-size: 0.85rem; }
-    .preview-card-footer { margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid #f1f5f9; }
-    .preview-card-price { color: #1c5fa8; font-size: 0.92rem; font-weight: 800; }
+    /* Photo grid */
+    .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    .photo-slot { position: relative; aspect-ratio: 1; border-radius: 10px; border: 2px dashed #cbd5e1; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+    .photo-slot:hover { border-color: #217b96; }
+    .photo-slot-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; color: #94a3b8; gap: 0.15rem; }
+    .photo-slot-empty[hidden] { display: none !important; }
+    .photo-slot-empty .material-symbols-outlined { font-size: 1.5rem; }
+    .photo-slot-label { font-size: 0.65rem; font-weight: 600; }
+    .photo-slot-filled { position: relative; width: 100%; height: 100%; }
+    .photo-slot-filled[hidden] { display: none !important; }
+    .photo-slot-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-slot-cover { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.35rem 0.5rem; background: rgba(28,95,168,0.75); color: #fff; font-size: 0.62rem; font-weight: 700; display: flex; align-items: center; gap: 0.2rem; cursor: pointer; transition: opacity 0.2s; opacity: 0; }
+    .photo-slot:hover .photo-slot-cover { opacity: 1; }
+    .photo-slot-cover:hover { background: rgba(28,95,168,0.95); }
+    .photo-slot-cover .material-symbols-outlined { font-size: 0.8rem; }
+    :global(.photo-slot.is-cover) .photo-slot-cover { display: none; }
+    :global(.photo-slot.is-cover) { border: 2px solid #1c5fa8; border-style: solid; }
+    .photo-slot-progress { position: absolute; bottom: 0; left: 0; right: 0; padding: 0.3rem 0.4rem; background: rgba(0,0,0,0.5); }
+    .photo-slot-progress[hidden] { display: none !important; }
+    .photo-slot-progress-bar { height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
+    .photo-slot-progress-fill { height: 100%; width: 0%; background: #1c5fa8; border-radius: 2px; transition: width 0.3s; }
+    .photo-slot-remove { position: absolute; top: 0.25rem; right: 0.25rem; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(220,38,38,0.85); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; z-index: 2; }
+    .photo-slot:hover .photo-slot-remove { opacity: 1; }
+    .photo-slot-remove .material-symbols-outlined { font-size: 0.85rem; }
 
-    .hotel-form { display: flex; flex-direction: column; gap: 1rem; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
-    .form-group label { font-size: 0.8rem; font-weight: 700; color: #475569; }
-    .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select { padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.88rem; font-family: inherit; color: #1e293b; background: #fff; transition: border-color 0.2s; box-sizing: border-box; width: 100%; }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #217b96; box-shadow: 0 0 0 3px rgba(33,123,150,0.12); }
+    .upload-error { margin-top: 0.4rem; padding: 0.5rem 0.7rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 0.78rem; font-weight: 500; }
 
-    /* Upload zone */
-    .upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .upload-zone:hover, .upload-zone--over { border-color: #1c5fa8; background: rgba(28,95,168,0.04); }
-    .upload-icon { font-size: 2rem; color: #94a3b8; }
-    .upload-text { font-size: 0.88rem; color: #475569; margin: 0.4rem 0 0.15rem; }
-    .upload-hint { font-size: 0.75rem; color: #94a3b8; margin: 0 0 0.75rem; }
-    .upload-select-btn { padding: 0.5rem 1.2rem; border: none; border-radius: 8px; background: #1c5fa8; color: #fff; font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.2s; }
-    .upload-select-btn:hover { background: #155088; }
-
-    .upload-preview { display: flex; gap: 1rem; align-items: flex-start; margin-top: 0.5rem; }
-    .upload-preview img { width: 120px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; flex-shrink: 0; }
-    .upload-preview-info { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
-    .upload-filename { font-size: 0.8rem; color: #64748b; font-weight: 500; }
-    .upload-progress-wrap { display: flex; align-items: center; gap: 0.6rem; }
-    .upload-progress-bar { flex: 1; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
-    .upload-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1c5fa8, #217b96); border-radius: 3px; transition: width 0.3s ease; }
-    .upload-progress-text { font-size: 0.75rem; font-weight: 600; color: #1c5fa8; min-width: 2.5rem; }
-    .upload-preview-actions { display: flex; gap: 0.4rem; }
-    .upload-remove-btn { padding: 0.35rem 0.8rem; border: 1px solid #fecaca; border-radius: 6px; background: #fff; color: #dc2626; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-    .upload-remove-btn:hover { background: #fef2f2; }
-
-    .upload-error { margin-top: 0.5rem; padding: 0.6rem 0.8rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 0.82rem; font-weight: 500; }
-
-    .perks-list { display: flex; flex-wrap: wrap; gap: 0.35rem; min-height: 28px; margin-bottom: 0.3rem; }
-    :global(.perk-tag) { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.75rem; font-weight: 600; }
-    :global(.perk-tag button) { display: inline-flex; align-items: center; background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0; font-size: 0.85rem; line-height: 1; }
+    .perks-list { display: flex; flex-wrap: wrap; gap: 0.3rem; min-height: 24px; margin-bottom: 0.2rem; }
+    :global(.perk-tag) { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.5rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.72rem; font-weight: 600; }
+    :global(.perk-tag button) { display: inline-flex; align-items: center; background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0; font-size: 0.8rem; line-height: 1; }
     :global(.perk-tag button:hover) { color: #dc2626; }
 
-    .perk-add-row { display: flex; gap: 0.4rem; align-items: center; }
+    .perk-add-row { display: flex; gap: 0.35rem; align-items: center; }
     .perk-add-row input[type="text"] { flex: 1; }
-    .perk-add-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .perk-add-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
     .perk-add-btn:hover { background: #e9f6fb; border-color: #217b96; color: #217b96; }
 
     /* Perk icon dropdown */
     .perk-icon-dropdown { position: relative; flex-shrink: 0; }
-    .perk-icon-trigger { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 0.6rem; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s; white-space: nowrap; }
+    .perk-icon-trigger { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.5rem; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; font-family: inherit; font-size: 0.82rem; cursor: pointer; transition: border-color 0.2s; white-space: nowrap; }
     .perk-icon-trigger:hover { border-color: #217b96; }
-    .perk-icon-sel { font-size: 1.15rem; color: #1c5fa8; }
-    .perk-icon-label { color: #1e293b; font-weight: 600; font-size: 0.82rem; }
-    .perk-icon-arrow { font-size: 1rem; color: #94a3b8; transition: transform 0.2s; }
+    .perk-icon-sel { font-size: 1.1rem; color: #1c5fa8; }
+    .perk-icon-label { color: #1e293b; font-weight: 600; font-size: 0.78rem; }
+    .perk-icon-arrow { font-size: 0.95rem; color: #94a3b8; transition: transform 0.2s; }
     .perk-icon-dropdown[data-open] .perk-icon-arrow { transform: rotate(180deg); }
 
-    .perk-icon-panel { position: absolute; top: calc(100% + 4px); left: 0; z-index: 100; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 0.5rem 0.6rem 0.7rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; min-width: 340px; max-height: 320px; overflow-y: auto; }
+    .perk-icon-panel { position: absolute; top: calc(100% + 4px); left: 0; z-index: 100; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 0.4rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 310px; max-height: 280px; overflow-y: auto; }
     .perk-icon-panel[hidden] { display: none; }
-    .perk-icon-option { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.6rem; border-radius: 8px; cursor: pointer; transition: background 0.15s; font-size: 0.78rem; color: #334155; font-weight: 500; }
+    .perk-icon-option { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.5rem; border-radius: 8px; cursor: pointer; transition: background 0.15s; font-size: 0.75rem; color: #334155; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .perk-icon-option:hover { background: #e9f6fb; }
-    .perk-icon-option .material-symbols-outlined { font-size: 1.1rem; color: #1c5fa8; }
+    .perk-icon-option .material-symbols-outlined { font-size: 1.1rem; color: #1c5fa8; flex-shrink: 0; }
     .perk-icon-option[data-selected] { background: #dbeafe; color: #1d4ed8; }
     .perk-icon-option[data-selected] .material-symbols-outlined { color: #1d4ed8; }
 
-    .form-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem; }
+    .form-actions { display: flex; gap: 0.4rem; justify-content: flex-end; margin-top: 0.3rem; flex-shrink: 0; }
 
-    .modal-btn { padding: 0.6rem 1.4rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
+    .modal-btn { padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
     .modal-btn-primary { background: linear-gradient(135deg, #2675a5, #217b96); color: #fff; }
     .modal-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(38,117,165,0.3); }
     .modal-btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; }
     .modal-btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
     .modal-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
     .modal-btn-cancel:hover { background: #e2e8f0; }
+
+    /* Preview panel */
+    .preview-panel { flex: 0 0 300px; display: flex; flex-direction: column; gap: 0.5rem; position: sticky; top: 0; background: linear-gradient(135deg, #0f2a4a 0%, #163d6b 50%, #1a4f7a 100%); border-radius: 14px; padding: 1rem; align-self: stretch; justify-content: center; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .preview-panel::-webkit-scrollbar { display: none; }
+    .preview-label { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .preview-card { background: #fff; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: all 0.3s; width: 100%; }
+    .preview-card-img { position: relative; width: 100%; height: 150px; overflow: hidden; background: #f1f5f9; }
+    .preview-card-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .preview-card-img img[data-visible] { display: block; }
+    .preview-card-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #cbd5e1; }
+    .preview-card-placeholder .material-symbols-outlined { font-size: 2.5rem; }
+    .preview-card-placeholder[data-hidden] { display: none; }
+    .preview-card-rating { position: absolute; top: 0.5rem; right: 0.5rem; display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.5rem; border-radius: 999px; background: rgba(22,50,79,0.78); color: #fff; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px); }
+    .preview-card-rating .material-symbols-outlined { font-size: 0.8rem; color: #ffd35f; }
+
+    .preview-card-body { padding: 0.65rem 0.75rem 0.75rem; }
+    .preview-card-name { margin: 0; color: #1c5fa8; font-size: 0.88rem; line-height: 1.3; }
+    .preview-card-zone { display: inline-flex; align-items: center; gap: 0.15rem; color: #217b96; font-size: 0.73rem; font-weight: 600; margin-top: 0.1rem; }
+    .preview-card-zone .material-symbols-outlined { font-size: 0.85rem; }
+    .preview-card-desc { color: #4e6278; font-size: 0.78rem; line-height: 1.45; margin: 0.35rem 0 0.4rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    :global(.preview-card-perks) { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem; }
+    :global(.preview-card-perks li) { display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.2rem 0.45rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.68rem; font-weight: 600; }
+    :global(.preview-card-perks li .material-symbols-outlined) { font-size: 0.8rem; }
+    .preview-card-footer { margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid #f1f5f9; }
+    .preview-card-price { color: #1c5fa8; font-size: 0.88rem; font-weight: 800; }
 
     .confirm-modal-card { width: 380px; text-align: center; }
     .confirm-icon { font-size: 3rem; color: #dc2626; }
@@ -408,11 +469,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       .form-row { grid-template-columns: 1fr; }
       .hoteles-header { flex-direction: column; }
       .modal-card-wide { width: 100%; }
+      .modal-card { padding: 1rem; }
+      .photo-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 800px) {
       .modal-split { flex-direction: column; }
       .preview-panel { flex: none; width: 100%; position: static; }
-      .preview-card { max-width: 300px; margin: 0 auto; }
+      .preview-card { max-width: 280px; margin: 0 auto; }
     }
   </style>
 
@@ -426,7 +489,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     const hotelForm = document.getElementById('hotelForm') as HTMLFormElement;
     const hotelIdInput = document.getElementById('hotelId') as HTMLInputElement;
-    const hotelImageUrl = document.getElementById('hotelImageUrl') as HTMLInputElement;
     const hotelName = document.getElementById('hotelName') as HTMLInputElement;
     const hotelZone = document.getElementById('hotelZone') as HTMLInputElement;
     const hotelPrice = document.getElementById('hotelPrice') as HTMLInputElement;
@@ -442,27 +504,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const modalTitle = document.getElementById('modalTitle')!;
     const saveBtn = document.getElementById('saveBtn')!;
 
-    const hotelDropZone = document.getElementById('hotelDropZone')!;
     const hotelFileInput = document.getElementById('hotelFileInput') as HTMLInputElement;
-    const hotelSelectBtn = document.getElementById('hotelSelectBtn')!;
-    const hotelPreview = document.getElementById('hotelPreview')!;
-    const hotelPreviewImg = document.getElementById('hotelPreviewImg') as HTMLImageElement;
-    const hotelPreviewName = document.getElementById('hotelPreviewName')!;
-    const hotelProgressWrap = document.getElementById('hotelProgressWrap')!;
-    const hotelProgressFill = document.getElementById('hotelProgressFill')!;
-    const hotelProgressText = document.getElementById('hotelProgressText')!;
-    const hotelRemoveImg = document.getElementById('hotelRemoveImg')!;
     const hotelUploadError = document.getElementById('hotelUploadError')!;
 
     const toastOverlay = document.getElementById('toastOverlay')!;
     const toastCard = document.getElementById('toastCard')!;
     const toastIcon = document.getElementById('toastIcon')!;
     const toastText = document.getElementById('toastText')!;
-
-    let currentPerks: { icon: string; label: string }[] = [];
-    let deleteTargetId: string | null = null;
-    let selectedHotelFile: File | null = null;
-    let uploadedImageUrl: string = '';
 
     const prevCardImg = document.getElementById('prevCardImg') as HTMLImageElement;
     const prevCardPlaceholder = document.getElementById('prevCardPlaceholder')!;
@@ -473,12 +521,47 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const prevCardPerks = document.getElementById('prevCardPerks')!;
     const prevCardPrice = document.getElementById('prevCardPrice')!;
 
+    let currentPerks: { icon: string; label: string }[] = [];
+    let deleteTargetId: string | null = null;
+    let hotelImages: string[] = [];
+    let hotelCoverIndex: number = 0;
+    let activeSlotIndex: number | null = null;
+
     function showToast(type: 'success' | 'error' | 'info', msg: string) {
       toastCard.className = 'toast-card toast-' + type;
       toastIcon.textContent = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
       toastText.textContent = msg;
       toastOverlay.hidden = false;
       setTimeout(() => { toastOverlay.hidden = true; }, 3500);
+    }
+
+    function showUploadError(msg: string) {
+      hotelUploadError.textContent = msg;
+      hotelUploadError.hidden = false;
+    }
+    function hideUploadError() { hotelUploadError.hidden = true; }
+
+    function renderPhotoSlots() {
+      for (let i = 0; i < 4; i++) {
+        const slot = document.getElementById(`photoSlot${i}`)!;
+        const emptyEl = slot.querySelector('.photo-slot-empty') as HTMLElement;
+        const filledEl = slot.querySelector('.photo-slot-filled') as HTMLElement;
+        const img = slot.querySelector('.photo-slot-img') as HTMLImageElement;
+        const coverBtn = document.getElementById(`photoCover${i}`)!;
+
+        if (hotelImages[i]) {
+          emptyEl.hidden = true;
+          filledEl.hidden = false;
+          img.src = hotelImages[i];
+          slot.classList.toggle('is-cover', i === hotelCoverIndex);
+          coverBtn.hidden = hotelImages.length < 2;
+        } else {
+          emptyEl.hidden = false;
+          filledEl.hidden = true;
+          img.src = '';
+          slot.classList.remove('is-cover');
+        }
+      }
     }
 
     function updatePreview() {
@@ -494,9 +577,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       prevCardScore.textContent = String(score);
       prevCardPrice.textContent = `$${price.toLocaleString('es-MX')} MXN`;
 
-      const imgUrl = hotelImageUrl.value || (hotelPreviewImg.src && !hotelPreviewImg.src.startsWith('about:') ? hotelPreviewImg.src : '');
-      if (imgUrl) {
-        prevCardImg.src = imgUrl;
+      const coverUrl = hotelImages[hotelCoverIndex] || '';
+      if (coverUrl) {
+        prevCardImg.src = coverUrl;
         prevCardImg.setAttribute('data-visible', '');
         prevCardPlaceholder.setAttribute('data-hidden', '');
       } else {
@@ -509,48 +592,101 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       ).join('');
     }
 
-    function showUploadError(msg: string) {
-      hotelUploadError.textContent = msg;
-      hotelUploadError.hidden = false;
-    }
-    function hideUploadError() { hotelUploadError.hidden = true; }
-
-    function resetUploadZone() {
-      selectedHotelFile = null;
-      uploadedImageUrl = '';
-      hotelImageUrl.value = '';
+    function resetPhotos() {
+      hotelImages = [];
+      hotelCoverIndex = 0;
       hotelFileInput.value = '';
-      hotelPreviewImg.src = '';
-      hotelPreviewName.textContent = '';
-      hotelProgressWrap.hidden = true;
-      hotelProgressFill.style.width = '0%';
-      hotelDropZone.hidden = false;
-      hotelPreview.hidden = true;
       hideUploadError();
+      renderPhotoSlots();
     }
 
-    function handleHotelFile(file: File) {
+    function handleSlotClick(index: number) {
+      if (hotelImages.length >= 4 && !hotelImages[index]) {
+        showToast('info', 'Máximo 4 fotos por hotel.');
+        return;
+      }
+      activeSlotIndex = index;
+      hotelFileInput.value = '';
+      hotelFileInput.click();
+    }
+
+    async function uploadToSlot(file: File, slotIndex: number) {
       hideUploadError();
       if (!file.type.startsWith('image/')) { showUploadError('Formato no soportado.'); return; }
       if (file.size > 20 * 1024 * 1024) { showUploadError('La imagen supera los 20 MB.'); return; }
-      selectedHotelFile = file;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        hotelPreviewImg.src = e.target!.result as string;
+
+      const progressFill = document.getElementById(`photoProgressFill${slotIndex}`)!;
+      const progressWrap = progressFill.closest('.photo-slot-progress') as HTMLElement;
+      progressWrap.hidden = false;
+      progressFill.style.width = '10%';
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('hotelId', hotelIdInput.value || 'new');
+
+        const resp = await fetch('/api/hotels/upload', { method: 'POST', body: formData });
+        progressFill.style.width = '80%';
+        const result = await resp.json();
+        if (!resp.ok || !result.ok) throw new Error(result.error || 'Error al subir');
+        progressFill.style.width = '100%';
+
+        hotelImages[slotIndex] = result.url;
+        if (hotelImages.filter(Boolean).length === 1) hotelCoverIndex = slotIndex;
+        renderPhotoSlots();
         updatePreview();
-      };
-      reader.readAsDataURL(file);
-      hotelDropZone.hidden = true;
-      hotelPreview.hidden = false;
-      hotelPreviewName.textContent = file.name;
+      } catch (err: any) {
+        showUploadError(err.message);
+      } finally {
+        progressWrap.hidden = true;
+        progressFill.style.width = '0%';
+      }
     }
 
-    hotelDropZone.addEventListener('dragover', (e) => { e.preventDefault(); hotelDropZone.classList.add('upload-zone--over'); });
-    hotelDropZone.addEventListener('dragleave', () => { hotelDropZone.classList.remove('upload-zone--over'); });
-    hotelDropZone.addEventListener('drop', (e) => { e.preventDefault(); hotelDropZone.classList.remove('upload-zone--over'); if (e.dataTransfer?.files[0]) handleHotelFile(e.dataTransfer.files[0]); });
-    hotelSelectBtn.addEventListener('click', () => hotelFileInput.click());
-    hotelFileInput.addEventListener('change', () => { if (hotelFileInput.files?.[0]) handleHotelFile(hotelFileInput.files[0]); });
-    hotelRemoveImg.addEventListener('click', () => { resetUploadZone(); updatePreview(); });
+    hotelFileInput.addEventListener('change', () => {
+      if (hotelFileInput.files?.[0] && activeSlotIndex !== null) {
+        uploadToSlot(hotelFileInput.files[0], activeSlotIndex);
+        activeSlotIndex = null;
+      }
+    });
+
+    for (let i = 0; i < 4; i++) {
+      const slot = document.getElementById(`photoSlot${i}`)!;
+      slot.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.photo-slot-remove') || target.closest('.photo-slot-cover')) return;
+        if (!hotelImages[i]) {
+          handleSlotClick(i);
+        } else if (hotelImages.length < 4) {
+          handleSlotClick(i);
+        }
+      });
+    }
+
+    document.querySelectorAll('.photo-slot-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = Number(btn.getAttribute('data-remove'));
+        hotelImages.splice(idx, 1);
+        hotelImages.push('');
+        while (hotelImages.length > 0 && hotelImages[hotelImages.length - 1] === '') hotelImages.pop();
+        if (hotelCoverIndex >= hotelImages.length) hotelCoverIndex = Math.max(0, hotelImages.length - 1);
+        renderPhotoSlots();
+        updatePreview();
+      });
+    });
+
+    document.querySelectorAll('.photo-slot-cover').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = Number(btn.getAttribute('data-cover'));
+        if (hotelImages[idx]) {
+          hotelCoverIndex = idx;
+          renderPhotoSlots();
+          updatePreview();
+        }
+      });
+    });
 
     hotelName.addEventListener('input', updatePreview);
     hotelZone.addEventListener('input', updatePreview);
@@ -584,30 +720,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       perkIconDropdown.removeAttribute('data-open');
     });
 
-    async function uploadHotelImage(file: File): Promise<string> {
-      return new Promise((resolve, reject) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('hotelId', hotelIdInput.value || 'new');
-
-        hotelProgressWrap.hidden = false;
-        hotelProgressFill.style.width = '10%';
-        hotelProgressText.textContent = '10%';
-
-        fetch('/api/hotels/upload', { method: 'POST', body: formData })
-          .then(async (resp) => {
-            hotelProgressFill.style.width = '90%';
-            hotelProgressText.textContent = '90%';
-            const result = await resp.json();
-            if (!resp.ok || !result.ok) throw new Error(result.error || 'Error al subir');
-            hotelProgressFill.style.width = '100%';
-            hotelProgressText.textContent = '100%';
-            resolve(result.url);
-          })
-          .catch((err) => { reject(err); });
-      });
-    }
-
     function renderPerks() {
       perksList.innerHTML = currentPerks.map((p, i) =>
         `<span class="perk-tag"><span class="material-symbols-outlined">${p.icon}</span> ${p.label} <button type="button" data-remove="${i}">&times;</button></span>`
@@ -624,7 +736,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     function openModal(hotel?: any) {
       currentPerks = hotel ? [...hotel.perks] : [];
       hotelIdInput.value = hotel ? hotel.id : '';
-      hotelImageUrl.value = hotel ? hotel.image : '';
       hotelName.value = hotel ? hotel.name : '';
       hotelZone.value = hotel ? hotel.zone : '';
       hotelPrice.value = hotel ? hotel.price : '';
@@ -633,21 +744,23 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       modalTitle.textContent = hotel ? 'Editar hotel' : 'Agregar hotel';
       saveBtn.textContent = hotel ? 'Guardar cambios' : 'Guardar hotel';
 
-      if (hotel && hotel.image) {
-        hotelPreviewImg.src = hotel.image;
-        hotelPreviewName.textContent = hotel.image.split('/').pop() || 'Imagen actual';
-        hotelDropZone.hidden = true;
-        hotelPreview.hidden = false;
-        hotelProgressWrap.hidden = true;
+      if (hotel && Array.isArray(hotel.images) && hotel.images.length > 0) {
+        hotelImages = [...hotel.images];
+        hotelCoverIndex = Number(hotel.coverIndex) || 0;
+      } else if (hotel && hotel.image) {
+        hotelImages = [hotel.image];
+        hotelCoverIndex = 0;
       } else {
-        resetUploadZone();
+        resetPhotos();
       }
+      renderPhotoSlots();
       renderPerks();
       updatePreview();
       hotelModal.hidden = false;
+      document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() { hotelModal.hidden = true; resetUploadZone(); }
+    function closeModal() { hotelModal.hidden = true; resetPhotos(); document.body.style.overflow = ''; }
 
     async function loadHotels() {
       try {
@@ -666,13 +779,17 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           return;
         }
 
-        grid.innerHTML = data.hotels.map((h: any) => `
+        grid.innerHTML = data.hotels.map((h: any) => {
+          const imgs = Array.isArray(h.images) ? h.images : (h.image ? [h.image] : []);
+          const coverIdx = Number(h.coverIndex) || 0;
+          const coverImg = imgs[coverIdx] || imgs[0] || '';
+          return `
           <article class="hotel-card-admin">
             <div class="hotel-card-img">
-              ${h.image
-                ? `<img src="${h.image}" alt="${h.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />`
+              ${coverImg
+                ? `<img src="${coverImg}" alt="${h.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />`
                 : ''}
-              <div class="hotel-card-placeholder" ${h.image ? 'style="display:none"' : ''}>
+              <div class="hotel-card-placeholder" ${coverImg ? 'style="display:none"' : ''}>
                 <span class="material-symbols-outlined">apartment</span>
               </div>
               <div class="hotel-card-rating">
@@ -704,8 +821,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 </div>
               </div>
             </div>
-          </article>
-        `).join('');
+          </article>`;
+        }).join('');
 
         grid.querySelectorAll('[data-edit]').forEach(btn => {
           btn.addEventListener('click', () => openModal(JSON.parse(btn.getAttribute('data-edit')!)));
@@ -716,6 +833,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             deleteTargetId = btn.getAttribute('data-delete');
             document.getElementById('confirmText')!.textContent = `¿Eliminar "${btn.getAttribute('data-name')}"? Esta acción no se puede deshacer.`;
             confirmModal.hidden = false;
+            document.body.style.overflow = 'hidden';
           });
         });
 
@@ -760,25 +878,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       e.preventDefault();
       const id = hotelIdInput.value;
 
-      let finalImageUrl = hotelImageUrl.value;
-
-      if (selectedHotelFile && !uploadedImageUrl) {
-        try {
-          uploadedImageUrl = await uploadHotelImage(selectedHotelFile);
-          finalImageUrl = uploadedImageUrl;
-        } catch (err: any) {
-          showToast('error', 'Error al subir imagen: ' + err.message);
-          return;
-        }
-      }
-
       const payload = {
         id: id || undefined,
         name: hotelName.value.trim(),
         zone: hotelZone.value.trim(),
         price: Number(hotelPrice.value),
         score: Number(hotelScore.value) || 0,
-        image: finalImageUrl,
+        images: hotelImages.filter(Boolean),
+        coverIndex: hotelCoverIndex,
         description: hotelDesc.value.trim(),
         perks: currentPerks,
       };
@@ -796,9 +903,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       }
     });
 
-    document.getElementById('confirmClose')!.addEventListener('click', () => { confirmModal.hidden = true; });
-    document.getElementById('confirmCancel')!.addEventListener('click', () => { confirmModal.hidden = true; });
-    confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmModal.hidden = true; });
+    document.getElementById('confirmClose')!.addEventListener('click', () => { confirmModal.hidden = true; document.body.style.overflow = ''; });
+    document.getElementById('confirmCancel')!.addEventListener('click', () => { confirmModal.hidden = true; document.body.style.overflow = ''; });
+    confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) { confirmModal.hidden = true; document.body.style.overflow = ''; } });
 
     document.getElementById('confirmDelete')!.addEventListener('click', async () => {
       if (!deleteTargetId) return;
@@ -807,6 +914,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
         confirmModal.hidden = true;
+        document.body.style.overflow = '';
         deleteTargetId = null;
         showToast('success', 'Hotel eliminado correctamente.');
         await loadHotels();
