@@ -1,0 +1,820 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Hoteles · Azulia Admin">
+  <div class="hoteles-page">
+    <div class="hoteles-header">
+      <div>
+        <h1 class="hoteles-title">Hoteles</h1>
+        <p class="hoteles-subtitle">Gestiona los hoteles que se muestran en el sitio público.</p>
+      </div>
+      <div class="header-actions">
+        <button class="seed-btn" id="seedBtn">
+          <span class="material-symbols-outlined">database</span>
+          Seed datos
+        </button>
+        <button class="add-btn" id="addHotelBtn">
+          <span class="material-symbols-outlined">add</span>
+          Agregar hotel
+        </button>
+      </div>
+    </div>
+
+    <div class="hoteles-grid" id="hotelsGrid">
+      <div class="hoteles-loading" id="hotelsLoading">Cargando hoteles...</div>
+    </div>
+  </div>
+
+  <!-- Modal agregar/editar -->
+  <div class="modal-overlay" id="hotelModal" hidden>
+    <div class="modal-card modal-card-wide">
+      <button class="modal-close" id="modalClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h2 class="modal-title" id="modalTitle">Agregar hotel</h2>
+
+      <div class="modal-split">
+        <!-- Formulario -->
+        <form id="hotelForm" class="hotel-form">
+          <input type="hidden" id="hotelId" />
+          <input type="hidden" id="hotelImageUrl" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="hotelName">Nombre</label>
+              <input type="text" id="hotelName" required placeholder="Ej: Casa Siete Colores" />
+            </div>
+            <div class="form-group">
+              <label for="hotelZone">Zona</label>
+              <input type="text" id="hotelZone" required placeholder="Ej: Costera de Bacalar" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="hotelPrice">Precio (MXN/noche)</label>
+              <input type="number" id="hotelPrice" required min="0" step="10" placeholder="3250" />
+            </div>
+            <div class="form-group">
+              <label for="hotelScore">Puntuación</label>
+              <input type="number" id="hotelScore" min="0" max="5" step="0.1" placeholder="4.9" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Imagen del hotel</label>
+            <div class="upload-zone" id="hotelDropZone">
+              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+              <p class="upload-text">Arrastra una imagen o haz clic</p>
+              <p class="upload-hint">Todos los formatos · Máx 20 MB</p>
+              <input type="file" id="hotelFileInput" accept="image/*" hidden />
+              <button type="button" class="upload-select-btn" id="hotelSelectBtn">Seleccionar</button>
+            </div>
+            <div class="upload-preview" id="hotelPreview" hidden>
+              <img id="hotelPreviewImg" alt="Vista previa" />
+              <div class="upload-preview-info">
+                <span class="upload-filename" id="hotelPreviewName"></span>
+                <div class="upload-progress-wrap" id="hotelProgressWrap" hidden>
+                  <div class="upload-progress-bar"><div class="upload-progress-fill" id="hotelProgressFill"></div></div>
+                  <span class="upload-progress-text" id="hotelProgressText">0%</span>
+                </div>
+                <div class="upload-preview-actions">
+                  <button type="button" class="upload-remove-btn" id="hotelRemoveImg">Quitar imagen</button>
+                </div>
+              </div>
+            </div>
+            <div class="upload-error" id="hotelUploadError" hidden></div>
+          </div>
+
+          <div class="form-group">
+            <label for="hotelDesc">Descripción</label>
+            <textarea id="hotelDesc" rows="3" required placeholder="Suites boutique frente a la laguna..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Amenidades</label>
+            <div class="perks-list" id="perksList"></div>
+            <div class="perk-add-row">
+              <input type="hidden" id="perkIcon" value="water" />
+              <div class="perk-icon-dropdown" id="perkIconDropdown">
+                <button type="button" class="perk-icon-trigger" id="perkIconTrigger">
+                  <span class="material-symbols-outlined perk-icon-sel">water</span>
+                  <span class="perk-icon-label" id="perkIconLabel">Agua</span>
+                  <span class="material-symbols-outlined perk-icon-arrow">expand_more</span>
+                </button>
+                <div class="perk-icon-panel" id="perkIconPanel" hidden>
+                  <div class="perk-icon-option" data-icon="water" data-label="Agua" title="water">
+                    <span class="material-symbols-outlined">water</span> Agua
+                  </div>
+                  <div class="perk-icon-option" data-icon="pool" data-label="Alberca" title="pool">
+                    <span class="material-symbols-outlined">pool</span> Alberca
+                  </div>
+                  <div class="perk-icon-option" data-icon="wifi" data-label="Wifi" title="wifi">
+                    <span class="material-symbols-outlined">wifi</span> Wifi
+                  </div>
+                  <div class="perk-icon-option" data-icon="spa" data-label="Spa" title="spa">
+                    <span class="material-symbols-outlined">spa</span> Spa
+                  </div>
+                  <div class="perk-icon-option" data-icon="restaurant" data-label="Restaurante" title="restaurant">
+                    <span class="material-symbols-outlined">restaurant</span> Restaurante
+                  </div>
+                  <div class="perk-icon-option" data-icon="local_bar" data-label="Bar" title="local_bar">
+                    <span class="material-symbols-outlined">local_bar</span> Bar
+                  </div>
+                  <div class="perk-icon-option" data-icon="free_breakfast" data-label="Desayuno" title="free_breakfast">
+                    <span class="material-symbols-outlined">free_breakfast</span> Desayuno
+                  </div>
+                  <div class="perk-icon-option" data-icon="roofing" data-label="Rooftop" title="roofing">
+                    <span class="material-symbols-outlined">roofing</span> Rooftop
+                  </div>
+                  <div class="perk-icon-option" data-icon="sailing" data-label="Velero" title="sailing">
+                    <span class="material-symbols-outlined">sailing</span> Velero
+                  </div>
+                  <div class="perk-icon-option" data-icon="kayaking" data-label="Kayak" title="kayaking">
+                    <span class="material-symbols-outlined">kayaking</span> Kayak
+                  </div>
+                  <div class="perk-icon-option" data-icon="park" data-label="Naturaleza" title="park">
+                    <span class="material-symbols-outlined">park</span> Naturaleza
+                  </div>
+                  <div class="perk-icon-option" data-icon="child_care" data-label="Infantil" title="child_care">
+                    <span class="material-symbols-outlined">child_care</span> Infantil
+                  </div>
+                  <div class="perk-icon-option" data-icon="king_bed" data-label="Suite" title="king_bed">
+                    <span class="material-symbols-outlined">king_bed</span> Suite
+                  </div>
+                  <div class="perk-icon-option" data-icon="airport_shuttle" data-label="Traslados" title="airport_shuttle">
+                    <span class="material-symbols-outlined">airport_shuttle</span> Traslados
+                  </div>
+                  <div class="perk-icon-option" data-icon="local_fire_department" data-label="Fogata" title="local_fire_department">
+                    <span class="material-symbols-outlined">local_fire_department</span> Fogata
+                  </div>
+                  <div class="perk-icon-option" data-icon="travel_explore" data-label="Tours" title="travel_explore">
+                    <span class="material-symbols-outlined">travel_explore</span> Tours
+                  </div>
+                  <div class="perk-icon-option" data-icon="luggage" data-label="Equipaje" title="luggage">
+                    <span class="material-symbols-outlined">luggage</span> Equipaje
+                  </div>
+                  <div class="perk-icon-option" data-icon="pin_drop" data-label="Ubicación" title="pin_drop">
+                    <span class="material-symbols-outlined">pin_drop</span> Ubicación
+                  </div>
+                </div>
+              </div>
+              <input type="text" id="perkLabel" placeholder="Etiqueta (ej: Vista laguna)" />
+              <button type="button" class="perk-add-btn" id="addPerkBtn">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="modal-btn modal-btn-cancel" id="cancelBtn">Cancelar</button>
+            <button type="submit" class="modal-btn modal-btn-primary" id="saveBtn">Guardar hotel</button>
+          </div>
+        </form>
+
+        <!-- Preview card -->
+        <div class="preview-panel">
+          <span class="preview-label">Vista previa</span>
+          <article class="preview-card">
+            <div class="preview-card-img">
+              <img id="prevCardImg" alt="" />
+              <div class="preview-card-placeholder" id="prevCardPlaceholder">
+                <span class="material-symbols-outlined">apartment</span>
+              </div>
+              <div class="preview-card-rating">
+                <span class="material-symbols-outlined">star</span>
+                <span id="prevCardScore">0</span>
+              </div>
+            </div>
+            <div class="preview-card-body">
+              <h3 class="preview-card-name" id="prevCardName">Nombre del hotel</h3>
+              <span class="preview-card-zone">
+                <span class="material-symbols-outlined">location_on</span>
+                <span id="prevCardZone">Zona</span>
+              </span>
+              <p class="preview-card-desc" id="prevCardDesc">La descripción del hotel aparecerá aquí...</p>
+              <ul class="preview-card-perks" id="prevCardPerks"></ul>
+              <div class="preview-card-footer">
+                <span class="preview-card-price" id="prevCardPrice">$0 MXN</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmar eliminar -->
+  <div class="modal-overlay" id="confirmModal" hidden>
+    <div class="modal-card confirm-modal-card">
+      <button class="modal-close" id="confirmClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <span class="material-symbols-outlined confirm-icon">warning</span>
+      <h2 class="confirm-title">Eliminar hotel</h2>
+      <p class="confirm-text" id="confirmText">¿Seguro que quieres eliminar este hotel?</p>
+      <div class="confirm-actions">
+        <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
+        <button class="modal-btn modal-btn-danger" id="confirmDelete">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notificación -->
+  <div class="toast-overlay" id="toastOverlay" hidden>
+    <div class="toast-card" id="toastCard">
+      <span class="material-symbols-outlined toast-icon" id="toastIcon">check_circle</span>
+      <p class="toast-text" id="toastText"></p>
+    </div>
+  </div>
+
+  <style>
+    .hoteles-page { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 1rem; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hoteles-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .hoteles-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+    .hoteles-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin: 0.25rem 0 0; }
+
+    .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+    .add-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 10px; border: none; background: rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); }
+    .add-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .add-btn .material-symbols-outlined { font-size: 1.1rem; }
+    .seed-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .seed-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .seed-btn .material-symbols-outlined { font-size: 1rem; }
+
+    :global(.hoteles-grid) { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    :global(.hoteles-loading) { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.5); font-style: italic; grid-column: 1/-1; }
+
+    :global(.hotel-card-admin) { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 14px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.12); transition: transform 0.22s, box-shadow 0.22s; }
+    :global(.hotel-card-admin:hover) { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.18); }
+
+    :global(.hotel-card-img) { position: relative; width: 100%; height: 180px; overflow: hidden; background: #f1f5f9; }
+    :global(.hotel-card-img img) { width: 100%; height: 100%; object-fit: cover; }
+    :global(.hotel-card-img img[data-placeholder]) { display: none; }
+    :global(.hotel-card-placeholder) { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #94a3b8; }
+    :global(.hotel-card-placeholder .material-symbols-outlined) { font-size: 3rem; opacity: 0.4; }
+    :global(.hotel-card-rating) { position: absolute; top: 0.6rem; right: 0.6rem; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: rgba(22,50,79,0.78); color: #fff; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(4px); }
+    :global(.hotel-card-rating .material-symbols-outlined) { font-size: 0.9rem; color: #ffd35f; }
+
+    :global(.hotel-card-body) { padding: 0.85rem 1rem; }
+    :global(.hotel-card-name) { margin: 0; color: #1c5fa8; font-size: 1.05rem; line-height: 1.3; }
+    :global(.hotel-card-zone) { display: inline-flex; align-items: center; gap: 0.2rem; color: #217b96; font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
+    :global(.hotel-card-zone .material-symbols-outlined) { font-size: 0.95rem; }
+    :global(.hotel-card-desc) { color: #4e6278; font-size: 0.88rem; line-height: 1.5; margin: 0.5rem 0 0.6rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    :global(.hotel-card-perks) { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    :global(.hotel-card-perks li) { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.28rem 0.55rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.73rem; font-weight: 600; }
+    :global(.hotel-card-perks li .material-symbols-outlined) { font-size: 0.9rem; }
+
+    :global(.hotel-card-footer) { margin-top: 0.75rem; display: flex; align-items: center; justify-content: space-between; padding-top: 0.65rem; border-top: 1px solid #f1f5f9; }
+    :global(.hotel-card-price) { color: #1c5fa8; font-size: 1rem; font-weight: 800; }
+    :global(.hotel-card-actions) { display: flex; gap: 0.35rem; }
+    :global(.hotel-action-btn) { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.35rem 0.7rem; border-radius: 8px; border: none; font-size: 0.75rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    :global(.hotel-action-btn .material-symbols-outlined) { font-size: 1rem; }
+    :global(.hotel-edit-btn) { background: #dbeafe; color: #1d4ed8; }
+    :global(.hotel-edit-btn:hover) { background: #bfdbfe; }
+    :global(.hotel-delete-btn) { background: #fee2e2; color: #dc2626; }
+    :global(.hotel-delete-btn:hover) { background: #fecaca; }
+
+    :global(.hoteles-empty) { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,0.5); grid-column: 1/-1; }
+    :global(.hoteles-empty-icon) { font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem; }
+    .modal-overlay[hidden] { display: none !important; }
+    .modal-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 1.75rem; width: min(580px, 100%); max-height: 85vh; overflow-y: auto; position: relative; animation: modalIn 0.2s ease; }
+    .modal-card-wide { width: min(960px, 95vw); }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,0.06); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2; }
+    .modal-close:hover { background: rgba(0,0,0,0.1); color: #1e293b; }
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin: 0 0 1.25rem; }
+
+    .modal-split { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .modal-split > .hotel-form { flex: 1; min-width: 0; }
+
+    /* Preview panel */
+    .preview-panel { flex: 0 0 280px; display: flex; flex-direction: column; gap: 0.5rem; position: sticky; top: 0; }
+    .preview-label { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .preview-card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid rgba(38,117,165,0.16); box-shadow: 0 4px 16px rgba(21,71,117,0.1); transition: all 0.3s; width: 100%; }
+    .preview-card-img { position: relative; width: 100%; height: 160px; overflow: hidden; background: #f1f5f9; }
+    .preview-card-img img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .preview-card-img img[data-visible] { display: block; }
+    .preview-card-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #cbd5e1; }
+    .preview-card-placeholder .material-symbols-outlined { font-size: 3rem; }
+    .preview-card-placeholder[data-hidden] { display: none; }
+    .preview-card-rating { position: absolute; top: 0.5rem; right: 0.5rem; display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.5rem; border-radius: 999px; background: rgba(22,50,79,0.78); color: #fff; font-size: 0.78rem; font-weight: 700; backdrop-filter: blur(4px); }
+    .preview-card-rating .material-symbols-outlined { font-size: 0.85rem; color: #ffd35f; }
+
+    .preview-card-body { padding: 0.75rem 0.85rem 0.85rem; }
+    .preview-card-name { margin: 0; color: #1c5fa8; font-size: 0.95rem; line-height: 1.3; }
+    .preview-card-zone { display: inline-flex; align-items: center; gap: 0.15rem; color: #217b96; font-size: 0.78rem; font-weight: 600; margin-top: 0.15rem; }
+    .preview-card-zone .material-symbols-outlined { font-size: 0.9rem; }
+    .preview-card-desc { color: #4e6278; font-size: 0.82rem; line-height: 1.5; margin: 0.4rem 0 0.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .preview-card-perks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .preview-card-perks li { display: inline-flex; align-items: center; gap: 0.15rem; padding: 0.22rem 0.5rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.7rem; font-weight: 600; }
+    .preview-card-perks li .material-symbols-outlined { font-size: 0.85rem; }
+    .preview-card-footer { margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid #f1f5f9; }
+    .preview-card-price { color: #1c5fa8; font-size: 0.92rem; font-weight: 800; }
+
+    .hotel-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group label { font-size: 0.8rem; font-weight: 700; color: #475569; }
+    .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group select { padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.88rem; font-family: inherit; color: #1e293b; background: #fff; transition: border-color 0.2s; box-sizing: border-box; width: 100%; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #217b96; box-shadow: 0 0 0 3px rgba(33,123,150,0.12); }
+
+    /* Upload zone */
+    .upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-zone:hover, .upload-zone--over { border-color: #1c5fa8; background: rgba(28,95,168,0.04); }
+    .upload-icon { font-size: 2rem; color: #94a3b8; }
+    .upload-text { font-size: 0.88rem; color: #475569; margin: 0.4rem 0 0.15rem; }
+    .upload-hint { font-size: 0.75rem; color: #94a3b8; margin: 0 0 0.75rem; }
+    .upload-select-btn { padding: 0.5rem 1.2rem; border: none; border-radius: 8px; background: #1c5fa8; color: #fff; font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.2s; }
+    .upload-select-btn:hover { background: #155088; }
+
+    .upload-preview { display: flex; gap: 1rem; align-items: flex-start; margin-top: 0.5rem; }
+    .upload-preview img { width: 120px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; flex-shrink: 0; }
+    .upload-preview-info { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+    .upload-filename { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .upload-progress-wrap { display: flex; align-items: center; gap: 0.6rem; }
+    .upload-progress-bar { flex: 1; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+    .upload-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1c5fa8, #217b96); border-radius: 3px; transition: width 0.3s ease; }
+    .upload-progress-text { font-size: 0.75rem; font-weight: 600; color: #1c5fa8; min-width: 2.5rem; }
+    .upload-preview-actions { display: flex; gap: 0.4rem; }
+    .upload-remove-btn { padding: 0.35rem 0.8rem; border: 1px solid #fecaca; border-radius: 6px; background: #fff; color: #dc2626; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .upload-remove-btn:hover { background: #fef2f2; }
+
+    .upload-error { margin-top: 0.5rem; padding: 0.6rem 0.8rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; font-size: 0.82rem; font-weight: 500; }
+
+    .perks-list { display: flex; flex-wrap: wrap; gap: 0.35rem; min-height: 28px; margin-bottom: 0.3rem; }
+    :global(.perk-tag) { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: #e9f6fb; border: 1px solid #c6e8f3; color: #215b83; font-size: 0.75rem; font-weight: 600; }
+    :global(.perk-tag button) { display: inline-flex; align-items: center; background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0; font-size: 0.85rem; line-height: 1; }
+    :global(.perk-tag button:hover) { color: #dc2626; }
+
+    .perk-add-row { display: flex; gap: 0.4rem; align-items: center; }
+    .perk-add-row input[type="text"] { flex: 1; }
+    .perk-add-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .perk-add-btn:hover { background: #e9f6fb; border-color: #217b96; color: #217b96; }
+
+    /* Perk icon dropdown */
+    .perk-icon-dropdown { position: relative; flex-shrink: 0; }
+    .perk-icon-trigger { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 0.6rem; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s; white-space: nowrap; }
+    .perk-icon-trigger:hover { border-color: #217b96; }
+    .perk-icon-sel { font-size: 1.15rem; color: #1c5fa8; }
+    .perk-icon-label { color: #1e293b; font-weight: 600; font-size: 0.82rem; }
+    .perk-icon-arrow { font-size: 1rem; color: #94a3b8; transition: transform 0.2s; }
+    .perk-icon-dropdown[data-open] .perk-icon-arrow { transform: rotate(180deg); }
+
+    .perk-icon-panel { position: absolute; top: calc(100% + 4px); left: 0; z-index: 100; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 0.5rem 0.6rem 0.7rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; min-width: 340px; max-height: 320px; overflow-y: auto; }
+    .perk-icon-panel[hidden] { display: none; }
+    .perk-icon-option { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.6rem; border-radius: 8px; cursor: pointer; transition: background 0.15s; font-size: 0.78rem; color: #334155; font-weight: 500; }
+    .perk-icon-option:hover { background: #e9f6fb; }
+    .perk-icon-option .material-symbols-outlined { font-size: 1.1rem; color: #1c5fa8; }
+    .perk-icon-option[data-selected] { background: #dbeafe; color: #1d4ed8; }
+    .perk-icon-option[data-selected] .material-symbols-outlined { color: #1d4ed8; }
+
+    .form-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem; }
+
+    .modal-btn { padding: 0.6rem 1.4rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
+    .modal-btn-primary { background: linear-gradient(135deg, #2675a5, #217b96); color: #fff; }
+    .modal-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(38,117,165,0.3); }
+    .modal-btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; }
+    .modal-btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    .modal-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .modal-btn-cancel:hover { background: #e2e8f0; }
+
+    .confirm-modal-card { width: 380px; text-align: center; }
+    .confirm-icon { font-size: 3rem; color: #dc2626; }
+    .confirm-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0.5rem 0 0.25rem; }
+    .confirm-text { font-size: 0.9rem; color: #64748b; margin: 0 0 1.25rem; }
+    .confirm-actions { display: flex; gap: 0.5rem; justify-content: center; }
+
+    /* Toast */
+    .toast-overlay { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 2000; }
+    .toast-overlay[hidden] { display: none !important; }
+    .toast-card { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; border-radius: 12px; background: rgba(255,255,255,0.97); backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.2); animation: toastIn 0.3s ease; max-width: 400px; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+    .toast-icon { font-size: 1.3rem; }
+    .toast-text { font-size: 0.88rem; font-weight: 600; color: #1e293b; margin: 0; }
+    .toast-success .toast-icon { color: #16a34a; }
+    .toast-error .toast-icon { color: #dc2626; }
+    .toast-info .toast-icon { color: #1c5fa8; }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .hoteles-header { flex-direction: column; }
+      .modal-card-wide { width: 100%; }
+    }
+    @media (max-width: 800px) {
+      .modal-split { flex-direction: column; }
+      .preview-panel { flex: none; width: 100%; position: static; }
+      .preview-card { max-width: 300px; margin: 0 auto; }
+    }
+  </style>
+
+  <script>
+    const API = '/api/hotels';
+    const grid = document.getElementById('hotelsGrid')!;
+    const loading = document.getElementById('hotelsLoading')!;
+
+    const hotelModal = document.getElementById('hotelModal') as HTMLDivElement;
+    const confirmModal = document.getElementById('confirmModal') as HTMLDivElement;
+
+    const hotelForm = document.getElementById('hotelForm') as HTMLFormElement;
+    const hotelIdInput = document.getElementById('hotelId') as HTMLInputElement;
+    const hotelImageUrl = document.getElementById('hotelImageUrl') as HTMLInputElement;
+    const hotelName = document.getElementById('hotelName') as HTMLInputElement;
+    const hotelZone = document.getElementById('hotelZone') as HTMLInputElement;
+    const hotelPrice = document.getElementById('hotelPrice') as HTMLInputElement;
+    const hotelScore = document.getElementById('hotelScore') as HTMLInputElement;
+    const hotelDesc = document.getElementById('hotelDesc') as HTMLTextAreaElement;
+    const perksList = document.getElementById('perksList')!;
+    const perkIconInput = document.getElementById('perkIcon') as HTMLInputElement;
+    const perkLabel = document.getElementById('perkLabel') as HTMLInputElement;
+    const perkIconTrigger = document.getElementById('perkIconTrigger')!;
+    const perkIconPanel = document.getElementById('perkIconPanel')!;
+    const perkIconLabel = document.getElementById('perkIconLabel')!;
+    const perkIconDropdown = document.getElementById('perkIconDropdown')!;
+    const modalTitle = document.getElementById('modalTitle')!;
+    const saveBtn = document.getElementById('saveBtn')!;
+
+    const hotelDropZone = document.getElementById('hotelDropZone')!;
+    const hotelFileInput = document.getElementById('hotelFileInput') as HTMLInputElement;
+    const hotelSelectBtn = document.getElementById('hotelSelectBtn')!;
+    const hotelPreview = document.getElementById('hotelPreview')!;
+    const hotelPreviewImg = document.getElementById('hotelPreviewImg') as HTMLImageElement;
+    const hotelPreviewName = document.getElementById('hotelPreviewName')!;
+    const hotelProgressWrap = document.getElementById('hotelProgressWrap')!;
+    const hotelProgressFill = document.getElementById('hotelProgressFill')!;
+    const hotelProgressText = document.getElementById('hotelProgressText')!;
+    const hotelRemoveImg = document.getElementById('hotelRemoveImg')!;
+    const hotelUploadError = document.getElementById('hotelUploadError')!;
+
+    const toastOverlay = document.getElementById('toastOverlay')!;
+    const toastCard = document.getElementById('toastCard')!;
+    const toastIcon = document.getElementById('toastIcon')!;
+    const toastText = document.getElementById('toastText')!;
+
+    let currentPerks: { icon: string; label: string }[] = [];
+    let deleteTargetId: string | null = null;
+    let selectedHotelFile: File | null = null;
+    let uploadedImageUrl: string = '';
+
+    const prevCardImg = document.getElementById('prevCardImg') as HTMLImageElement;
+    const prevCardPlaceholder = document.getElementById('prevCardPlaceholder')!;
+    const prevCardScore = document.getElementById('prevCardScore')!;
+    const prevCardName = document.getElementById('prevCardName')!;
+    const prevCardZone = document.getElementById('prevCardZone')!;
+    const prevCardDesc = document.getElementById('prevCardDesc')!;
+    const prevCardPerks = document.getElementById('prevCardPerks')!;
+    const prevCardPrice = document.getElementById('prevCardPrice')!;
+
+    function showToast(type: 'success' | 'error' | 'info', msg: string) {
+      toastCard.className = 'toast-card toast-' + type;
+      toastIcon.textContent = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
+      toastText.textContent = msg;
+      toastOverlay.hidden = false;
+      setTimeout(() => { toastOverlay.hidden = true; }, 3500);
+    }
+
+    function updatePreview() {
+      const name = hotelName.value.trim() || 'Nombre del hotel';
+      const zone = hotelZone.value.trim() || 'Zona';
+      const price = Number(hotelPrice.value) || 0;
+      const score = Number(hotelScore.value) || 0;
+      const desc = hotelDesc.value.trim() || 'La descripción del hotel aparecerá aquí...';
+
+      prevCardName.textContent = name;
+      prevCardZone.textContent = zone;
+      prevCardDesc.textContent = desc;
+      prevCardScore.textContent = String(score);
+      prevCardPrice.textContent = `$${price.toLocaleString('es-MX')} MXN`;
+
+      const imgUrl = hotelImageUrl.value || (hotelPreviewImg.src && !hotelPreviewImg.src.startsWith('about:') ? hotelPreviewImg.src : '');
+      if (imgUrl) {
+        prevCardImg.src = imgUrl;
+        prevCardImg.setAttribute('data-visible', '');
+        prevCardPlaceholder.setAttribute('data-hidden', '');
+      } else {
+        prevCardImg.removeAttribute('data-visible');
+        prevCardPlaceholder.removeAttribute('data-hidden');
+      }
+
+      prevCardPerks.innerHTML = currentPerks.map(p =>
+        `<li><span class="material-symbols-outlined">${p.icon}</span> ${p.label}</li>`
+      ).join('');
+    }
+
+    function showUploadError(msg: string) {
+      hotelUploadError.textContent = msg;
+      hotelUploadError.hidden = false;
+    }
+    function hideUploadError() { hotelUploadError.hidden = true; }
+
+    function resetUploadZone() {
+      selectedHotelFile = null;
+      uploadedImageUrl = '';
+      hotelImageUrl.value = '';
+      hotelFileInput.value = '';
+      hotelPreviewImg.src = '';
+      hotelPreviewName.textContent = '';
+      hotelProgressWrap.hidden = true;
+      hotelProgressFill.style.width = '0%';
+      hotelDropZone.hidden = false;
+      hotelPreview.hidden = true;
+      hideUploadError();
+    }
+
+    function handleHotelFile(file: File) {
+      hideUploadError();
+      if (!file.type.startsWith('image/')) { showUploadError('Formato no soportado.'); return; }
+      if (file.size > 20 * 1024 * 1024) { showUploadError('La imagen supera los 20 MB.'); return; }
+      selectedHotelFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        hotelPreviewImg.src = e.target!.result as string;
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+      hotelDropZone.hidden = true;
+      hotelPreview.hidden = false;
+      hotelPreviewName.textContent = file.name;
+    }
+
+    hotelDropZone.addEventListener('dragover', (e) => { e.preventDefault(); hotelDropZone.classList.add('upload-zone--over'); });
+    hotelDropZone.addEventListener('dragleave', () => { hotelDropZone.classList.remove('upload-zone--over'); });
+    hotelDropZone.addEventListener('drop', (e) => { e.preventDefault(); hotelDropZone.classList.remove('upload-zone--over'); if (e.dataTransfer?.files[0]) handleHotelFile(e.dataTransfer.files[0]); });
+    hotelSelectBtn.addEventListener('click', () => hotelFileInput.click());
+    hotelFileInput.addEventListener('change', () => { if (hotelFileInput.files?.[0]) handleHotelFile(hotelFileInput.files[0]); });
+    hotelRemoveImg.addEventListener('click', () => { resetUploadZone(); updatePreview(); });
+
+    hotelName.addEventListener('input', updatePreview);
+    hotelZone.addEventListener('input', updatePreview);
+    hotelPrice.addEventListener('input', updatePreview);
+    hotelScore.addEventListener('input', updatePreview);
+    hotelDesc.addEventListener('input', updatePreview);
+
+    perkIconTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !perkIconPanel.hidden;
+      perkIconPanel.hidden = isOpen;
+      perkIconDropdown.toggleAttribute('data-open', !isOpen);
+    });
+
+    perkIconPanel.querySelectorAll('.perk-icon-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const icon = opt.getAttribute('data-icon')!;
+        const label = opt.getAttribute('data-label')!;
+        perkIconInput.value = icon;
+        perkIconTrigger.querySelector('.perk-icon-sel')!.textContent = icon;
+        perkIconLabel.textContent = label;
+        perkIconPanel.hidden = true;
+        perkIconDropdown.removeAttribute('data-open');
+        perkIconPanel.querySelectorAll('.perk-icon-option').forEach(o => o.removeAttribute('data-selected'));
+        opt.setAttribute('data-selected', '');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      perkIconPanel.hidden = true;
+      perkIconDropdown.removeAttribute('data-open');
+    });
+
+    async function uploadHotelImage(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('hotelId', hotelIdInput.value || 'new');
+
+        hotelProgressWrap.hidden = false;
+        hotelProgressFill.style.width = '10%';
+        hotelProgressText.textContent = '10%';
+
+        fetch('/api/hotels/upload', { method: 'POST', body: formData })
+          .then(async (resp) => {
+            hotelProgressFill.style.width = '90%';
+            hotelProgressText.textContent = '90%';
+            const result = await resp.json();
+            if (!resp.ok || !result.ok) throw new Error(result.error || 'Error al subir');
+            hotelProgressFill.style.width = '100%';
+            hotelProgressText.textContent = '100%';
+            resolve(result.url);
+          })
+          .catch((err) => { reject(err); });
+      });
+    }
+
+    function renderPerks() {
+      perksList.innerHTML = currentPerks.map((p, i) =>
+        `<span class="perk-tag"><span class="material-symbols-outlined">${p.icon}</span> ${p.label} <button type="button" data-remove="${i}">&times;</button></span>`
+      ).join('');
+      perksList.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPerks.splice(Number(btn.getAttribute('data-remove')), 1);
+          renderPerks();
+          updatePreview();
+        });
+      });
+    }
+
+    function openModal(hotel?: any) {
+      currentPerks = hotel ? [...hotel.perks] : [];
+      hotelIdInput.value = hotel ? hotel.id : '';
+      hotelImageUrl.value = hotel ? hotel.image : '';
+      hotelName.value = hotel ? hotel.name : '';
+      hotelZone.value = hotel ? hotel.zone : '';
+      hotelPrice.value = hotel ? hotel.price : '';
+      hotelScore.value = hotel ? hotel.score : '';
+      hotelDesc.value = hotel ? hotel.description : '';
+      modalTitle.textContent = hotel ? 'Editar hotel' : 'Agregar hotel';
+      saveBtn.textContent = hotel ? 'Guardar cambios' : 'Guardar hotel';
+
+      if (hotel && hotel.image) {
+        hotelPreviewImg.src = hotel.image;
+        hotelPreviewName.textContent = hotel.image.split('/').pop() || 'Imagen actual';
+        hotelDropZone.hidden = true;
+        hotelPreview.hidden = false;
+        hotelProgressWrap.hidden = true;
+      } else {
+        resetUploadZone();
+      }
+      renderPerks();
+      updatePreview();
+      hotelModal.hidden = false;
+    }
+
+    function closeModal() { hotelModal.hidden = true; resetUploadZone(); }
+
+    async function loadHotels() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+
+        loading.style.display = 'none';
+
+        if (data.hotels.length === 0) {
+          grid.innerHTML = `
+            <div class="hoteles-empty">
+              <span class="material-symbols-outlined hoteles-empty-icon">apartment</span>
+              <p>No hay hoteles registrados</p>
+            </div>`;
+          return;
+        }
+
+        grid.innerHTML = data.hotels.map((h: any) => `
+          <article class="hotel-card-admin">
+            <div class="hotel-card-img">
+              ${h.image
+                ? `<img src="${h.image}" alt="${h.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />`
+                : ''}
+              <div class="hotel-card-placeholder" ${h.image ? 'style="display:none"' : ''}>
+                <span class="material-symbols-outlined">apartment</span>
+              </div>
+              <div class="hotel-card-rating">
+                <span class="material-symbols-outlined">star</span>
+                ${h.score || 0}
+              </div>
+            </div>
+            <div class="hotel-card-body">
+              <h3 class="hotel-card-name">${h.name}</h3>
+              <span class="hotel-card-zone">
+                <span class="material-symbols-outlined">location_on</span>
+                ${h.zone}
+              </span>
+              <p class="hotel-card-desc">${h.description || ''}</p>
+              <ul class="hotel-card-perks">
+                ${(h.perks || []).map((p: any) => `
+                  <li><span class="material-symbols-outlined">${p.icon}</span> ${p.label}</li>
+                `).join('')}
+              </ul>
+              <div class="hotel-card-footer">
+                <span class="hotel-card-price">$${(h.price || 0).toLocaleString('es-MX')} MXN</span>
+                <div class="hotel-card-actions">
+                  <button class="hotel-action-btn hotel-edit-btn" data-edit='${JSON.stringify(h).replace(/'/g, "&#39;")}'>
+                    <span class="material-symbols-outlined">edit</span> Editar
+                  </button>
+                  <button class="hotel-action-btn hotel-delete-btn" data-delete="${h.id}" data-name="${h.name}">
+                    <span class="material-symbols-outlined">delete</span> Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `).join('');
+
+        grid.querySelectorAll('[data-edit]').forEach(btn => {
+          btn.addEventListener('click', () => openModal(JSON.parse(btn.getAttribute('data-edit')!)));
+        });
+
+        grid.querySelectorAll('[data-delete]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            deleteTargetId = btn.getAttribute('data-delete');
+            document.getElementById('confirmText')!.textContent = `¿Eliminar "${btn.getAttribute('data-name')}"? Esta acción no se puede deshacer.`;
+            confirmModal.hidden = false;
+          });
+        });
+
+      } catch (err) {
+        loading.textContent = 'Error al cargar hoteles';
+      }
+    }
+
+    document.getElementById('addHotelBtn')!.addEventListener('click', () => openModal());
+    document.getElementById('modalClose')!.addEventListener('click', closeModal);
+    document.getElementById('cancelBtn')!.addEventListener('click', closeModal);
+    hotelModal.addEventListener('click', (e) => { if (e.target === hotelModal) closeModal(); });
+
+    document.getElementById('seedBtn')!.addEventListener('click', async () => {
+      const btn = document.getElementById('seedBtn')!;
+      btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Cargando...';
+      btn.setAttribute('disabled', 'true');
+      try {
+        const res = await fetch('/api/hotels/seed', { method: 'POST' });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+        showToast('success', `Seed completo: ${data.seeded} hoteles agregados de ${data.total} totales.`);
+        await loadHotels();
+      } catch (err: any) {
+        showToast('error', err.message);
+      } finally {
+        btn.innerHTML = '<span class="material-symbols-outlined">database</span> Seed datos';
+        btn.removeAttribute('disabled');
+      }
+    });
+
+    document.getElementById('addPerkBtn')!.addEventListener('click', () => {
+      const label = perkLabel.value.trim();
+      if (!label) return;
+      currentPerks.push({ icon: perkIconInput.value, label });
+      perkLabel.value = '';
+      renderPerks();
+      updatePreview();
+    });
+
+    hotelForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = hotelIdInput.value;
+
+      let finalImageUrl = hotelImageUrl.value;
+
+      if (selectedHotelFile && !uploadedImageUrl) {
+        try {
+          uploadedImageUrl = await uploadHotelImage(selectedHotelFile);
+          finalImageUrl = uploadedImageUrl;
+        } catch (err: any) {
+          showToast('error', 'Error al subir imagen: ' + err.message);
+          return;
+        }
+      }
+
+      const payload = {
+        id: id || undefined,
+        name: hotelName.value.trim(),
+        zone: hotelZone.value.trim(),
+        price: Number(hotelPrice.value),
+        score: Number(hotelScore.value) || 0,
+        image: finalImageUrl,
+        description: hotelDesc.value.trim(),
+        perks: currentPerks,
+      };
+
+      try {
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(API, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+        closeModal();
+        showToast('success', id ? 'Hotel actualizado correctamente.' : 'Hotel creado correctamente.');
+        await loadHotels();
+      } catch (err: any) {
+        showToast('error', 'Error: ' + err.message);
+      }
+    });
+
+    document.getElementById('confirmClose')!.addEventListener('click', () => { confirmModal.hidden = true; });
+    document.getElementById('confirmCancel')!.addEventListener('click', () => { confirmModal.hidden = true; });
+    confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmModal.hidden = true; });
+
+    document.getElementById('confirmDelete')!.addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      try {
+        const res = await fetch(API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: deleteTargetId }) });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error);
+        confirmModal.hidden = true;
+        deleteTargetId = null;
+        showToast('success', 'Hotel eliminado correctamente.');
+        await loadHotels();
+      } catch (err: any) {
+        showToast('error', 'Error: ' + err.message);
+      }
+    });
+
+    loadHotels();
+  </script>
+</AdminLayout>
