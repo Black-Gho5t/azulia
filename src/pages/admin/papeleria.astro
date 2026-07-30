@@ -11,6 +11,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       </div>
     </header>
 
+    <div class="trash-filters" id="trashFilters">
+      <button class="trash-filter active" data-filter="all">Todos</button>
+      <button class="trash-filter" data-filter="message">
+        <span class="material-symbols-outlined">mail</span> Mensajes
+      </button>
+      <button class="trash-filter" data-filter="admin">
+        <span class="material-symbols-outlined">badge</span> Perfiles
+      </button>
+      <button class="trash-filter" data-filter="poster">
+        <span class="material-symbols-outlined">wallpaper</span> Posters
+      </button>
+    </div>
+
     <div class="trash-card">
       <table class="trash-table">
         <thead>
@@ -19,7 +32,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             <th>Contenido</th>
             <th>Eliminado</th>
             <th>Expira</th>
-            <th>Acción</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="trashBody">
@@ -34,37 +47,56 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       <button class="modal-close" id="confirmClose">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <span class="material-symbols-outlined confirm-icon">help</span>
+      <span class="material-symbols-outlined confirm-icon" id="confirmIcon">help</span>
       <h3 class="confirm-title" id="confirmTitle">¿Restaurar?</h3>
       <p class="confirm-text" id="confirmText"></p>
       <div class="confirm-actions">
         <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
-        <button class="modal-btn modal-btn-primary" id="confirmOk">Restaurar</button>
+        <button class="modal-btn modal-btn-primary" id="confirmOk">Aceptar</button>
       </div>
     </div>
   </div>
 
   <script>
-    import { getTrashItems, restoreFromTrash } from '../../lib/admin';
-    import type { TrashItem } from '../../lib/admin';
+    import { restoreFromTrash } from '../../lib/admin';
 
-    const typeLabels: Record<string, string> = { message: 'Mensaje', admin: 'Perfil', poster: 'Poster' };
-    const typeIcons: Record<string, string> = { message: 'mail', admin: 'badge', poster: 'wallpaper' };
+    const typeConfig: Record<string, { label: string; icon: string; color: string; bg: string }> = {
+      message: { label: 'Mensaje', icon: 'mail', color: '#1c5fa8', bg: '#eff6ff' },
+      admin: { label: 'Perfil', icon: 'badge', color: '#7c3aed', bg: '#f5f3ff' },
+      poster: { label: 'Poster', icon: 'wallpaper', color: '#059669', bg: '#ecfdf5' },
+    };
 
-    let items: TrashItem[] = [];
+    interface TrashItemClient {
+      id: string;
+      type: string;
+      originalId: string;
+      data: Record<string, unknown>;
+      deletedAt: string | null;
+      expiresAt: string | null;
+    }
+
+    let items: TrashItemClient[] = [];
+    let activeFilter = 'all';
     let confirmResolve: ((ok: boolean) => void) | null = null;
 
+    const trashBody = document.getElementById('trashBody')!;
+    const filtersContainer = document.getElementById('trashFilters')!;
     const confirmModal = document.getElementById('confirmModal')!;
     const confirmClose = document.getElementById('confirmClose')!;
+    const confirmIcon = document.getElementById('confirmIcon')!;
     const confirmTitle = document.getElementById('confirmTitle')!;
     const confirmText = document.getElementById('confirmText')!;
     const confirmCancel = document.getElementById('confirmCancel')!;
     const confirmOk = document.getElementById('confirmOk')!;
 
-    function showConfirm(title: string, text: string): Promise<boolean> {
+    function showConfirm(icon: string, title: string, text: string, btnLabel: string, btnClass: string): Promise<boolean> {
       return new Promise((resolve) => {
+        confirmIcon.textContent = icon;
+        confirmIcon.style.color = btnClass === 'modal-btn-danger' ? '#dc2626' : '#1c5fa8';
         confirmTitle.textContent = title;
         confirmText.textContent = text;
+        confirmOk.textContent = btnLabel;
+        confirmOk.className = `modal-btn ${btnClass}`;
         confirmResolve = resolve;
         confirmModal.hidden = false;
       });
@@ -74,104 +106,189 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     confirmCancel.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
     confirmClose.addEventListener('click', () => { confirmModal.hidden = true; confirmResolve?.(false); });
 
-    function daysRemaining(expiresAt: Date | null): string {
+    filtersContainer.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('.trash-filter') as HTMLButtonElement | null;
+      if (!btn) return;
+      filtersContainer.querySelectorAll('.trash-filter').forEach(f => f.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter!;
+      render();
+    });
+
+    function daysRemaining(expiresAt: string | null): string {
       if (!expiresAt) return '—';
-      const diff = expiresAt.getTime() - Date.now();
+      const diff = new Date(expiresAt).getTime() - Date.now();
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
       if (days <= 0) return 'Hoy expira';
       if (days === 1) return '1 día';
       return `${days} días`;
     }
 
+    function formatDeleted(dateStr: string | null): string {
+      if (!dateStr) return '—';
+      return new Date(dateStr).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    async function fetchTrash(): Promise<TrashItemClient[]> {
+      try {
+        const resp = await fetch('/api/trash');
+        const result = await resp.json();
+        if (!result.ok) { console.error('[trash]', result.error); return []; }
+        return result.items || [];
+      } catch (err) {
+        console.error('[trash] fetch error:', err);
+        return [];
+      }
+    }
+
+    async function permanentDelete(trashId: string): Promise<void> {
+      const resp = await fetch(`/api/trash/${trashId}`, { method: 'DELETE' });
+      if (!resp.ok) {
+        const result = await resp.json();
+        throw new Error(result.error || 'Error al eliminar');
+      }
+    }
+
     function render() {
-      const tbody = document.getElementById('trashBody')!;
-      if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="trash-loading">La papelera está vacía.</td></tr>';
+      const filtered = activeFilter === 'all' ? items : items.filter(i => i.type === activeFilter);
+
+      if (filtered.length === 0) {
+        trashBody.innerHTML = '<tr><td colspan="5" class="trash-loading">La papelera está vacía.</td></tr>';
         return;
       }
-      tbody.innerHTML = items.map((item) => {
-        const deletedDate = item.deletedAt
-          ? new Date(item.deletedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
-          : '—';
+      trashBody.innerHTML = filtered.map((item) => {
+        const cfg = typeConfig[item.type] || { label: item.type, icon: 'help', color: '#64748b', bg: '#f8fafc' };
         let summary = '—';
         if (item.type === 'message') summary = (item.data as any)?.name || (item.data as any)?.contact || 'Mensaje';
         else if (item.type === 'admin') summary = (item.data as any)?.email || item.originalId;
         else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
+
+        const isUrgent = daysRemaining(item.expiresAt).includes('Hoy');
+
         return `<tr>
-          <td><span class="trash-type"><span class="material-symbols-outlined trash-type-icon">${typeIcons[item.type] || 'help'}</span>${typeLabels[item.type] || item.type}</span></td>
-          <td>${summary}</td>
-          <td class="trash-date">${deletedDate}</td>
-          <td><span class="trash-expire ${daysRemaining(item.expiresAt).includes('Hoy') ? 'trash-expire--urgent' : ''}">${daysRemaining(item.expiresAt)}</span></td>
+          <td>
+            <span class="trash-type-badge" style="background: ${cfg.bg}; color: ${cfg.color};">
+              <span class="material-symbols-outlined trash-type-icon">${cfg.icon}</span>
+              ${cfg.label}
+            </span>
+          </td>
+          <td class="trash-summary">${summary}</td>
+          <td class="trash-date">${formatDeleted(item.deletedAt)}</td>
+          <td><span class="trash-expire ${isUrgent ? 'trash-expire--urgent' : ''}">${daysRemaining(item.expiresAt)}</span></td>
           <td class="trash-actions">
-            <button class="trash-restore-btn" data-id="${item.id}" data-type="${item.type}" data-original="${item.originalId}" data-json='${JSON.stringify(item.data).replace(/'/g, "&#39;")}'>Restaurar</button>
+            <button class="trash-btn trash-btn-restore" data-action="restore" data-id="${item.id}" data-type="${item.type}" data-original="${item.originalId}" data-json='${JSON.stringify(item.data).replace(/'/g, "&#39;")}'>
+              <span class="material-symbols-outlined">restore</span> Restaurar
+            </button>
+            <button class="trash-btn trash-btn-delete" data-action="delete" data-id="${item.id}" data-type="${item.type}">
+              <span class="material-symbols-outlined">delete_forever</span> Eliminar
+            </button>
           </td>
         </tr>`;
       }).join('');
 
-      tbody.querySelectorAll('.trash-restore-btn').forEach((btn) => {
+      trashBody.querySelectorAll('.trash-btn').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const el = e.currentTarget as HTMLButtonElement;
+          const action = el.dataset.action!;
           const id = el.dataset.id!;
           const type = el.dataset.type!;
-          const originalId = el.dataset.original!;
-          let data: Record<string, unknown>;
-          try { data = JSON.parse(el.dataset.json!.replace(/&#39;/g, "'")); } catch { data = {}; }
 
-          const ok = await showConfirm(
-            `¿Restaurar ${typeLabels[type] || type}?`,
-            type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' : 'El elemento volverá a su ubicación original.'
-          );
-          if (!ok) return;
+          if (action === 'restore') {
+            const originalId = el.dataset.original!;
+            let data: Record<string, unknown>;
+            try { data = JSON.parse(el.dataset.json!.replace(/&#39;/g, "'")); } catch { data = {}; }
 
-          if (type === 'poster') {
-            try {
-              const resp = await fetch(`/api/posters/restore/${id}`, { method: 'POST' });
-              if (!resp.ok) {
-                const result = await resp.json();
-                alert(result.error || 'No se pudo restaurar');
+            const cfg = typeConfig[type] || { label: type };
+            const ok = await showConfirm(
+              'help',
+              `¿Restaurar ${cfg.label}?`,
+              type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' : 'El elemento volverá a su ubicación original.',
+              'Restaurar',
+              'modal-btn-primary'
+            );
+            if (!ok) return;
+
+            if (type === 'poster') {
+              try {
+                const resp = await fetch(`/api/posters/restore/${id}`, { method: 'POST' });
+                if (!resp.ok) {
+                  const result = await resp.json();
+                  alert(result.error || 'No se pudo restaurar');
+                }
+              } catch (err) {
+                alert('Error al restaurar poster');
               }
-            } catch (err) {
-              alert('Error al restaurar poster');
+            } else {
+              await restoreFromTrash(id, type, originalId, data);
             }
-          } else {
-            await restoreFromTrash(id, type, originalId, data);
+            items = await fetchTrash();
+            render();
+
+          } else if (action === 'delete') {
+            const ok = await showConfirm(
+              'warning',
+              '¿Eliminar permanentemente?',
+              'Esta acción no se puede deshacer. El archivo se eliminará del servidor.',
+              'Eliminar',
+              'modal-btn-danger'
+            );
+            if (!ok) return;
+
+            try {
+              await permanentDelete(id);
+            } catch (err: any) {
+              alert(err.message);
+            }
+            items = await fetchTrash();
+            render();
           }
-          items = await getTrashItems();
-          render();
         });
       });
     }
 
     (async () => {
-      items = await getTrashItems();
+      items = await fetchTrash();
       render();
     })();
   </script>
 
   <style>
-    .trash-page { width: 100%; max-width: 1000px; animation: fadeIn 0.4s ease; }
+    .trash-page { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 1rem; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-    .trash-header { margin-bottom: 1.5rem; }
+    .trash-header { margin-bottom: 1rem; padding-left: 0.5rem; }
     .trash-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
     .trash-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin: 0.25rem 0 0; }
 
+    .trash-filters { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .trash-filter { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.45rem 0.9rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); font-size: 0.8rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); }
+    .trash-filter:hover { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+    .trash-filter.active { background: rgba(255,255,255,0.22); color: #fff; border-color: rgba(255,255,255,0.35); }
+    .trash-filter .material-symbols-outlined { font-size: 1rem; }
+
     .trash-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
 
-    .trash-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .trash-table th { text-align: left; padding: 1rem 1rem; background: rgba(15,30,50,0.04); color: #475569; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e2e8f0; }
-    .trash-table td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+    :global(.trash-table) { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    :global(.trash-table th) { text-align: left; padding: 1rem 1.5rem; background: rgba(15,30,50,0.04); color: #475569; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e2e8f0; }
+    :global(.trash-table td) { padding: 0.85rem 1.5rem; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
 
-    .trash-type { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; }
-    .trash-type-icon { font-size: 1.1rem; color: #64748b; }
-    .trash-date { color: #64748b; font-size: 0.8rem; white-space: nowrap; }
-    .trash-expire { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: #f1f5f9; color: #475569; }
-    .trash-expire--urgent { background: #fef2f2; color: #dc2626; }
+    :global(.trash-type-badge) { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    :global(.trash-type-badge .trash-type-icon) { font-size: 1rem; }
 
-    .trash-restore-btn { padding: 0.35rem 0.85rem; border-radius: 8px; border: none; background: #eff6ff; color: #1c5fa8; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-    .trash-restore-btn:hover { background: #dbeafe; }
+    :global(.trash-summary) { font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    :global(.trash-date) { color: #64748b; font-size: 0.8rem; white-space: nowrap; }
+    :global(.trash-expire) { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: #f1f5f9; color: #475569; }
+    :global(.trash-expire--urgent) { background: #fef2f2; color: #dc2626; }
 
-    .trash-loading { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-style: italic; }
+    :global(.trash-actions) { display: flex; gap: 0.5rem; }
+    :global(.trash-btn) { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.9rem; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    :global(.trash-btn .material-symbols-outlined) { font-size: 1rem; }
+    :global(.trash-btn-restore) { background: #dbeafe; color: #1d4ed8; }
+    :global(.trash-btn-restore:hover) { background: #bfdbfe; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(29,78,216,0.2); }
+    :global(.trash-btn-delete) { background: #fee2e2; color: #dc2626; }
+    :global(.trash-btn-delete:hover) { background: #fecaca; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(220,38,38,0.2); }
+
+    :global(.trash-loading) { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-style: italic; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1.5rem; }
     .modal-overlay[hidden] { display: none !important; }
@@ -180,23 +297,28 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border: none; border-radius: 8px; background: rgba(0,0,0,0.06); color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .modal-close:hover { background: rgba(0,0,0,0.1); color: #1e293b; }
 
-    .confirm-modal-card { width: 360px; text-align: center; }
+    .confirm-modal-card { width: 380px; text-align: center; }
     .confirm-icon { font-size: 3rem; color: #1c5fa8; }
     .confirm-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0.5rem 0 0.25rem; }
     .confirm-text { font-size: 0.9rem; color: #64748b; margin: 0 0 1.25rem; }
     .confirm-actions { display: flex; gap: 0.5rem; justify-content: center; }
 
-    .modal-btn { padding: 0.55rem 1.2rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
+    .modal-btn { padding: 0.6rem 1.4rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all 0.2s; }
     .modal-btn-primary { background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; }
     .modal-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(28,95,168,0.3); }
+    .modal-btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; }
+    .modal-btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
     .modal-btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
     .modal-btn-cancel:hover { background: #e2e8f0; }
 
     @media (max-width: 768px) {
-      .trash-table thead { display: none; }
-      .trash-table, .trash-table tbody, .trash-table tr, .trash-table td { display: block; }
-      .trash-table tr { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
-      .trash-table td { padding: 0.35rem 0; border: none; }
+      .trash-page { padding: 0 0.5rem; }
+      :global(.trash-table thead) { display: none; }
+      :global(.trash-table), :global(.trash-table tbody), :global(.trash-table tr), :global(.trash-table td) { display: block; }
+      :global(.trash-table tr) { padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; }
+      :global(.trash-table td) { padding: 0.35rem 0; border: none; }
+      :global(.trash-summary) { max-width: 100%; }
+      :global(.trash-actions) { margin-top: 0.5rem; }
     }
   </style>
 </AdminLayout>

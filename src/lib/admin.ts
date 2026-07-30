@@ -120,10 +120,11 @@ export async function trashPoster(id: string): Promise<void> {
 }
 
 export async function getTrashItems(): Promise<TrashItem[]> {
-  const now = Timestamp.now();
-  const q = query(collection(db, 'trash'), where('expiresAt', '>', now), orderBy('expiresAt', 'asc'));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data(), deletedAt: d.data().deletedAt?.toDate() ?? null, expiresAt: d.data().expiresAt?.toDate() ?? null } as TrashItem));
+  const snap = await getDocs(collection(db, 'trash'));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data(), deletedAt: d.data().deletedAt?.toDate() ?? null, expiresAt: d.data().expiresAt?.toDate() ?? null } as TrashItem))
+    .filter((item) => !item.expiresAt || item.expiresAt.getTime() > Date.now())
+    .sort((a, b) => (b.deletedAt?.getTime() ?? 0) - (a.deletedAt?.getTime() ?? 0));
 }
 
 export async function restoreFromTrash(id: string, type: string, originalId: string, data: Record<string, unknown>): Promise<void> {
