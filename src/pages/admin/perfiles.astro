@@ -87,11 +87,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <div class="pm-card pm-card--sm">
       <button class="pm-close" id="newPwClose"><span class="material-symbols-outlined">close</span></button>
       <span class="pm-modal-icon material-symbols-outlined">key</span>
-      <p class="pm-modal-msg">Cambiar contraseña</p>
-      <div class="pw-field-wrap">
-        <input type="password" id="newPwCurrent" class="pm-field" placeholder="Tu contraseña actual" autocomplete="current-password" />
-        <button type="button" class="pw-toggle" id="newPwCurrentToggle"><span class="material-symbols-outlined">visibility</span></button>
-      </div>
+      <p class="pm-modal-msg">Nueva contraseña</p>
       <div class="pw-field-wrap">
         <input type="password" id="newPwInput" class="pm-field" placeholder="Nueva contraseña (mín. 8 caracteres)" autocomplete="new-password" />
         <button type="button" class="pw-toggle" id="newPwInputToggle"><span class="material-symbols-outlined">visibility</span></button>
@@ -130,6 +126,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     let currentEmail = '';
     let admins: AdminProfile[] = [];
     let selectedAdmin: AdminProfile | null = null;
+    let verifiedPw = '';
 
     function escHtml(s: string) {
       const d = document.createElement('div');
@@ -152,7 +149,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
     setupPwToggle('pwToggle', 'pwInput');
     setupPwToggle('editPwToggle', 'editPw');
-    setupPwToggle('newPwCurrentToggle', 'newPwCurrent');
     setupPwToggle('newPwInputToggle', 'newPwInput');
     setupPwToggle('newPwConfirmToggle', 'newPwConfirm');
 
@@ -307,13 +303,20 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       }
 
       if (action === 'password') {
-        const fields = ['newPwCurrent', 'newPwInput', 'newPwConfirm'] as const;
+        const pw = await showPwModal(`Confirma tu contraseña para continuar`);
+        if (pw === null) return;
+        if (!await verifyPassword(pw)) {
+          document.getElementById('pwError')!.textContent = 'Contraseña incorrecta';
+          document.getElementById('pwError')!.hidden = false;
+          return;
+        }
+        verifiedPw = pw;
+        const fields = ['newPwInput', 'newPwConfirm'] as const;
         fields.forEach(id => {
           const el = document.getElementById(id) as HTMLInputElement;
           el.value = '';
           el.type = 'password';
         });
-        document.getElementById('newPwCurrentToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
         document.getElementById('newPwInputToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
         document.getElementById('newPwConfirmToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
         document.getElementById('newPwError')!.hidden = true;
@@ -364,12 +367,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     document.getElementById('newPwCancel')!.addEventListener('click', () => { document.getElementById('newPwModal')!.hidden = true; });
     document.getElementById('newPwOk')!.addEventListener('click', async () => {
       if (!selectedAdmin) return;
-      const current = (document.getElementById('newPwCurrent') as HTMLInputElement).value.trim();
       const newPw = (document.getElementById('newPwInput') as HTMLInputElement).value.trim();
       const confirm = (document.getElementById('newPwConfirm') as HTMLInputElement).value.trim();
       const errEl = document.getElementById('newPwError')!;
 
-      if (!current) { errEl.textContent = 'Ingresa tu contraseña actual'; errEl.hidden = false; return; }
       if (newPw.length < 8) { errEl.textContent = 'La nueva contraseña debe tener al menos 8 caracteres'; errEl.hidden = false; return; }
       if (newPw !== confirm) { errEl.textContent = 'Las contraseñas no coinciden'; errEl.hidden = false; return; }
 
@@ -377,21 +378,22 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
       if (isOwn) {
         try {
-          const cred = await signInWithEmailAndPassword(auth, currentEmail, current);
+          const cred = await signInWithEmailAndPassword(auth, currentEmail, verifiedPw);
           await updatePassword(cred.user, newPw);
         } catch {
-          errEl.textContent = 'Contraseña incorrecta'; errEl.hidden = false; return;
+          errEl.textContent = 'Error al cambiar contraseña'; errEl.hidden = false; return;
         }
       } else {
         const res = await fetch('/api/change-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ targetEmail: selectedAdmin.email, newPassword: newPw, adminEmail: currentEmail, adminPassword: current }),
+          body: JSON.stringify({ targetEmail: selectedAdmin.email, newPassword: newPw, adminEmail: currentEmail, adminPassword: verifiedPw }),
         });
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error || 'Error al cambiar contraseña'; errEl.hidden = false; return; }
       }
 
+      verifiedPw = '';
       document.getElementById('newPwModal')!.hidden = true;
       await showConfirm('Contraseña actualizada correctamente');
       closeProfileModal();
