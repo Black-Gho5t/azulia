@@ -20,67 +20,435 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             <th>Rol</th>
             <th>Estado</th>
             <th>Registro</th>
-            <th>Acción</th>
           </tr>
         </thead>
         <tbody id="profBody">
-          <tr><td colspan="6" class="prof-loading">Cargando administradores...</td></tr>
+          <tr><td colspan="5" class="prof-loading">Cargando administradores...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
+  <div id="profileModal" class="pm-overlay" hidden>
+    <div class="pm-card">
+      <button class="pm-close" id="pmClose"><span class="material-symbols-outlined">close</span></button>
+      <div class="pm-header">
+        <div class="pm-avatar" id="pmAvatar"></div>
+        <div>
+          <h2 class="pm-name" id="pmName"></h2>
+          <p class="pm-email" id="pmEmail"></p>
+        </div>
+      </div>
+      <div class="pm-info">
+        <div class="pm-info-item"><span class="pm-info-label">Rol</span><span class="pm-info-value" id="pmRole"></span></div>
+        <div class="pm-info-item"><span class="pm-info-label">Estado</span><span class="pm-info-value" id="pmStatus"></span></div>
+        <div class="pm-info-item"><span class="pm-info-label">Registro</span><span class="pm-info-value" id="pmDate"></span></div>
+      </div>
+      <div class="pm-actions" id="pmActions"></div>
+    </div>
+  </div>
+
+  <div id="pwModal" class="pm-overlay" hidden>
+    <div class="pm-card pm-card--sm">
+      <button class="pm-close" id="pwClose"><span class="material-symbols-outlined">close</span></button>
+      <span class="pm-modal-icon material-symbols-outlined">lock</span>
+      <p class="pm-modal-msg" id="pwMsg"></p>
+      <div class="pw-field-wrap">
+        <input type="password" id="pwInput" class="pm-field" placeholder="Contraseña" autocomplete="current-password" />
+        <button type="button" class="pw-toggle" id="pwToggle"><span class="material-symbols-outlined">visibility</span></button>
+      </div>
+      <span class="pm-field-error" id="pwError" hidden></span>
+      <div class="pm-modal-btns">
+        <button class="pm-btn pm-btn--cancel" id="pwCancel">Cancelar</button>
+        <button class="pm-btn pm-btn--ok" id="pwOk">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editModal" class="pm-overlay" hidden>
+    <div class="pm-card pm-card--sm">
+      <button class="pm-close" id="editClose"><span class="material-symbols-outlined">close</span></button>
+      <span class="pm-modal-icon material-symbols-outlined">edit</span>
+      <p class="pm-modal-msg">Editar información del perfil</p>
+      <input type="text" id="editName" class="pm-field" placeholder="Nombre" />
+      <div class="pw-field-wrap">
+        <input type="password" id="editPw" class="pm-field" placeholder="Tu contraseña para confirmar" autocomplete="current-password" />
+        <button type="button" class="pw-toggle" id="editPwToggle"><span class="material-symbols-outlined">visibility</span></button>
+      </div>
+      <span class="pm-field-error" id="editError" hidden></span>
+      <div class="pm-modal-btns">
+        <button class="pm-btn pm-btn--cancel" id="editCancel">Cancelar</button>
+        <button class="pm-btn pm-btn--ok" id="editOk">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="newPwModal" class="pm-overlay" hidden>
+    <div class="pm-card pm-card--sm">
+      <button class="pm-close" id="newPwClose"><span class="material-symbols-outlined">close</span></button>
+      <span class="pm-modal-icon material-symbols-outlined">key</span>
+      <p class="pm-modal-msg">Cambiar contraseña</p>
+      <div class="pw-field-wrap">
+        <input type="password" id="newPwCurrent" class="pm-field" placeholder="Tu contraseña actual" autocomplete="current-password" />
+        <button type="button" class="pw-toggle" id="newPwCurrentToggle"><span class="material-symbols-outlined">visibility</span></button>
+      </div>
+      <div class="pw-field-wrap">
+        <input type="password" id="newPwInput" class="pm-field" placeholder="Nueva contraseña (mín. 8 caracteres)" autocomplete="new-password" />
+        <button type="button" class="pw-toggle" id="newPwInputToggle"><span class="material-symbols-outlined">visibility</span></button>
+      </div>
+      <div class="pw-field-wrap">
+        <input type="password" id="newPwConfirm" class="pm-field" placeholder="Repite la nueva contraseña" autocomplete="new-password" />
+        <button type="button" class="pw-toggle" id="newPwConfirmToggle"><span class="material-symbols-outlined">visibility</span></button>
+      </div>
+      <span class="pm-field-error" id="newPwError" hidden></span>
+      <div class="pm-modal-btns">
+        <button class="pm-btn pm-btn--cancel" id="newPwCancel">Cancelar</button>
+        <button class="pm-btn pm-btn--ok" id="newPwOk">Cambiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="pm-overlay" hidden>
+    <div class="pm-card pm-card--sm">
+      <span class="pm-modal-icon material-symbols-outlined">help</span>
+      <p class="pm-modal-msg" id="confirmMsg"></p>
+      <div class="pm-modal-btns">
+        <button class="pm-btn pm-btn--cancel" id="confirmCancel">Cancelar</button>
+        <button class="pm-btn pm-btn--ok" id="confirmOk">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    import { getAdmins, toggleAdminStatus } from '../../lib/admin';
+    import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
+    import { auth, db } from '../../lib/firebase';
+    import { signInWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
+    import { getAdmins } from '../../lib/admin';
     import type { AdminProfile } from '../../lib/admin';
 
+    const MAIN_ADMIN = 'azulia.bacalar@gmail.com';
+    let currentEmail = '';
     let admins: AdminProfile[] = [];
+    let selectedAdmin: AdminProfile | null = null;
+
+    function escHtml(s: string) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function setupPwToggle(toggleId: string, inputId: string) {
+      document.getElementById(toggleId)!.addEventListener('click', () => {
+        const input = document.getElementById(inputId) as HTMLInputElement;
+        const icon = document.getElementById(toggleId)!.querySelector('.material-symbols-outlined')!;
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.textContent = 'visibility_off';
+        } else {
+          input.type = 'password';
+          icon.textContent = 'visibility';
+        }
+      });
+    }
+    setupPwToggle('pwToggle', 'pwInput');
+    setupPwToggle('editPwToggle', 'editPw');
+    setupPwToggle('newPwCurrentToggle', 'newPwCurrent');
+    setupPwToggle('newPwInputToggle', 'newPwInput');
+    setupPwToggle('newPwConfirmToggle', 'newPwConfirm');
+
+    let confirmResolve: ((v: boolean) => void) | null = null;
+    function showConfirm(msg: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        confirmResolve = resolve;
+        document.getElementById('confirmMsg')!.textContent = msg;
+        document.getElementById('confirmModal')!.hidden = false;
+      });
+    }
+    document.getElementById('confirmOk')!.addEventListener('click', () => {
+      document.getElementById('confirmModal')!.hidden = true;
+      if (confirmResolve) confirmResolve(true);
+    });
+    document.getElementById('confirmCancel')!.addEventListener('click', () => {
+      document.getElementById('confirmModal')!.hidden = true;
+      if (confirmResolve) confirmResolve(false);
+    });
+
+    let pwResolve: ((v: string | null) => void) | null = null;
+    function showPwModal(msg: string): Promise<string | null> {
+      return new Promise((resolve) => {
+        pwResolve = resolve;
+        document.getElementById('pwMsg')!.textContent = msg;
+        const input = document.getElementById('pwInput') as HTMLInputElement;
+        input.value = '';
+        input.type = 'password';
+        document.getElementById('pwToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
+        document.getElementById('pwError')!.hidden = true;
+        document.getElementById('pwModal')!.hidden = false;
+        setTimeout(() => input.focus(), 100);
+      });
+    }
+    document.getElementById('pwOk')!.addEventListener('click', () => {
+      const input = document.getElementById('pwInput') as HTMLInputElement;
+      const val = input.value.trim();
+      if (!val) {
+        document.getElementById('pwError')!.textContent = 'Ingresa tu contraseña';
+        document.getElementById('pwError')!.hidden = false;
+        return;
+      }
+      document.getElementById('pwModal')!.hidden = true;
+      if (pwResolve) pwResolve(val);
+    });
+    document.getElementById('pwCancel')!.addEventListener('click', () => {
+      document.getElementById('pwModal')!.hidden = true;
+      if (pwResolve) pwResolve(null);
+    });
+    document.getElementById('pwInput')!.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('pwOk')!.click();
+    });
+
+    async function verifyPassword(password: string): Promise<boolean> {
+      try {
+        await signInWithEmailAndPassword(auth, currentEmail, password);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function openProfileModal(a: AdminProfile) {
+      selectedAdmin = a;
+      const initials = a.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('pmAvatar')!.textContent = initials;
+      document.getElementById('pmName')!.textContent = a.name;
+      document.getElementById('pmEmail')!.textContent = a.email;
+
+      const roleEl = document.getElementById('pmRole')!;
+      roleEl.textContent = a.role === 'superadmin' ? 'Superadmin' : 'Admin';
+      roleEl.className = 'pm-info-value ' + (a.role === 'superadmin' ? 'pm-role--super' : '');
+
+      const statusEl = document.getElementById('pmStatus')!;
+      statusEl.textContent = a.status === 'active' ? 'Activo' : a.status === 'pending' ? 'Pendiente' : 'Deshabilitado';
+      statusEl.className = 'pm-info-value pm-status--' + a.status;
+
+      const date = a.createdAt
+        ? new Date(a.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
+        : '—';
+      document.getElementById('pmDate')!.textContent = date;
+
+      const actionsEl = document.getElementById('pmActions')!;
+      const isMain = currentEmail === MAIN_ADMIN;
+      const isSuper = a.role === 'superadmin';
+      let html = '';
+
+      if (isMain && !isSuper) {
+        const isActive = a.status === 'active';
+        html += `<button class="pm-action-btn ${isActive ? 'pm-action--disable' : 'pm-action--enable'}" data-action="toggle">
+          <span class="material-symbols-outlined">${isActive ? 'person_off' : 'person_check'}</span>
+          ${isActive ? 'Deshabilitar' : 'Habilitar'}
+        </button>`;
+      }
+      if (isMain || a.email === currentEmail) {
+        html += `<button class="pm-action-btn pm-action--edit" data-action="edit">
+          <span class="material-symbols-outlined">edit</span>
+          Editar datos
+        </button>`;
+      }
+      if (isMain && !isSuper) {
+        html += `<button class="pm-action-btn pm-action--password" data-action="password">
+          <span class="material-symbols-outlined">key</span>
+          Cambiar contraseña
+        </button>`;
+      } else if (a.email === currentEmail) {
+        html += `<button class="pm-action-btn pm-action--password" data-action="password">
+          <span class="material-symbols-outlined">key</span>
+          Cambiar contraseña
+        </button>`;
+      }
+      actionsEl.innerHTML = html;
+
+      actionsEl.querySelectorAll('.pm-action-btn').forEach((btn) => {
+        btn.addEventListener('click', () => handleAction((btn as HTMLElement).dataset.action!));
+      });
+
+      document.getElementById('profileModal')!.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function handleAction(action: string) {
+      if (!selectedAdmin) return;
+
+      if (action === 'toggle') {
+        const isActive = selectedAdmin.status === 'active';
+        const act = isActive ? 'deshabilitar' : 'habilitar';
+        const pw = await showPwModal(`Confirma tu contraseña para ${act} a ${selectedAdmin.email}`);
+        if (pw === null) return;
+        if (!await verifyPassword(pw)) {
+          document.getElementById('pwError')!.textContent = 'Contraseña incorrecta';
+          document.getElementById('pwError')!.hidden = false;
+          return;
+        }
+        if (!await showConfirm(`¿${act} al administrador ${selectedAdmin.email}?`)) return;
+        const { toggleAdminStatus } = await import('../../lib/admin');
+        await toggleAdminStatus(selectedAdmin.email, selectedAdmin.status);
+        admins = await getAdmins();
+        closeProfileModal();
+        render();
+      }
+
+      if (action === 'edit') {
+        const editName = document.getElementById('editName') as HTMLInputElement;
+        const editPw = document.getElementById('editPw') as HTMLInputElement;
+        editName.value = selectedAdmin.name;
+        editPw.value = '';
+        editPw.type = 'password';
+        document.getElementById('editPwToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
+        document.getElementById('editError')!.hidden = true;
+        document.getElementById('editModal')!.hidden = false;
+      }
+
+      if (action === 'password') {
+        const fields = ['newPwCurrent', 'newPwInput', 'newPwConfirm'] as const;
+        fields.forEach(id => {
+          const el = document.getElementById(id) as HTMLInputElement;
+          el.value = '';
+          el.type = 'password';
+        });
+        document.getElementById('newPwCurrentToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
+        document.getElementById('newPwInputToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
+        document.getElementById('newPwConfirmToggle')!.querySelector('.material-symbols-outlined')!.textContent = 'visibility';
+        document.getElementById('newPwError')!.hidden = true;
+        document.getElementById('newPwModal')!.hidden = false;
+      }
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal')!.hidden = true;
+      document.body.style.overflow = '';
+      selectedAdmin = null;
+    }
+
+    document.getElementById('pmClose')!.addEventListener('click', closeProfileModal);
+    document.getElementById('profileModal')!.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeProfileModal();
+    });
+
+    document.getElementById('editClose')!.addEventListener('click', () => { document.getElementById('editModal')!.hidden = true; });
+    document.getElementById('editCancel')!.addEventListener('click', () => { document.getElementById('editModal')!.hidden = true; });
+    document.getElementById('editOk')!.addEventListener('click', async () => {
+      if (!selectedAdmin) return;
+      const newName = (document.getElementById('editName') as HTMLInputElement).value.trim();
+      const pw = (document.getElementById('editPw') as HTMLInputElement).value.trim();
+      if (!newName) {
+        document.getElementById('editError')!.textContent = 'El nombre es obligatorio';
+        document.getElementById('editError')!.hidden = false;
+        return;
+      }
+      if (!pw) {
+        document.getElementById('editError')!.textContent = 'Ingresa tu contraseña';
+        document.getElementById('editError')!.hidden = false;
+        return;
+      }
+      if (!await verifyPassword(pw)) {
+        document.getElementById('editError')!.textContent = 'Contraseña incorrecta';
+        document.getElementById('editError')!.hidden = false;
+        return;
+      }
+      await updateDoc(doc(db, 'admins', selectedAdmin.email), { name: newName });
+      document.getElementById('editModal')!.hidden = true;
+      admins = await getAdmins();
+      closeProfileModal();
+      render();
+    });
+
+    document.getElementById('newPwClose')!.addEventListener('click', () => { document.getElementById('newPwModal')!.hidden = true; });
+    document.getElementById('newPwCancel')!.addEventListener('click', () => { document.getElementById('newPwModal')!.hidden = true; });
+    document.getElementById('newPwOk')!.addEventListener('click', async () => {
+      if (!selectedAdmin) return;
+      const current = (document.getElementById('newPwCurrent') as HTMLInputElement).value.trim();
+      const newPw = (document.getElementById('newPwInput') as HTMLInputElement).value.trim();
+      const confirm = (document.getElementById('newPwConfirm') as HTMLInputElement).value.trim();
+      const errEl = document.getElementById('newPwError')!;
+
+      if (!current) { errEl.textContent = 'Ingresa tu contraseña actual'; errEl.hidden = false; return; }
+      if (newPw.length < 8) { errEl.textContent = 'La nueva contraseña debe tener al menos 8 caracteres'; errEl.hidden = false; return; }
+      if (newPw !== confirm) { errEl.textContent = 'Las contraseñas no coinciden'; errEl.hidden = false; return; }
+
+      const isOwn = selectedAdmin.email === currentEmail;
+
+      if (isOwn) {
+        try {
+          const cred = await signInWithEmailAndPassword(auth, currentEmail, current);
+          await updatePassword(cred.user, newPw);
+        } catch {
+          errEl.textContent = 'Contraseña incorrecta'; errEl.hidden = false; return;
+        }
+      } else {
+        const res = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetEmail: selectedAdmin.email, newPassword: newPw, adminEmail: currentEmail, adminPassword: current }),
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Error al cambiar contraseña'; errEl.hidden = false; return; }
+      }
+
+      document.getElementById('newPwModal')!.hidden = true;
+      await showConfirm('Contraseña actualizada correctamente');
+      closeProfileModal();
+    });
+
+    function sortAdmins(list: AdminProfile[]) {
+      const order = { active: 0, pending: 1, disabled: 2 };
+      return [...list].sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3));
+    }
 
     function render() {
       const tbody = document.getElementById('profBody')!;
       if (admins.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="prof-loading">No hay administradores registrados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="prof-loading">No hay administradores registrados.</td></tr>';
         return;
       }
-      tbody.innerHTML = admins.map((a) => {
+      const sorted = sortAdmins(admins);
+      tbody.innerHTML = sorted.map((a) => {
         const date = a.createdAt
           ? new Date(a.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
           : '—';
         const isActive = a.status === 'active';
         const isPending = a.status === 'pending';
-        return `<tr class="${isActive ? '' : 'prof-row--disabled'}">
-          <td><strong>${a.name}</strong></td>
-          <td>${a.email}</td>
-          <td><span class="prof-role ${a.role === 'superadmin' ? 'prof-role--super' : ''}">${a.role === 'superadmin' ? 'Superadmin' : 'Admin'}</span></td>
+        const isDisabled = a.status === 'disabled';
+        const isSuper = a.role === 'superadmin';
+        return `<tr class="prof-row ${isDisabled ? 'prof-row--disabled' : ''}" data-email="${a.email}">
+          <td><span class="prof-name">${escHtml(a.name)}</span></td>
+          <td><span class="prof-email">${escHtml(a.email)}</span></td>
+          <td><span class="prof-role ${isSuper ? 'prof-role--super' : ''}">${isSuper ? 'Superadmin' : 'Admin'}</span></td>
           <td><span class="prof-status ${isActive ? 'prof-status--active' : isPending ? 'prof-status--pending' : 'prof-status--disabled'}">${isActive ? 'Activo' : isPending ? 'Pendiente' : 'Deshabilitado'}</span></td>
           <td class="prof-date">${date}</td>
-          <td>
-            ${a.role !== 'superadmin' ? `<button class="prof-toggle-btn ${isActive ? 'prof-toggle--disable' : 'prof-toggle--enable'}" data-email="${a.email}" data-status="${a.status}">${isActive ? 'Deshabilitar' : 'Habilitar'}</button>` : '<span class="prof-na">—</span>'}
-          </td>
         </tr>`;
       }).join('');
 
-      tbody.querySelectorAll('.prof-toggle-btn').forEach((btn) => {
-        btn.addEventListener('click', async (e) => {
-          const el = e.currentTarget as HTMLButtonElement;
-          const email = el.dataset.email!;
-          const status = el.dataset.status!;
-          const action = status === 'active' ? 'deshabilitar' : 'habilitar';
-          if (!confirm(`¿${action} al administrador ${email}?`)) return;
-          await toggleAdminStatus(email, status);
-          admins = await getAdmins();
-          render();
+      tbody.querySelectorAll('.prof-row').forEach((row) => {
+        row.addEventListener('click', () => {
+          const email = (row as HTMLElement).dataset.email;
+          const admin = admins.find(a => a.email === email);
+          if (admin) openProfileModal(admin);
         });
       });
     }
 
     (async () => {
+      await new Promise<void>((res) => {
+        const unsub = auth.onAuthStateChanged((user) => {
+          unsub();
+          currentEmail = user?.email ?? '';
+          res();
+        });
+      });
       admins = await getAdmins();
       render();
     })();
   </script>
 
-  <style>
+  <style is:global>
     .prof-page { width: 100%; max-width: 1000px; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -88,37 +456,195 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     .prof-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
     .prof-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0.25rem 0 0; }
 
-    .prof-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+    .prof-card {
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(24px);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.25);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+    }
 
     .prof-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    .prof-table th { text-align: left; padding: 1rem 1rem; background: rgba(15,30,50,0.04); color: #475569; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e2e8f0; }
-    .prof-table td { padding: 0.85rem 1rem; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
-    .prof-row--disabled { opacity: 0.55; }
+    .prof-table th {
+      text-align: left;
+      padding: 0.9rem 1.25rem;
+      background: rgba(15,30,50,0.03);
+      color: #64748b;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid #e8ecf1;
+    }
+    .prof-table td {
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+    .prof-row { transition: background 0.12s; cursor: pointer; }
+    .prof-row:hover { background: rgba(0,0,0,0.02); }
+    .prof-row:last-child td { border-bottom: none; }
+    .prof-row--disabled { opacity: 0.5; }
 
-    .prof-role { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: #e2e8f0; color: #475569; text-transform: uppercase; letter-spacing: 0.04em; }
+    .prof-name { font-weight: 600; color: #0f172a; }
+    .prof-email { color: #475569; font-size: 0.84rem; }
+
+    .prof-role {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      letter-spacing: 0.02em;
+    }
     .prof-role--super { background: #fef3c7; color: #92400e; }
 
-    .prof-status { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .prof-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
     .prof-status--active { background: #dcfce7; color: #166534; }
     .prof-status--pending { background: #fef9c3; color: #854d0e; }
     .prof-status--disabled { background: #f1f5f9; color: #64748b; }
 
-    .prof-date { color: #64748b; font-size: 0.8rem; white-space: nowrap; }
-
-    .prof-toggle-btn { padding: 0.35rem 0.85rem; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-    .prof-toggle--disable { background: #fef2f2; color: #dc2626; }
-    .prof-toggle--disable:hover { background: #fee2e2; }
-    .prof-toggle--enable { background: #f0fdf4; color: #16a34a; }
-    .prof-toggle--enable:hover { background: #dcfce7; }
-    .prof-na { color: #94a3b8; font-size: 0.82rem; }
+    .prof-date { color: #94a3b8; font-size: 0.8rem; white-space: nowrap; }
 
     .prof-loading { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-style: italic; }
+
+    .pm-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(10, 26, 47, 0.55); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .pm-overlay[hidden] { display: none !important; }
+
+    .pm-card {
+      background: #fff; border-radius: 20px;
+      max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      padding: 2rem;
+      position: relative;
+    }
+    .pm-card--sm { max-width: 400px; text-align: center; }
+    .pm-card::-webkit-scrollbar { width: 6px; }
+    .pm-card::-webkit-scrollbar-track { background: transparent; }
+    .pm-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    .pm-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: #f1f5f9;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #64748b; transition: all 0.2s;
+    }
+    .pm-close:hover { background: #e2e8f0; color: #0a1a2f; }
+    .pm-close .material-symbols-outlined { font-size: 1.15rem; }
+
+    .pm-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .pm-avatar {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: linear-gradient(135deg, #1c5fa8, #155088);
+      color: #fff; font-size: 1.1rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; letter-spacing: 0.02em;
+    }
+    .pm-name { font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; }
+    .pm-email { font-size: 0.85rem; color: #64748b; margin: 0.15rem 0 0; }
+
+    .pm-info {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+      padding: 1rem 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 1.25rem;
+    }
+    .pm-info-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .pm-info-label { font-size: 0.7rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pm-info-value { font-size: 0.88rem; font-weight: 600; color: #1e293b; }
+
+    .pm-role--super { color: #92400e; }
+    .pm-status--active { color: #166534; }
+    .pm-status--pending { color: #854d0e; }
+    .pm-status--disabled { color: #64748b; }
+
+    .pm-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    .pm-action-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1rem; border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 0.84rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .pm-action-btn .material-symbols-outlined { font-size: 1.1rem; }
+    .pm-action--enable { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+    .pm-action--enable:hover { background: #dcfce7; border-color: #86efac; }
+    .pm-action--disable { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+    .pm-action--disable:hover { background: #fee2e2; border-color: #fca5a5; }
+    .pm-action--edit { background: #eff6ff; color: #1c5fa8; border-color: #bfdbfe; }
+    .pm-action--edit:hover { background: #dbeafe; border-color: #93c5fd; }
+    .pm-action--password { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+    .pm-action--password:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+    .pm-modal-icon { font-size: 2.5rem; color: #1c5fa8; margin-bottom: 0.5rem; display: block; }
+    .pm-modal-msg { font-size: 0.95rem; color: #1e293b; line-height: 1.6; margin: 0 0 1.25rem; }
+
+    .pw-field-wrap {
+      position: relative; margin-bottom: 0.5rem;
+    }
+    .pm-field {
+      width: 100%;
+      padding: 0.65rem 2.5rem 0.65rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .pm-field:focus { border-color: #1c5fa8; box-shadow: 0 0 0 3px rgba(28,95,168,0.1); }
+    .pw-toggle {
+      position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: #94a3b8; padding: 0.3rem; display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: #475569; }
+    .pw-toggle .material-symbols-outlined { font-size: 1.2rem; }
+
+    .pm-field-error { font-size: 0.82rem; color: #dc2626; display: block; margin-bottom: 0.5rem; min-height: 1rem; text-align: left; }
+
+    .pm-modal-btns { display: flex; gap: 0.75rem; justify-content: center; margin-top: 0.75rem; }
+    .pm-btn {
+      padding: 0.6rem 1.5rem; border-radius: 10px; border: none;
+      font-size: 0.88rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .pm-btn--cancel { background: #f1f5f9; color: #475569; }
+    .pm-btn--cancel:hover { background: #e2e8f0; }
+    .pm-btn--ok { background: #1c5fa8; color: #fff; }
+    .pm-btn--ok:hover { background: #155088; }
 
     @media (max-width: 768px) {
       .prof-table thead { display: none; }
       .prof-table, .prof-table tbody, .prof-table tr, .prof-table td { display: block; }
-      .prof-table tr { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
-      .prof-table td { padding: 0.35rem 0; border: none; }
+      .prof-table tr { padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
+      .prof-table td { padding: 0.3rem 0; border: none; }
+      .prof-table td::before { content: attr(data-label); display: inline; font-weight: 600; color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; margin-right: 0.5rem; }
+      .pm-info { grid-template-columns: 1fr 1fr; }
+      .pm-actions { flex-direction: column; }
+      .pm-action-btn { justify-content: center; }
     }
   </style>
 </AdminLayout>
