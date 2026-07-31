@@ -22,6 +22,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       <button class="trash-filter" data-filter="poster">
         <span class="material-symbols-outlined">wallpaper</span> Posters
       </button>
+      <button class="trash-filter" data-filter="hotel">
+        <span class="material-symbols-outlined">apartment</span> Hoteles
+      </button>
     </div>
 
     <div class="trash-card">
@@ -64,6 +67,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       message: { label: 'Mensaje', icon: 'mail', color: '#1c5fa8', bg: '#eff6ff' },
       admin: { label: 'Perfil', icon: 'badge', color: '#7c3aed', bg: '#f5f3ff' },
       poster: { label: 'Poster', icon: 'wallpaper', color: '#059669', bg: '#ecfdf5' },
+      hotel: { label: 'Hotel', icon: 'apartment', color: '#d97706', bg: '#fffbeb' },
     };
 
     interface TrashItemClient {
@@ -162,6 +166,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         if (item.type === 'message') summary = (item.data as any)?.name || (item.data as any)?.contact || 'Mensaje';
         else if (item.type === 'admin') summary = (item.data as any)?.email || item.originalId;
         else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
+        else if (item.type === 'hotel') summary = (item.data as any)?.name || 'Hotel';
 
         const isUrgent = daysRemaining(item.expiresAt).includes('Hoy');
 
@@ -202,7 +207,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             const ok = await showConfirm(
               'help',
               `¿Restaurar ${cfg.label}?`,
-              type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' : 'El elemento volverá a su ubicación original.',
+              type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' :
+              type === 'hotel' ? 'El hotel volverá a la lista de hoteles.' :
+              'El elemento volverá a su ubicación original.',
               'Restaurar',
               'modal-btn-primary'
             );
@@ -217,6 +224,16 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 }
               } catch (err) {
                 alert('Error al restaurar poster');
+              }
+            } else if (type === 'hotel') {
+              try {
+                const resp = await fetch(`/api/hotels/restore/${id}`, { method: 'POST' });
+                if (!resp.ok) {
+                  const result = await resp.json();
+                  alert(result.error || 'No se pudo restaurar');
+                }
+              } catch (err) {
+                alert('Error al restaurar hotel');
               }
             } else {
               await restoreFromTrash(id, type, originalId, data);

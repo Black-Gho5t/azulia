@@ -30,6 +30,7 @@ export const POST: APIRoute = async () => {
         score: hotel.score,
         description: hotel.description,
         images: hotel.images,
+        imageFiles: [],
         coverIndex: hotel.coverIndex,
         perks: hotel.perks,
         createdAt: new Date(),

@@ -1,6 +1,12 @@
 import type { APIRoute } from 'astro';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { rename, mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
+const HOTELS_DIR = path.resolve('uploads/hotels');
+const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
 
 function getAdminApp() {
   if (getApps().length > 0) return getApps()[0];
@@ -27,7 +33,7 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { name, zone, price, score, description, images, coverIndex, perks } = body;
+    const { name, zone, price, score, description, images, imageFiles, coverIndex, perks } = body;
 
     if (!name || !zone || price == null || !description) {
       return new Response(JSON.stringify({ ok: false, error: 'Faltan campos requeridos' }), { status: 400 });
@@ -42,6 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
       score: Number(score) || 0,
       description,
       images: Array.isArray(images) ? images : [],
+      imageFiles: Array.isArray(imageFiles) ? imageFiles : [],
       coverIndex: Number(coverIndex) || 0,
       perks: Array.isArray(perks) ? perks : [],
       createdAt: new Date(),
@@ -88,6 +95,52 @@ export const DELETE: APIRoute = async ({ request }) => {
 
     const app = getAdminApp();
     const db = getFirestore(app);
+    const doc = await db.collection('hotels').doc(id).get();
+
+    if (!doc.exists) {
+      return new Response(JSON.stringify({ ok: false, error: 'Hotel no encontrado' }), { status: 404 });
+    }
+
+    const hotelData = doc.data()!;
+    const images: string[] = Array.isArray(hotelData.images) ? hotelData.images : [];
+    const imageFiles: string[] = Array.isArray(hotelData.imageFiles) ? hotelData.imageFiles : [];
+
+    if (!existsSync(HOTELS_TRASH_DIR)) {
+      await mkdir(HOTELS_TRASH_DIR, { recursive: true });
+    }
+
+    const movedFilenames: string[] = [];
+    for (const filename of imageFiles) {
+      const src = path.join(HOTELS_DIR, filename);
+      const dest = path.join(HOTELS_TRASH_DIR, filename);
+      if (existsSync(src)) {
+        await rename(src, dest);
+        movedFilenames.push(filename);
+      }
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    await db.collection('trash').add({
+      type: 'hotel',
+      originalId: id,
+      data: {
+        name: hotelData.name || '',
+        zone: hotelData.zone || '',
+        price: hotelData.price || 0,
+        score: hotelData.score || 0,
+        description: hotelData.description || '',
+        images: images,
+        imageFiles: imageFiles,
+        coverIndex: hotelData.coverIndex || 0,
+        perks: hotelData.perks || [],
+        movedFilenames,
+      },
+      deletedAt: now.toISOString(),
+      expiresAt: expiresAt.toISOString(),
+    });
+
     await db.collection('hotels').doc(id).delete();
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });

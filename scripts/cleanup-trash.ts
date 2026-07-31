@@ -4,7 +4,8 @@ import { unlink, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-const TRASH_DIR = path.resolve('uploads/posters-trash');
+const POSTERS_TRASH_DIR = path.resolve('uploads/posters-trash');
+const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
 
 function getAdminApp() {
   if (getApps().length > 0) return getApps()[0];
@@ -27,26 +28,54 @@ async function cleanup() {
   for (const doc of expiredSnap.docs) {
     const data = doc.data();
     if (data.type === 'poster' && data.data?.filename) {
-      const filePath = path.join(TRASH_DIR, data.data.filename);
+      const filePath = path.join(POSTERS_TRASH_DIR, data.data.filename);
       if (existsSync(filePath)) {
         await unlink(filePath);
-        console.log(`  Eliminado archivo: ${data.data.filename}`);
+        console.log(`  Eliminado archivo poster: ${data.data.filename}`);
+      }
+    }
+    if (data.type === 'hotel' && Array.isArray(data.data?.movedFilenames)) {
+      for (const filename of data.data.movedFilenames) {
+        const filePath = path.join(HOTELS_TRASH_DIR, filename);
+        if (existsSync(filePath)) {
+          await unlink(filePath);
+          console.log(`  Eliminado archivo hotel: ${filename}`);
+        }
       }
     }
     await doc.ref.delete();
     console.log(`  Eliminado trash entry: ${doc.id}`);
   }
 
-  // Limpiar archivos huérfanos en trash que no tienen entrada en Firestore
-  if (existsSync(TRASH_DIR)) {
-    const files = await readdir(TRASH_DIR);
+  // Limpiar archivos huérfanos en posters-trash
+  if (existsSync(POSTERS_TRASH_DIR)) {
+    const files = await readdir(POSTERS_TRASH_DIR);
     const trashDocs = await db.collection('trash').where('type', '==', 'poster').get();
     const knownFilenames = new Set(trashDocs.docs.map(d => d.data().data?.filename).filter(Boolean));
 
     for (const file of files) {
       if (!knownFilenames.has(file)) {
-        await unlink(path.join(TRASH_DIR, file));
-        console.log(`  Eliminado archivo huérfano: ${file}`);
+        await unlink(path.join(POSTERS_TRASH_DIR, file));
+        console.log(`  Eliminado archivo huérfano poster: ${file}`);
+      }
+    }
+  }
+
+  // Limpiar archivos huérfanos en hotels-trash
+  if (existsSync(HOTELS_TRASH_DIR)) {
+    const files = await readdir(HOTELS_TRASH_DIR);
+    const trashDocs = await db.collection('trash').where('type', '==', 'hotel').get();
+    const knownFilenames = new Set(
+      trashDocs.docs.flatMap(d => {
+        const arr = d.data().data?.movedFilenames;
+        return Array.isArray(arr) ? arr : [];
+      })
+    );
+
+    for (const file of files) {
+      if (!knownFilenames.has(file)) {
+        await unlink(path.join(HOTELS_TRASH_DIR, file));
+        console.log(`  Eliminado archivo huérfano hotel: ${file}`);
       }
     }
   }

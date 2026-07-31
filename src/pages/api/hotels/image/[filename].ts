@@ -1,8 +1,10 @@
 import type { APIRoute } from 'astro';
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-const UPLOADS_DIR = path.resolve('uploads/hotels');
+const HOTELS_DIR = path.resolve('uploads/hotels');
+const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
 
 export const prerender = false;
 
@@ -14,7 +16,15 @@ export const GET: APIRoute = async ({ params }) => {
     }
 
     const safeFilename = path.basename(filename);
-    const filePath = path.join(UPLOADS_DIR, safeFilename);
+    let filePath = path.join(HOTELS_DIR, safeFilename);
+
+    if (!existsSync(filePath)) {
+      filePath = path.join(HOTELS_TRASH_DIR, safeFilename);
+    }
+
+    if (!existsSync(filePath)) {
+      return new Response('Not found', { status: 404 });
+    }
 
     const data = await readFile(filePath);
     return new Response(data, {

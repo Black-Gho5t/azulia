@@ -266,7 +266,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <span class="material-symbols-outlined">close</span>
       </button>
       <span class="material-symbols-outlined confirm-icon">warning</span>
-      <h2 class="confirm-title">Eliminar hotel</h2>
+      <h2 class="confirm-title">Mover a papelera</h2>
       <p class="confirm-text" id="confirmText">¿Seguro que quieres eliminar este hotel?</p>
       <div class="confirm-actions">
         <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
@@ -831,7 +831,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         grid.querySelectorAll('[data-delete]').forEach(btn => {
           btn.addEventListener('click', () => {
             deleteTargetId = btn.getAttribute('data-delete');
-            document.getElementById('confirmText')!.textContent = `¿Eliminar "${btn.getAttribute('data-name')}"? Esta acción no se puede deshacer.`;
+            document.getElementById('confirmText')!.textContent = `¿Mover "${btn.getAttribute('data-name')}" a la papelera? Se restaurará automáticamente en 30 días.`;
             confirmModal.hidden = false;
             document.body.style.overflow = 'hidden';
           });
@@ -878,13 +878,20 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       e.preventDefault();
       const id = hotelIdInput.value;
 
+      const filteredImages = hotelImages.filter(Boolean);
+      const imageFiles = filteredImages.map(url => {
+        const match = url.match(/\/api\/hotels\/image\/(.+)$/);
+        return match ? match[1] : '';
+      }).filter(Boolean);
+
       const payload = {
         id: id || undefined,
         name: hotelName.value.trim(),
         zone: hotelZone.value.trim(),
         price: Number(hotelPrice.value),
         score: Number(hotelScore.value) || 0,
-        images: hotelImages.filter(Boolean),
+        images: filteredImages,
+        imageFiles,
         coverIndex: hotelCoverIndex,
         description: hotelDesc.value.trim(),
         perks: currentPerks,
@@ -916,7 +923,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         confirmModal.hidden = true;
         document.body.style.overflow = '';
         deleteTargetId = null;
-        showToast('success', 'Hotel eliminado correctamente.');
+        showToast('success', 'Hotel movido a la papelera.');
         await loadHotels();
       } catch (err: any) {
         showToast('error', 'Error: ' + err.message);

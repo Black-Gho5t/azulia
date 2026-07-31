@@ -5,7 +5,8 @@ import { unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-const TRASH_DIR = path.resolve('uploads/posters-trash');
+const POSTERS_TRASH_DIR = path.resolve('uploads/posters-trash');
+const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
 
 function getAdminApp() {
   if (getApps().length > 0) return getApps()[0];
@@ -33,9 +34,18 @@ export const DELETE: APIRoute = async ({ params }) => {
     const data = doc.data()!;
 
     if (data.type === 'poster' && data.data?.filename) {
-      const filePath = path.join(TRASH_DIR, data.data.filename);
+      const filePath = path.join(POSTERS_TRASH_DIR, data.data.filename);
       if (existsSync(filePath)) {
         await unlink(filePath);
+      }
+    }
+
+    if (data.type === 'hotel' && Array.isArray(data.data?.movedFilenames)) {
+      for (const filename of data.data.movedFilenames) {
+        const filePath = path.join(HOTELS_TRASH_DIR, filename);
+        if (existsSync(filePath)) {
+          await unlink(filePath);
+        }
       }
     }
 
