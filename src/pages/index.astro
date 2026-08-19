@@ -4,6 +4,7 @@ import Footer from "../components/footer.astro";
 import Layout from "../layouts/Layout.astro";
 import CardsComponent from "../components/cards_component.astro";
 import GalleryCollage from "../components/gallery_collage.astro";
+import PosterCarousel from "../components/galeria/poster_carousel.astro";
 
 const products = [
     {
@@ -200,6 +201,12 @@ const galleryImages = [
             </div>
             <br><br>
 
+            <PosterCarousel
+                eyebrow="Posters destacados"
+                title="Nuestros afiches más recientes"
+                subtitle="Descubre los posters promocionales de nuestros tours y experiencias en Bacalar."
+            />
+
             <GalleryCollage
                 id="galeria"
                 images={galleryImages}
@@ -207,6 +214,7 @@ const galleryImages = [
                 title="Fotos que inspiran tu próxima aventura"
                 subtitle="Toda la belleza del sur de México y Bacalar cerca de ti"
             />
+
             <div class="map-contenedor">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1889.8543070499081!2d-88.3904501826024!3d18.677067246377177!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f5bb1399bb9a5ad%3A0x68459b3cd0c64df8!2sZ%C3%B3calo%20Park!5e0!3m2!1ses-419!2smx!4v1782486830459!5m2!1ses-419!2smx"

@@ -1,0 +1,324 @@
+---
+interface Props {
+    eyebrow?: string;
+    title?: string;
+    subtitle?: string;
+}
+
+const {
+    eyebrow = "Galería de posters",
+    title = "Nuestros afiches destacados",
+    subtitle = "Descubre los posters promocionales de nuestros tours y experiencias en Bacalar.",
+} = Astro.props;
+---
+
+<section class="poster-carousel-section" id="posters">
+    <div class="poster-carousel-inner">
+        <div class="poster-carousel-heading">
+            <span class="poster-eyebrow">{eyebrow}</span>
+            <h2>{title}</h2>
+            <p>{subtitle}</p>
+        </div>
+
+        <div class="poster-carousel-wrapper">
+            <button class="poster-nav poster-nav--prev" id="posterPrev" aria-label="Anterior">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div class="poster-carousel-track" id="posterTrack">
+                <div class="poster-carousel-loading" id="posterLoading">
+                    <span class="material-symbols-outlined poster-loading-icon">hourglass_empty</span>
+                    <span>Cargando posters...</span>
+                </div>
+            </div>
+
+            <button class="poster-nav poster-nav--next" id="posterNext" aria-label="Siguiente">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        .poster-carousel-section {
+            padding: 4rem 1.5rem;
+            background: #fff;
+        }
+
+        .poster-carousel-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .poster-carousel-heading {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .poster-eyebrow {
+            display: inline-block;
+            color: #1c5fa8;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .poster-carousel-heading h2 {
+            font-size: clamp(2rem, 2.5vw, 3rem);
+            margin: 0.4rem 0 0.8rem;
+            color: #0f2a4a;
+        }
+
+        .poster-carousel-heading p {
+            color: #556d89;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .poster-carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .poster-carousel-track {
+            display: flex;
+            gap: 1.2rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            padding: 1rem 0.5rem;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .poster-carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        :global(.poster-carousel-loading) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            min-height: 300px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        :global(.poster-loading-icon) {
+            font-size: 2.5rem;
+            animation: posterSpin 1.2s linear infinite;
+        }
+
+        @keyframes posterSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        :global(.poster-carousel-empty) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            min-height: 300px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        :global(.poster-carousel-empty .material-symbols-outlined) {
+            font-size: 3rem;
+            opacity: 0.4;
+        }
+
+        :global(.poster-card) {
+            flex: 0 0 auto;
+            width: 280px;
+            scroll-snap-align: start;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(15, 42, 74, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #0f1a2e;
+            position: relative;
+        }
+
+        :global(.poster-card:hover) {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 40px rgba(15, 42, 74, 0.25);
+        }
+
+        :global(.poster-card-img) {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            background: #0f1a2e;
+        }
+
+        :global(.poster-card-img img) {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        :global(.poster-card:hover .poster-card-img img) {
+            transform: scale(1.05);
+        }
+
+        :global(.poster-card-name) {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2.5rem 1rem 1rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        :global(.poster-card:hover .poster-card-name) {
+            opacity: 1;
+        }
+
+        .poster-nav {
+            flex: 0 0 auto;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1c5fa8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            z-index: 2;
+        }
+
+        .poster-nav:hover {
+            background: #1c5fa8;
+            color: #fff;
+            border-color: #1c5fa8;
+            transform: scale(1.08);
+        }
+
+        .poster-nav .material-symbols-outlined {
+            font-size: 1.4rem;
+        }
+
+        @media (max-width: 768px) {
+            .poster-carousel-section {
+                padding: 3rem 1rem;
+            }
+
+            :global(.poster-card) {
+                width: 220px;
+            }
+
+            .poster-nav {
+                width: 36px;
+                height: 36px;
+            }
+
+            .poster-nav .material-symbols-outlined {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :global(.poster-card) {
+                width: 180px;
+            }
+
+            :global(.poster-card-name) {
+                font-size: 0.8rem;
+                padding: 2rem 0.75rem 0.75rem;
+            }
+        }
+    </style>
+</section>
+
+<script>
+    const track = document.getElementById('posterTrack')!;
+    const prevBtn = document.getElementById('posterPrev')!;
+    const nextBtn = document.getElementById('posterNext')!;
+    const loadingEl = document.getElementById('posterLoading')!;
+
+    let posters: { id: string; name: string; filename: string; url: string }[] = [];
+
+    function renderPosters() {
+        if (posters.length === 0) {
+            loadingEl.outerHTML = `
+                <div class="poster-carousel-empty">
+                    <span class="material-symbols-outlined">image</span>
+                    <span>No hay posters disponibles</span>
+                </div>`;
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            return;
+        }
+
+        loadingEl.outerHTML = posters.map((p) => `
+            <article class="poster-card">
+                <div class="poster-card-img">
+                    <img src="${p.url}" alt="${p.name}" loading="lazy"
+                         onerror="this.parentElement.style.background='#e2e8f0';this.style.display='none'" />
+                </div>
+                <div class="poster-card-name">${p.name}</div>
+            </article>
+        `).join('');
+
+        updateNav();
+    }
+
+    function updateNav() {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        prevBtn.style.opacity = track.scrollLeft <= 5 ? '0.4' : '1';
+        nextBtn.style.opacity = track.scrollLeft >= maxScroll - 5 ? '0.4' : '1';
+    }
+
+    const scrollAmount = 300;
+
+    prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    track.addEventListener('scroll', updateNav);
+    window.addEventListener('resize', updateNav);
+
+    async function loadPosters() {
+        try {
+            const res = await fetch('/api/posters');
+            const data = await res.json();
+            if (!data.ok) throw new Error(data.error);
+            posters = data.posters || [];
+        } catch {
+            posters = [];
+        }
+        renderPosters();
+    }
+
+    loadPosters();
+</script>
