@@ -20,33 +20,58 @@ const {
             <p>{subtitle}</p>
         </div>
 
-        <div class="poster-carousel-wrapper">
-            <button class="poster-nav poster-nav--prev" id="posterPrev" aria-label="Anterior">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-
-            <div class="poster-carousel-track" id="posterTrack">
+        <div class="poster-viewport" id="posterViewport">
+            <div class="poster-stage" id="posterStage">
                 <div class="poster-carousel-loading" id="posterLoading">
                     <span class="material-symbols-outlined poster-loading-icon">hourglass_empty</span>
                     <span>Cargando posters...</span>
                 </div>
             </div>
+        </div>
 
-            <button class="poster-nav poster-nav--next" id="posterNext" aria-label="Siguiente">
+        <div class="poster-nav-row">
+            <button class="poster-nav" id="posterPrev" aria-label="Anterior">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="poster-dots" id="posterDots"></div>
+            <button class="poster-nav" id="posterNext" aria-label="Siguiente">
                 <span class="material-symbols-outlined">chevron_right</span>
             </button>
         </div>
     </div>
 
+    <div class="poster-lightbox" id="posterLightbox">
+        <div class="poster-lightbox-backdrop" id="posterLightboxBackdrop"></div>
+        <button class="poster-lightbox-close" id="posterLightboxClose" aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="poster-lightbox-top">
+            <h3 id="posterLightboxTitle"></h3>
+        </div>
+        <div class="poster-lightbox-img">
+            <img id="posterLightboxImg" src="" alt="" />
+        </div>
+        <div class="poster-lightbox-bottom">
+                <a id="posterLightboxContact" href="javascript:void(0)" class="poster-lightbox-btn">
+                    <span class="material-symbols-outlined">chat</span>
+                    Contactar
+                </a>
+        </div>
+    </div>
+
     <style>
         .poster-carousel-section {
-            padding: 4rem 1.5rem;
-            background: #fff;
+            padding: 4rem 0;
+            background: linear-gradient(180deg, #0a1628 0%, #0f2240 40%, #132d52 70%, #0a1628 100%);
+            overflow: hidden;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
         }
 
         .poster-carousel-inner {
             max-width: 1180px;
             margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
         .poster-carousel-heading {
@@ -56,7 +81,7 @@ const {
 
         .poster-eyebrow {
             display: inline-block;
-            color: #1c5fa8;
+            color: #5ba3e6;
             letter-spacing: 0.18em;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -67,38 +92,33 @@ const {
         .poster-carousel-heading h2 {
             font-size: clamp(2rem, 2.5vw, 3rem);
             margin: 0.4rem 0 0.8rem;
-            color: #0f2a4a;
+            color: #e8f0fa;
         }
 
         .poster-carousel-heading p {
-            color: #556d89;
+            color: #8fa8c4;
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.7;
         }
 
-        .poster-carousel-wrapper {
+        .poster-viewport {
             position: relative;
+            width: 100%;
+            height: 520px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            perspective: 1400px;
         }
 
-        .poster-carousel-track {
+        .poster-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
-            gap: 1.2rem;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
-            padding: 1rem 0.5rem;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .poster-carousel-track::-webkit-scrollbar {
-            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
         :global(.poster-carousel-loading) {
@@ -108,8 +128,8 @@ const {
             justify-content: center;
             gap: 0.75rem;
             width: 100%;
-            min-height: 300px;
-            color: #94a3b8;
+            height: 100%;
+            color: #5a7a9e;
             font-size: 0.95rem;
         }
 
@@ -130,107 +150,211 @@ const {
             justify-content: center;
             gap: 0.75rem;
             width: 100%;
-            min-height: 300px;
-            color: #94a3b8;
+            height: 100%;
+            color: #5a7a9e;
             font-size: 0.95rem;
         }
 
         :global(.poster-carousel-empty .material-symbols-outlined) {
             font-size: 3rem;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
-        :global(.poster-card) {
-            flex: 0 0 auto;
-            width: 280px;
-            scroll-snap-align: start;
-            border-radius: 16px;
+        :global(.poster-slide) {
+            position: absolute;
+            width: 220px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(15, 42, 74, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 8px 30px rgba(15, 42, 74, 0.15);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.5s ease;
             background: #0f1a2e;
-            position: relative;
+            cursor: pointer;
         }
 
-        :global(.poster-card:hover) {
-            transform: translateY(-6px);
-            box-shadow: 0 14px 40px rgba(15, 42, 74, 0.25);
+        :global(.poster-slide.is-center:hover) {
+            box-shadow: 0 16px 45px rgba(15, 42, 74, 0.4);
         }
 
-        :global(.poster-card-img) {
+        :global(.poster-slide-img) {
             width: 100%;
             aspect-ratio: 2 / 3;
             overflow: hidden;
             background: #0f1a2e;
+            position: relative;
         }
 
-        :global(.poster-card-img img) {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.4s ease;
-        }
-
-        :global(.poster-card:hover .poster-card-img img) {
-            transform: scale(1.05);
-        }
-
-        :global(.poster-card-name) {
+        :global(.poster-slide-img::after) {
+            content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 2.5rem 1rem 1rem;
+            height: 50%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+        }
+
+        :global(.poster-slide.is-center:hover .poster-slide-img::after) {
+            opacity: 1;
+        }
+
+        :global(.poster-slide-img img) {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        :global(.poster-slide.is-center:hover .poster-slide-img img) {
+            transform: scale(1.02);
+        }
+
+        :global(.poster-slide-name) {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2.5rem 1rem 0.85rem;
             background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            font-size: 0.92rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #fff;
             text-align: center;
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        :global(.poster-card:hover .poster-card-name) {
+        :global(.poster-slide.is-center:hover .poster-slide-name) {
             opacity: 1;
+        }
+
+        .poster-nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .poster-nav {
             flex: 0 0 auto;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 1px solid #e2e8f0;
-            background: rgba(255, 255, 255, 0.95);
-            color: #1c5fa8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            color: #8fa8c4;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            z-index: 2;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .poster-nav:hover {
-            background: #1c5fa8;
-            color: #fff;
-            border-color: #1c5fa8;
+            background: rgba(91, 163, 230, 0.25);
+            color: #e8f0fa;
+            border-color: rgba(91, 163, 230, 0.4);
             transform: scale(1.08);
         }
 
         .poster-nav .material-symbols-outlined {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
+        }
+
+        .poster-dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        :global(.poster-dot) {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        :global(.poster-dot.is-active) {
+            background: #5ba3e6;
+            width: 24px;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
             .poster-carousel-section {
-                padding: 3rem 1rem;
+                padding: 3rem 0;
             }
 
-            :global(.poster-card) {
-                width: 220px;
+            .poster-carousel-inner {
+                padding: 0 1rem;
+            }
+
+            .poster-viewport {
+                height: 400px;
+            }
+
+            :global(.poster-slide) {
+                width: 170px;
+            }
+
+            :global(.poster-slide-name) {
+                font-size: 0.78rem;
+                padding: 2rem 0.85rem 0.75rem;
+            }
+
+            .poster-nav {
+                width: 40px;
+                height: 40px;
+            }
+
+            .poster-nav .material-symbols-outlined {
+                font-size: 1.3rem;
+            }
+
+            .poster-lightbox-img {
+                max-width: 92vw;
+                max-height: 65vh;
+            }
+
+            .poster-lightbox-img img {
+                max-height: 65vh;
+            }
+
+            .poster-lightbox-top h3 {
+                font-size: 1.15rem;
+            }
+
+            .poster-lightbox-btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .poster-viewport {
+                height: 320px;
+            }
+
+            :global(.poster-slide) {
+                width: 130px;
+                border-radius: 10px;
+            }
+
+            :global(.poster-slide-name) {
+                font-size: 0.7rem;
+                padding: 1.5rem 0.6rem 0.6rem;
             }
 
             .poster-nav {
@@ -239,30 +363,198 @@ const {
             }
 
             .poster-nav .material-symbols-outlined {
-                font-size: 1.2rem;
+                font-size: 1.15rem;
+            }
+
+            .poster-lightbox-img {
+                max-width: 95vw;
+                max-height: 60vh;
+                border-radius: 8px;
+            }
+
+            .poster-lightbox-img img {
+                max-height: 60vh;
+            }
+
+            .poster-lightbox-top h3 {
+                font-size: 1rem;
+            }
+
+            .poster-lightbox-close {
+                width: 34px;
+                height: 34px;
+                top: 0.6rem;
+                right: 0.6rem;
             }
         }
 
-        @media (max-width: 480px) {
-            :global(.poster-card) {
-                width: 180px;
-            }
+        .poster-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
 
-            :global(.poster-card-name) {
-                font-size: 0.8rem;
-                padding: 2rem 0.75rem 0.75rem;
-            }
+        .poster-lightbox.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .poster-lightbox-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 12, 25, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .poster-lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 12;
+            transition: background 0.2s ease;
+        }
+
+        .poster-lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .poster-lightbox-close .material-symbols-outlined {
+            font-size: 1.3rem;
+        }
+
+        .poster-lightbox-top {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 0 1rem 1rem;
+        }
+
+        .poster-lightbox-top h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .poster-lightbox-img {
+            position: relative;
+            z-index: 10;
+            max-height: 70vh;
+            max-width: 85vw;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .poster-lightbox.is-open .poster-lightbox-img {
+            transform: scale(1);
+        }
+
+        .poster-lightbox-img img {
+            width: 100%;
+            height: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .poster-lightbox-bottom {
+            position: relative;
+            z-index: 10;
+            padding: 1.25rem 1rem 0;
+        }
+
+        .poster-lightbox-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            background: #25d366;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .poster-lightbox-btn:hover {
+            background: #1eba57;
+            transform: translateY(-2px);
+        }
+
+        .poster-lightbox-btn .material-symbols-outlined {
+            font-size: 1.2rem;
         }
     </style>
 </section>
 
 <script>
-    const track = document.getElementById('posterTrack')!;
+    const stage = document.getElementById('posterStage')!;
     const prevBtn = document.getElementById('posterPrev')!;
     const nextBtn = document.getElementById('posterNext')!;
+    const dotsContainer = document.getElementById('posterDots')!;
     const loadingEl = document.getElementById('posterLoading')!;
+    const lightbox = document.getElementById('posterLightbox')!;
+    const lightboxBackdrop = document.getElementById('posterLightboxBackdrop')!;
+    const lightboxClose = document.getElementById('posterLightboxClose')!;
+    const lightboxImg = document.getElementById('posterLightboxImg') as HTMLImageElement;
+    const lightboxTitle = document.getElementById('posterLightboxTitle')!;
+    const lightboxContact = document.getElementById('posterLightboxContact') as HTMLAnchorElement;
 
     let posters: { id: string; name: string; filename: string; url: string }[] = [];
+    let currentIndex = 0;
+    let autoTimer: ReturnType<typeof setInterval> | null = null;
+
+    function openLightbox(index: number) {
+        const p = posters[index];
+        if (!p) return;
+        lightboxImg.src = p.url;
+        lightboxImg.alt = p.name;
+        lightboxTitle.textContent = p.name;
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        if (autoTimer) clearInterval(autoTimer);
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+        startAuto();
+    }
+
+    lightboxBackdrop.addEventListener('click', closeLightbox);
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxContact.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeLightbox();
+        (window as any).openContactModal('Galería de posters');
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+    });
 
     function renderPosters() {
         if (posters.length === 0) {
@@ -273,40 +565,162 @@ const {
                 </div>`;
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
+            dotsContainer.style.display = 'none';
             return;
         }
 
-        loadingEl.outerHTML = posters.map((p) => `
-            <article class="poster-card">
-                <div class="poster-card-img">
+        loadingEl.remove();
+
+        stage.innerHTML = posters.map((p, i) => `
+            <article class="poster-slide" data-index="${i}">
+                <div class="poster-slide-img">
                     <img src="${p.url}" alt="${p.name}" loading="lazy"
-                         onerror="this.parentElement.style.background='#e2e8f0';this.style.display='none'" />
+                         onerror="this.parentElement.style.background='#1a2744';this.style.display='none'" />
                 </div>
-                <div class="poster-card-name">${p.name}</div>
+                <div class="poster-slide-name">${p.name}</div>
             </article>
         `).join('');
 
-        updateNav();
+        dotsContainer.innerHTML = posters.map((_, i) => `
+            <button class="poster-dot${i === 0 ? ' is-active' : ''}" data-dot="${i}" aria-label="Poster ${i + 1}"></button>
+        `).join('');
+
+        dotsContainer.querySelectorAll('.poster-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const idx = Number(dot.getAttribute('data-dot'));
+                goTo(idx);
+                resetAuto();
+            });
+        });
+
+        stage.querySelectorAll('.poster-slide').forEach(slide => {
+            slide.addEventListener('click', () => {
+                const idx = Number(slide.getAttribute('data-index'));
+                if (idx === currentIndex) {
+                    openLightbox(idx);
+                } else {
+                    goTo(idx);
+                    resetAuto();
+                }
+            });
+
+            slide.addEventListener('mouseenter', () => {
+                if (Number(slide.getAttribute('data-index')) === currentIndex) {
+                    const base = slide.getAttribute('data-base-transform') || '';
+                    slide.style.transform = base + ' translateY(-5px)';
+                }
+            });
+
+            slide.addEventListener('mouseleave', () => {
+                layout();
+            });
+        });
+
+        layout();
+        startAuto();
     }
 
-    function updateNav() {
-        const maxScroll = track.scrollWidth - track.clientWidth;
-        prevBtn.style.opacity = track.scrollLeft <= 5 ? '0.4' : '1';
-        nextBtn.style.opacity = track.scrollLeft >= maxScroll - 5 ? '0.4' : '1';
+    function layout() {
+        const slides = stage.querySelectorAll('.poster-slide') as NodeListOf<HTMLElement>;
+        const dots = dotsContainer.querySelectorAll('.poster-dot') as NodeListOf<HTMLElement>;
+        const total = posters.length;
+        if (total === 0) return;
+
+        const vw = window.innerWidth;
+        let gap: number;
+        if (vw <= 480) {
+            gap = 100;
+        } else if (vw <= 768) {
+            gap = 130;
+        } else {
+            gap = 180;
+        }
+
+        slides.forEach((slide, i) => {
+            let offset = i - currentIndex;
+
+            if (offset > total / 2) offset -= total;
+            if (offset < -total / 2) offset += total;
+
+            const absOffset = Math.abs(offset);
+
+            let translateX = 0;
+            let translateZ = 0;
+            let scale = 1;
+            let opacity = 1;
+            let zIndex = 0;
+
+            if (offset === 0) {
+                translateX = 0;
+                translateZ = 80;
+                scale = 1.6;
+                opacity = 1;
+                zIndex = 10;
+                slide.classList.add('is-center');
+            } else if (absOffset === 1) {
+                translateX = offset * gap;
+                translateZ = -30;
+                scale = 1.0;
+                opacity = 0.8;
+                zIndex = 5;
+                slide.classList.remove('is-center');
+            } else if (absOffset === 2) {
+                translateX = offset * (gap - 20);
+                translateZ = -100;
+                scale = 0.78;
+                opacity = 0.5;
+                zIndex = 3;
+                slide.classList.remove('is-center');
+            } else {
+                translateX = offset * (gap - 30);
+                translateZ = -200;
+                scale = 0.6;
+                opacity = 0;
+                zIndex = 1;
+                slide.classList.remove('is-center');
+            }
+
+            slide.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) scale(${scale})`;
+            slide.setAttribute('data-base-transform', slide.style.transform);
+            slide.style.opacity = String(opacity);
+            slide.style.zIndex = String(zIndex);
+        });
+
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('is-active', i === currentIndex);
+        });
     }
 
-    const scrollAmount = 300;
+    function goTo(index: number) {
+        currentIndex = ((index % posters.length) + posters.length) % posters.length;
+        layout();
+    }
 
-    prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
+    function next() {
+        goTo(currentIndex + 1);
+    }
 
-    nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
+    function prev() {
+        goTo(currentIndex - 1);
+    }
 
-    track.addEventListener('scroll', updateNav);
-    window.addEventListener('resize', updateNav);
+    function startAuto() {
+        if (autoTimer) clearInterval(autoTimer);
+        autoTimer = setInterval(next, 2200);
+    }
+
+    function resetAuto() {
+        startAuto();
+    }
+
+    prevBtn.addEventListener('click', () => { prev(); resetAuto(); });
+    nextBtn.addEventListener('click', () => { next(); resetAuto(); });
+
+    const viewport = document.getElementById('posterViewport')!;
+    viewport.addEventListener('mouseenter', () => { if (autoTimer) clearInterval(autoTimer); });
+    viewport.addEventListener('mouseleave', () => { startAuto(); });
+
+    window.addEventListener('resize', layout);
 
     async function loadPosters() {
         try {

@@ -1,0 +1,554 @@
+---
+interface Props {
+    service?: string;
+}
+
+const { service = "" } = Astro.props;
+---
+
+<div class="cmodal-overlay" id="contactModal">
+    <div class="cmodal-backdrop" id="contactModalBackdrop"></div>
+    <div class="cmodal-content">
+        <button class="cmodal-close" id="contactModalClose" aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="cmodal-header">
+            <h2>Contáctanos</h2>
+            <p>Resuelve tus dudas o reserva directamente</p>
+        </div>
+
+        <form class="cmodal-form" id="contactForm">
+            <div class="cmodal-field">
+                <label for="contactName">Nombre *</label>
+                <input type="text" id="contactName" name="name" required placeholder="Tu nombre completo" />
+            </div>
+
+            <div class="cmodal-field">
+                <label>Servicios de interés</label>
+                <div class="cmodal-tags" id="contactTags"></div>
+                <div class="cmodal-tag-input">
+                    <input type="text" id="contactTagInput" placeholder="Agregar otro servicio..." />
+                    <button type="button" id="contactTagAdd" class="cmodal-tag-add-btn">
+                        <span class="material-symbols-outlined">add</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="cmodal-row">
+                <div class="cmodal-field">
+                    <label for="contactDate">Fecha deseada</label>
+                    <input type="date" id="contactDate" name="date" />
+                </div>
+                <div class="cmodal-field">
+                    <label for="contactPeople">Personas</label>
+                    <input type="number" id="contactPeople" name="people" min="1" max="50" placeholder="1" />
+                </div>
+            </div>
+
+            <div class="cmodal-field">
+                <label for="contactMessage">Mensaje</label>
+                <textarea id="contactMessage" name="message" rows="3" placeholder="Cuéntanos en qué podemos ayudarte..."></textarea>
+            </div>
+
+            <div class="cmodal-actions">
+                <button type="submit" class="cmodal-btn cmodal-btn--primary">
+                    <span class="material-symbols-outlined">send</span>
+                    Contactar
+                </button>
+                <button type="button" class="cmodal-btn cmodal-btn--whatsapp" id="contactWhatsApp">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                    Contactar desde WhatsApp
+                </button>
+            </div>
+        </form>
+
+        <div class="cmodal-success" id="contactSuccess">
+            <span class="material-symbols-outlined">check_circle</span>
+            <h3>¡Mensaje enviado!</h3>
+            <p>Te contactaremos pronto.</p>
+            <button type="button" class="cmodal-btn cmodal-btn--primary" id="contactSuccessClose">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cmodal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .cmodal-overlay.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cmodal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(5, 12, 25, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .cmodal-content {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        border-radius: 18px;
+        width: min(520px, 92vw);
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        transform: scale(0.92) translateY(10px);
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        scrollbar-width: thin;
+        scrollbar-color: #c1d5e4 #f0f5fa;
+    }
+
+    .cmodal-overlay.is-open .cmodal-content {
+        transform: scale(1) translateY(0);
+    }
+
+    .cmodal-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0, 0, 0, 0.06);
+        color: #5a6f85;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .cmodal-close:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: #1a2d42;
+    }
+
+    .cmodal-close .material-symbols-outlined {
+        font-size: 1.25rem;
+    }
+
+    .cmodal-header {
+        padding: 1.75rem 1.75rem 0;
+        text-align: center;
+    }
+
+    .cmodal-header h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f2a4a;
+        margin: 0 0 0.3rem;
+    }
+
+    .cmodal-header p {
+        font-size: 0.88rem;
+        color: #6b8299;
+        margin: 0;
+    }
+
+    .cmodal-form {
+        padding: 1.25rem 1.75rem 1.75rem;
+    }
+
+    .cmodal-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+    }
+
+    .cmodal-field label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #2c4a63;
+    }
+
+    .cmodal-field input,
+    .cmodal-field textarea {
+        border: 1px solid #d1dde8;
+        border-radius: 10px;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+        color: #1a2d42;
+        background: #f7fafc;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-family: inherit;
+    }
+
+    .cmodal-field input:focus,
+    .cmodal-field textarea:focus {
+        border-color: #3a8db8;
+        box-shadow: 0 0 0 3px rgba(58, 141, 184, 0.12);
+    }
+
+    .cmodal-field textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+    .cmodal-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .cmodal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        min-height: 28px;
+    }
+
+    :global(.cmodal-tag) {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: #eaf2fb;
+        color: #1c5fa8;
+        border: 1px solid #c8dff0;
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    :global(.cmodal-tag-remove) {
+        border: none;
+        background: none;
+        color: #1c5fa8;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        line-height: 1;
+        opacity: 0.6;
+        transition: opacity 0.15s;
+    }
+
+    :global(.cmodal-tag-remove:hover) {
+        opacity: 1;
+    }
+
+    .cmodal-tag-input {
+        display: flex;
+        gap: 0.4rem;
+        margin-top: 0.3rem;
+    }
+
+    .cmodal-tag-input input {
+        flex: 1;
+        border: 1px solid #d1dde8;
+        border-radius: 10px;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.82rem;
+        color: #1a2d42;
+        background: #f7fafc;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .cmodal-tag-input input:focus {
+        border-color: #3a8db8;
+    }
+
+    .cmodal-tag-add-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid #d1dde8;
+        background: #f7fafc;
+        color: #1c5fa8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, border-color 0.2s;
+        flex-shrink: 0;
+    }
+
+    .cmodal-tag-add-btn:hover {
+        background: #eaf2fb;
+        border-color: #1c5fa8;
+    }
+
+    .cmodal-tag-add-btn .material-symbols-outlined {
+        font-size: 1.15rem;
+    }
+
+    .cmodal-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .cmodal-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.25rem;
+        border-radius: 12px;
+        border: none;
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        font-family: inherit;
+    }
+
+    .cmodal-btn:active {
+        transform: scale(0.97);
+    }
+
+    .cmodal-btn--primary {
+        background: #1c5fa8;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(28, 95, 168, 0.25);
+    }
+
+    .cmodal-btn--primary:hover {
+        background: #17508f;
+        box-shadow: 0 6px 20px rgba(28, 95, 168, 0.35);
+    }
+
+    .cmodal-btn--whatsapp {
+        background: #25d366;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+    }
+
+    .cmodal-btn--whatsapp:hover {
+        background: #1eba57;
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+    }
+
+    .cmodal-btn--whatsapp svg {
+        flex-shrink: 0;
+    }
+
+    .cmodal-btn .material-symbols-outlined {
+        font-size: 1.15rem;
+    }
+
+    .cmodal-success {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2.5rem 1.75rem;
+        gap: 0.5rem;
+    }
+
+    .cmodal-success.is-visible {
+        display: flex;
+    }
+
+    .cmodal-success .material-symbols-outlined {
+        font-size: 3.5rem;
+        color: #25d366;
+        margin-bottom: 0.25rem;
+    }
+
+    .cmodal-success h3 {
+        font-size: 1.2rem;
+        color: #0f2a4a;
+        margin: 0;
+    }
+
+    .cmodal-success p {
+        font-size: 0.88rem;
+        color: #6b8299;
+        margin: 0 0 1rem;
+    }
+
+    @media (max-width: 520px) {
+        .cmodal-content {
+            max-height: 95vh;
+            border-radius: 14px;
+        }
+
+        .cmodal-header {
+            padding: 1.25rem 1.25rem 0;
+        }
+
+        .cmodal-form {
+            padding: 1rem 1.25rem 1.25rem;
+        }
+
+        .cmodal-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .cmodal-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    const WA_NUMBER = '529831779754';
+    let selectedServices: string[] = [];
+
+    function createContactModal() {
+        if (document.getElementById('contactModal')) return;
+
+        const modalHTML = document.getElementById('contactModalTemplate');
+        if (modalHTML) {
+            document.body.insertAdjacentHTML('beforeend', modalHTML.innerHTML);
+        }
+    }
+
+    function openContactModal(service?: string) {
+        createContactModal();
+
+        const overlay = document.getElementById('contactModal');
+        const tagsContainer = document.getElementById('contactTags');
+        const form = document.getElementById('contactForm') as HTMLFormElement;
+        const success = document.getElementById('contactSuccess');
+        const tagInput = document.getElementById('contactTagInput') as HTMLInputElement;
+
+        if (!overlay) return;
+
+        selectedServices = [];
+        if (service) selectedServices.push(service);
+        renderTags();
+
+        if (form) form.style.display = '';
+        if (success) success.classList.remove('is-visible');
+        if (tagInput) tagInput.value = '';
+
+        overlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactModal() {
+        const overlay = document.getElementById('contactModal');
+        if (overlay) {
+            overlay.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function renderTags() {
+        const container = document.getElementById('contactTags');
+        if (!container) return;
+        container.innerHTML = selectedServices.map((s, i) => `
+            <span class="cmodal-tag">
+                ${s}
+                <button type="button" class="cmodal-tag-remove" data-index="${i}">×</button>
+            </span>
+        `).join('');
+
+        container.querySelectorAll('.cmodal-tag-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = Number(btn.getAttribute('data-index'));
+                selectedServices.splice(idx, 1);
+                renderTags();
+            });
+        });
+    }
+
+    function addTag() {
+        const input = document.getElementById('contactTagInput') as HTMLInputElement;
+        if (!input) return;
+        const val = input.value.trim();
+        if (val && !selectedServices.includes(val)) {
+            selectedServices.push(val);
+            renderTags();
+        }
+        input.value = '';
+        input.focus();
+    }
+
+    function getFormData() {
+        const name = (document.getElementById('contactName') as HTMLInputElement)?.value.trim() || '';
+        const date = (document.getElementById('contactDate') as HTMLInputElement)?.value || '';
+        const people = (document.getElementById('contactPeople') as HTMLInputElement)?.value || '';
+        const message = (document.getElementById('contactMessage') as HTMLTextAreaElement)?.value.trim() || '';
+        return { name, services: [...selectedServices], date, people, message };
+    }
+
+    function buildWhatsAppUrl(data: ReturnType<typeof getFormData>) {
+        let text = 'Hola, me interesa contactarlos.';
+        if (data.services.length > 0) text += `\nServicio(s): ${data.services.join(', ')}`;
+        if (data.date) text += `\nFecha: ${data.date}`;
+        if (data.people) text += `\nPersonas: ${data.people}`;
+        if (data.message) text += `\nMensaje: ${data.message}`;
+        if (data.name) text += `\nNombre: ${data.name}`;
+        return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
+    }
+
+    function bindEvents() {
+        const backdrop = document.getElementById('contactModalBackdrop');
+        const closeBtn = document.getElementById('contactModalClose');
+        const whatsappBtn = document.getElementById('contactWhatsApp');
+        const tagAddBtn = document.getElementById('contactTagAdd');
+        const tagInput = document.getElementById('contactTagInput');
+        const form = document.getElementById('contactForm');
+        const successClose = document.getElementById('contactSuccessClose');
+
+        backdrop?.addEventListener('click', closeContactModal);
+        closeBtn?.addEventListener('click', closeContactModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeContactModal();
+        });
+
+        tagAddBtn?.addEventListener('click', addTag);
+        tagInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+        });
+
+        whatsappBtn?.addEventListener('click', () => {
+            const data = getFormData();
+            window.open(buildWhatsAppUrl(data), '_blank');
+        });
+
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = getFormData();
+            if (!data.name) return;
+
+            try {
+                const res = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    form.style.display = 'none';
+                    document.getElementById('contactSuccess')?.classList.add('is-visible');
+                }
+            } catch {
+                alert('Error al enviar. Intenta de nuevo.');
+            }
+        });
+
+        successClose?.addEventListener('click', closeContactModal);
+    }
+
+    (window as any).openContactModal = openContactModal;
+    bindEvents();
+</script>

@@ -130,18 +130,18 @@ const {
 
                     <div class="tdm-capacity-alert" data-capacity-alert aria-live="polite">
                         <p>En caso de requerir más espacio contáctenos.</p>
-                        <a href={contactHref} class="tdm-contact-btn">
+                        <button type="button" class="tdm-contact-btn" data-transport-contact>
                             Contactar
                             <span class="material-symbols-outlined">chat</span>
-                        </a>
+                        </button>
                     </div>
 
                     <div class="tdm-form-contact" data-form-contact>
                         <p>Formulario completo. Continuar por contacto directo.</p>
-                        <a href={contactHref} class="tdm-contact-btn tdm-contact-btn--primary">
+                        <button type="button" class="tdm-contact-btn tdm-contact-btn--primary" data-transport-contact>
                             Contactar ahora
                             <span class="material-symbols-outlined">call</span>
-                        </a>
+                        </button>
                     </div>
                 </form>
 
@@ -174,7 +174,6 @@ const {
 </div>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
     .material-symbols-outlined {
         font-family: "Material Symbols Outlined";

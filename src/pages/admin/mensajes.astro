@@ -159,8 +159,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       document.getElementById('modalName').textContent = m.name;
 
       const interestsEl = document.getElementById('modalInterests');
-      if (m.interests?.length) {
-        interestsEl.textContent = m.interests.join(' · ');
+      const items = m.services || m.interests || [];
+      if (items.length) {
+        interestsEl.textContent = items.join(' · ');
         interestsEl.hidden = false;
       } else {
         interestsEl.hidden = true;
@@ -205,13 +206,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         const dateStr = formatDate(m.createdAt);
         const preview = m.message.length > 100 ? m.message.slice(0, 100) + '…' : m.message;
         const isLeido = m.status === 'leido';
+        const contactInfo = m.contact || (m.services || m.interests || []).join(', ') || '';
         return `<div class="inbox-row ${isLeido ? 'inbox-row--leido' : ''}" data-id="${m.id}" style="--row-bg:${meta.bg};--row-border:${meta.border};--row-hover:${meta.hover}">
           <div class="inbox-row-left">
             <div class="inbox-row-name">${escHtml(m.name)}</div>
             <div class="inbox-row-preview">${escHtml(preview)}</div>
           </div>
           <div class="inbox-row-right">
-            <div class="inbox-row-contact">${escHtml(m.contact)}</div>
+            <div class="inbox-row-contact">${escHtml(contactInfo)}</div>
             <div class="inbox-row-date">${escHtml(dateStr)}</div>
           </div>
         </div>`;

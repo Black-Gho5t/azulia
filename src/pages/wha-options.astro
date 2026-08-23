@@ -1,18 +1,45 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WhatsAppButton from "../components/functions/wha/redirection_button.astro";
+import ContactModal from "../components/contact_modal.astro";
 ---
 
 <Layout>
     <WhatsAppButton disabled={true} />
+    <ContactModal />
     <div class="wha-options-container">
         <div class="wha-options-content">
-            <h1>Contactanos por WhatsApp</h1>
+            <div class="wha-options-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#25d366" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                </svg>
+                <h1>Contáctanos</h1>
+                <p>Elige la forma que prefieras para comunicarte con nosotros</p>
+            </div>
 
-            <!-- formulario aquí -->
+            <div class="wha-options-cards">
+                <button class="wha-option-card" id="whaOpenForm">
+                    <span class="material-symbols-outlined">edit_note</span>
+                    <h3>Enviar formulario</h3>
+                    <p>Cuéntanos los detalles de tu reserva y te contactaremos</p>
+                </button>
+                <a href="https://wa.me/529831779754" target="_blank" rel="noopener noreferrer" class="wha-option-card wha-option-card--green">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                    <h3>WhatsApp directo</h3>
+                    <p>Chatea con nosotros en tiempo real</p>
+                </a>
+            </div>
         </div>
     </div>
 </Layout>
+
+<script>
+    document.getElementById('whaOpenForm')?.addEventListener('click', () => {
+        (window as any).openContactModal();
+    });
+</script>
 
 <style>
     .wha-options-container {
@@ -21,38 +48,102 @@ import WhatsAppButton from "../components/functions/wha/redirection_button.astro
         justify-content: center;
         min-height: 100vh;
         padding: 20px;
+        background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
     }
 
     .wha-options-content {
-        background: white;
-        border-radius: 12px;
-        padding: 40px;
         max-width: 600px;
         width: 100%;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    h1 {
+    .wha-options-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .wha-options-header svg {
+        margin-bottom: 1rem;
+    }
+
+    .wha-options-header h1 {
+        color: #0f2a4a;
+        margin: 0 0 0.5rem;
+        font-size: 1.8rem;
+    }
+
+    .wha-options-header p {
+        color: #6b8299;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .wha-options-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .wha-option-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.75rem;
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+        border: 2px solid #e2ecf4;
+        background: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 16px rgba(15, 42, 74, 0.06);
+        font-family: inherit;
+    }
+
+    .wha-option-card:hover {
+        border-color: #1c5fa8;
+        box-shadow: 0 8px 30px rgba(28, 95, 168, 0.12);
+        transform: translateY(-3px);
+    }
+
+    .wha-option-card .material-symbols-outlined {
+        font-size: 2.5rem;
+        color: #1c5fa8;
+    }
+
+    .wha-option-card--green {
+        border-color: #c8f0d8;
+    }
+
+    .wha-option-card--green:hover {
+        border-color: #25d366;
+        box-shadow: 0 8px 30px rgba(37, 211, 102, 0.15);
+    }
+
+    .wha-option-card--green svg {
         color: #25d366;
-        margin-bottom: 20px;
-        text-align: center;
     }
 
-    p {
-        color: #666;
-        text-align: center;
-        font-size: 14px;
+    .wha-option-card h3 {
+        font-size: 1rem;
+        color: #0f2a4a;
+        margin: 0;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .wha-options-container {
-            min-height: auto;
-            padding: 15px;
+    .wha-option-card p {
+        font-size: 0.82rem;
+        color: #6b8299;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+        .wha-options-cards {
+            grid-template-columns: 1fr;
         }
 
-        .wha-options-content {
-            padding: 30px 20px;
+        .wha-options-header h1 {
+            font-size: 1.5rem;
         }
     }
 </style>

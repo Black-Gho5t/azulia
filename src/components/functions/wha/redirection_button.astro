@@ -10,9 +10,10 @@ const { disabled = false } = Astro.props;
     !disabled && (
         <div class="wha-container">
             <a
-                href="/wha-options"
+                href="javascript:void(0)"
                 class="wha-button"
                 title="Contactar por WhatsApp"
+                id="whatsappFloatBtn"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -28,6 +29,13 @@ const { disabled = false } = Astro.props;
         </div>
     )
 }
+
+<script>
+    document.getElementById('whatsappFloatBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        (window as any).openContactModal();
+    });
+</script>
 
 <style>
     .wha-container {

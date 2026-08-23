@@ -199,7 +199,11 @@ const {
 
         // Botón de reserva
         reserveBtn?.addEventListener("click", () => {
-            alert("¡Gracias por tu interés! Para completar tu reserva, por favor contáctanos.");
+            const title = overlay.querySelector(".dmodal-title")?.textContent?.trim() || "";
+            overlay.classList.remove("open");
+            current = 0;
+            showImg(0);
+            (window as any).openContactModal(title);
         });
 
         // Cerrar con botón X

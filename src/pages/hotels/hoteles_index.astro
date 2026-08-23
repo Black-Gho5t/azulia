@@ -66,11 +66,6 @@ import Layout from "../../layouts/Layout.astro";
 </Layout>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
-
-    * {
-        font-family: Arial, Helvetica, sans-serif;
-    }
 
 
     .material-symbols-outlined {
@@ -546,10 +541,10 @@ import Layout from "../../layouts/Layout.astro";
                                     <span class="hotel-price">$${price.toLocaleString("es-MX")} MXN</span>
                                     <span class="note">por noche</span>
                                 </div>
-                                <a href="/menu/" class="hotel-cta">
+                                <button type="button" class="hotel-cta" data-contact="Hotel">
                                     Cotizar
                                     <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </article>
@@ -561,4 +556,12 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     loadHotels();
+
+    document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('[data-contact]') as HTMLElement | null;
+        if (btn) {
+            (window as any).openContactModal(btn.dataset.contact || '');
+        }
+    });
 </script>

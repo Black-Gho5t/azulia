@@ -99,8 +99,16 @@ const stars = "★".repeat(Math.round(car.rating));
 
             <div class="car-modal-footer">
                 <p>Desde <strong>${car.pricePerDay.toLocaleString("es-MX")} MXN</strong> / dia</p>
-                <a href="/wha-options" class="car-modal-cta">Reservar este auto</a>
+                <button type="button" class="car-modal-cta" data-car-contact>Reservar este auto</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('[data-car-contact]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            (window as any).openContactModal('Renta de auto');
+        });
+    });
+</script>
