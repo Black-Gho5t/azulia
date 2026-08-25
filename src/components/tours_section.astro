@@ -122,7 +122,7 @@ const centerIcons = Array.from(
             <h1 class="hero-title">{carouselTitle}</h1>
             <h2 class="hero-subtitle">{carouselSubtitle}</h2>
             <p class="hero-desc">{carouselDescription}</p>
-            <a href="#tours-cards" class="hero-cta">
+            <a href="#tours-cards" class="hero-cta" id="heroCta">
                 Descubrir <span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span>
             </a>
         </div>
@@ -383,24 +383,38 @@ const centerIcons = Array.from(
         font-size: 1rem;
         font-weight: 700;
         letter-spacing: 0.04em;
-        transition: all 0.3s;
         box-shadow: 0 6px 24px rgba(33, 123, 150, 0.45);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        animation: ctaPulse 2.5s ease-in-out infinite;
     }
 
     .hero-cta:hover {
         background: #1a5f78;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 32px rgba(33, 123, 150, 0.55);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 36px rgba(33, 123, 150, 0.6);
+        animation: none;
+    }
+
+    .hero-cta:active {
+        transform: translateY(-1px) scale(0.97);
+    }
+
+    @keyframes ctaPulse {
+        0%, 100% { box-shadow: 0 6px 24px rgba(33, 123, 150, 0.45); }
+        50%      { box-shadow: 0 6px 32px rgba(33, 123, 150, 0.7), 0 0 0 6px rgba(33, 123, 150, 0.15); }
     }
 
     .hero-cta .material-symbols-outlined {
         font-size: 1.1rem;
-        animation: bounceY 1.6s infinite;
+        transition: transform 0.3s ease;
     }
 
-    @keyframes bounceY {
-        0%, 100% { transform: translateY(0); }
-        50%       { transform: translateY(5px); }
+    .hero-cta:hover .material-symbols-outlined {
+        transform: translateY(4px);
+    }
+
+    .tours-section {
+        scroll-margin-top: 80px;
     }
 
     .carousel-dots {

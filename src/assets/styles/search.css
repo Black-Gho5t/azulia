@@ -7,6 +7,7 @@
 
 .search-form-inline {
     width: 100%;
+    position: relative;
 }
 
 .input {
@@ -43,10 +44,13 @@
 .icon {
     position: absolute;
     left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
     fill: rgba(255, 255, 255, 0.65);
     width: 0.95rem;
     height: 0.95rem;
     pointer-events: none;
+    z-index: 1;
     transition: fill 0.2s;
 }
 

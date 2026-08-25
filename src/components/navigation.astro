@@ -82,11 +82,11 @@ import "../assets/styles/home.css";
         </li>
     </ul>
 
-    <!-- Derecha: search + user (desktop) -->
+    <!-- Derecha: search + contact (desktop) -->
     <div class="nav-right">
         <Search />
-        <button class="nav-user-btn" aria-label="Perfil de usuario">
-            <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+        <button class="nav-contact-btn" id="navContactBtn" aria-label="Contactar">
+            <span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
         </button>
     </div>
 
@@ -95,8 +95,8 @@ import "../assets/styles/home.css";
         <button class="nav-mob-search-btn" id="mobSearchToggle" aria-label="Buscar" aria-expanded="false">
             <span class="material-symbols-outlined" aria-hidden="true">search</span>
         </button>
-        <button class="nav-user-btn" aria-label="Perfil de usuario">
-            <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+        <button class="nav-contact-btn" id="mobContactBtn" aria-label="Contactar">
+            <span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
         </button>
     </div>
 
@@ -334,6 +334,14 @@ import "../assets/styles/home.css";
         if (e.key !== "Enter") return;
         e.preventDefault();
         submitSearch(mobInput.value);
+    });
+
+    /* CONTACT BUTTON */
+    document.getElementById("navContactBtn")?.addEventListener("click", () => {
+        (window as any).openContactModal();
+    });
+    document.getElementById("mobContactBtn")?.addEventListener("click", () => {
+        (window as any).openContactModal();
     });
 </script>
 
@@ -631,6 +639,31 @@ import "../assets/styles/home.css";
     }
 
     .nav-user-btn .material-symbols-outlined {
+        font-size: 1.4rem;
+        line-height: 1;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .nav-contact-btn {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #fff;
+        transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-contact-btn:hover {
+        background: rgba(168,230,247,0.2);
+        border-color: #a8e6f7;
+    }
+
+    .nav-contact-btn .material-symbols-outlined {
         font-size: 1.4rem;
         line-height: 1;
         color: rgba(255,255,255,0.9);
