@@ -55,23 +55,6 @@ import "../assets/styles/home.css";
                 <span class="material-symbols-outlined nav-chevron" aria-hidden="true">expand_more</span>
             </button>
             <ul class="nav-dropdown nav-dropdown-transport" role="menu">
-                <li class="nav-dropdown-item nav-dropdown-item-has-submenu">
-                    <button class="nav-dropdown-link nav-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
-                        <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
-                        Tipos de transporte
-                        <span class="material-symbols-outlined nav-sub-chevron" aria-hidden="true">chevron_right</span>
-                    </button>
-                    <ul class="nav-sub-dropdown" role="menu">
-                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
-                            <span class="material-symbols-outlined" aria-hidden="true">local_taxi</span>Taxi</a></li>
-                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
-                            <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>Uber</a></li>
-                        <li><a href="/transportation/renta-autos" class="nav-dropdown-link nav-sub-link">
-                            <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>Privado</a></li>
-                        <li><a href="/menu" class="nav-dropdown-link nav-sub-link">
-                            <span class="material-symbols-outlined" aria-hidden="true">directions_bus</span>ADO</a></li>
-                    </ul>
-                </li>
                 <li><a href="/transportation/nacional" class="nav-dropdown-link">
                     <span class="material-symbols-outlined" aria-hidden="true">route</span>Nacional</a></li>
                 <li><a href="/transportation/international" class="nav-dropdown-link">
@@ -184,32 +167,6 @@ import "../assets/styles/home.css";
                 <span class="drawer-chevron material-symbols-outlined" aria-hidden="true">expand_more</span>
             </button>
             <div class="drawer-sub" id="transportSub">
-                <div class="drawer-sub-group">
-                    <button class="drawer-sub-toggle" id="transportTypesBtn" aria-expanded="false" type="button">
-                        <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
-                        Tipos de transporte
-                        <span class="drawer-sub-chevron material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                    </button>
-                    <div class="drawer-sub-nested" id="transportTypesSub">
-                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
-                            <span class="material-symbols-outlined" aria-hidden="true">local_taxi</span>
-                            Taxi
-                        </a>
-                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
-                            <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>
-                            Uber
-                        </a>
-                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
-                            <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-                            Privado
-                        </a>
-                        <a href="/menu" class="drawer-sub-link drawer-sub-link--nested">
-                            <span class="material-symbols-outlined" aria-hidden="true">directions_bus</span>
-                            ADO
-                        </a>
-                    </div>
-                </div>
-
                 <a href="/transportation/nacional" class="drawer-sub-link">
                     <span class="material-symbols-outlined" aria-hidden="true">route</span>
                     Nacional
@@ -276,22 +233,10 @@ import "../assets/styles/home.css";
 
     const transportBtn = document.getElementById("transportSectionBtn") as HTMLButtonElement;
     const transportSub = document.getElementById("transportSub")        as HTMLElement;
-    const transportTypesBtn = document.getElementById("transportTypesBtn") as HTMLButtonElement;
-    const transportTypesSub = document.getElementById("transportTypesSub") as HTMLElement;
 
     transportBtn?.addEventListener("click", () => {
         const isOpen = transportSub.classList.toggle("open");
         transportBtn.setAttribute("aria-expanded", String(isOpen));
-
-        if (!isOpen) {
-            transportTypesSub?.classList.remove("open");
-            transportTypesBtn?.setAttribute("aria-expanded", "false");
-        }
-    });
-
-    transportTypesBtn?.addEventListener("click", () => {
-        const isOpen = transportTypesSub.classList.toggle("open");
-        transportTypesBtn.setAttribute("aria-expanded", String(isOpen));
     });
 
     /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAVBAR SCROLL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -393,7 +338,7 @@ import "../assets/styles/home.css";
     }
 
     .nav-brand-text {
-        font-family: 'Allura', cursive, Arial, sans-serif;
+        font-family: 'Allura', cursive, Inter, sans-serif;
         font-size: 1.7rem;
         color: #fff;
         letter-spacing: 0.04em;
@@ -421,7 +366,7 @@ import "../assets/styles/home.css";
         gap: 6px;
         color: rgba(255,255,255,0.88);
         text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 0.9rem;
         font-weight: 500;
         letter-spacing: 0.04em;
@@ -523,7 +468,7 @@ import "../assets/styles/home.css";
         padding: 11px 18px;
         color: rgba(255,255,255,0.88);
         text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 0.875rem;
         font-weight: 400;
         letter-spacing: 0.03em;
@@ -546,61 +491,6 @@ import "../assets/styles/home.css";
 
     .nav-dropdown-link:hover .material-symbols-outlined {
         color: #fff;
-    }
-
-    .nav-dropdown-item {
-        position: relative;
-    }
-
-    .nav-dropdown-toggle {
-        width: 100%;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        text-align: left;
-    }
-
-    .nav-sub-chevron {
-        margin-left: auto;
-        font-size: 1rem;
-        color: rgba(255,255,255,0.65);
-        transition: transform 0.2s ease;
-    }
-
-    .nav-dropdown-item-has-submenu:hover .nav-sub-chevron,
-    .nav-dropdown-item-has-submenu:focus-within .nav-sub-chevron {
-        transform: translateX(2px);
-        color: #fff;
-    }
-
-    .nav-sub-dropdown {
-        position: absolute;
-        left: 100%;
-        top: -6px;
-        min-width: 190px;
-        list-style: none;
-        margin: 0;
-        padding: 6px 0;
-        background: #355e9d;
-        border-radius: 0 10px 10px 10px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.24);
-        opacity: 0;
-        transform: translateX(8px);
-        pointer-events: none;
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        z-index: 110;
-    }
-
-    .nav-dropdown-item-has-submenu:hover .nav-sub-dropdown,
-    .nav-dropdown-item-has-submenu:focus-within .nav-sub-dropdown {
-        opacity: 1;
-        transform: translateX(0);
-        pointer-events: auto;
-    }
-
-    .nav-sub-link {
-        font-size: 0.84rem;
-        background: rgba(255,255,255,0.02);
     }
 
     /* Right section */
@@ -745,7 +635,7 @@ import "../assets/styles/home.css";
     }
 
     .drawer-brand-text {
-        font-family: 'Allura', cursive, Arial, sans-serif;
+        font-family: 'Allura', cursive, Inter, sans-serif;
         font-size: 1.5rem;
         color: #fff;
         flex: 1;
@@ -788,7 +678,7 @@ import "../assets/styles/home.css";
         padding: 14px 24px;
         color: rgba(255,255,255,0.82);
         text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 0.98rem;
         font-weight: 500;
         letter-spacing: 0.03em;
@@ -824,7 +714,7 @@ import "../assets/styles/home.css";
         border: none;
         border-left: 3px solid transparent;
         color: rgba(255,255,255,0.82);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 0.98rem;
         font-weight: 500;
         letter-spacing: 0.03em;
@@ -872,7 +762,7 @@ import "../assets/styles/home.css";
         padding: 12px 24px 12px 36px;
         color: rgba(255,255,255,0.7);
         text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 0.9rem;
         font-weight: 400;
         border-left: 3px solid transparent;
@@ -896,58 +786,6 @@ import "../assets/styles/home.css";
 
     .drawer-sub-link:hover .material-symbols-outlined {
         opacity: 1;
-    }
-
-    .drawer-sub-group {
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .drawer-sub-toggle {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 11px 24px 11px 36px;
-        background: rgba(255,255,255,0.03);
-        border: none;
-        color: rgba(255,255,255,0.78);
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 0.88rem;
-        text-align: left;
-        cursor: pointer;
-    }
-
-    .drawer-sub-toggle .material-symbols-outlined {
-        font-size: 1.05rem;
-        color: #a8e6f7;
-        flex-shrink: 0;
-    }
-
-    .drawer-sub-chevron {
-        margin-left: auto;
-        color: rgba(255,255,255,0.6);
-        transition: transform 0.25s ease, color 0.25s ease;
-    }
-
-    .drawer-sub-toggle[aria-expanded="true"] .drawer-sub-chevron {
-        transform: rotate(90deg);
-        color: #fff;
-    }
-
-    .drawer-sub-nested {
-        max-height: 0;
-        overflow: hidden;
-        background: rgba(0,0,0,0.16);
-        transition: max-height 0.28s ease;
-    }
-
-    .drawer-sub-nested.open {
-        max-height: 240px;
-    }
-
-    .drawer-sub-link--nested {
-        padding-left: 52px;
-        font-size: 0.85rem;
     }
 
     /* Overlay */
@@ -988,7 +826,7 @@ import "../assets/styles/home.css";
         .mob-search-panel.open { pointer-events: auto; opacity: 1; transform: translateY(0); }
         .mob-search-inner { display: flex; align-items: center; gap: 10px; padding: 12px 16px 14px; max-width: 600px; margin: 0 auto; }
         .mob-search-icon { font-size: 1.35rem; color: rgba(255,255,255,0.7); flex-shrink: 0; line-height: 1; }
-        .mob-search-input { flex: 1; height: 46px; background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 50px; padding: 0 1.2rem; color: #fff; font-size: 1rem; font-family: Arial, Helvetica, sans-serif; outline: none; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+        .mob-search-input { flex: 1; height: 46px; background: rgba(255,255,255,0.16); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 50px; padding: 0 1.2rem; color: #fff; font-size: 1rem; font-family: Inter, system-ui, sans-serif; outline: none; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
         .mob-search-input::placeholder { color: rgba(255,255,255,0.55); }
         .mob-search-input:focus { background: rgba(255,255,255,0.24); border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
         .mob-search-close { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.85); transition: background 0.2s; }

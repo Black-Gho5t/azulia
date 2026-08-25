@@ -5,7 +5,7 @@
 .car-rental-page {
     background: linear-gradient(180deg, #f2f8fd 0%, #eaf3fb 60%, #f8fcff 100%);
     color: #173754;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Inter, system-ui, sans-serif;
 }
 
 .car-hero {
