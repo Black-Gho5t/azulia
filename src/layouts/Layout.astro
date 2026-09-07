@@ -73,4 +73,54 @@ import ContactModal from "../components/contact_modal.astro";
 	font[color] .material-symbols-outlined {
 		font-family: 'Material Symbols Outlined' !important;
 	}
+
+	/* Any element with inline font-family that contains an icon child */
+	font[style] .material-symbols-outlined,
+	span[style*="font-family"] .material-symbols-outlined {
+		font-family: 'Material Symbols Outlined' !important;
+	}
 </style>
+
+<script>
+(function () {
+	const ICON_SELECTOR = ".material-symbols-outlined";
+	const ICON_FONT = "'Material Symbols Outlined'";
+
+	function restoreIcons(root: ParentNode) {
+		root.querySelectorAll<HTMLElement>(ICON_SELECTOR).forEach((el) => {
+			el.style.fontFamily = ICON_FONT;
+		});
+	}
+
+	/* Restore on initial load */
+	restoreIcons(document);
+
+	/* Watch for Google Translate DOM mutations */
+	const observer = new MutationObserver((mutations) => {
+		for (const m of mutations) {
+			for (const node of Array.from(m.addedNodes)) {
+				if (node.nodeType === 1) {
+					const el = node as HTMLElement;
+					if (el.matches?.(ICON_SELECTOR)) {
+						el.style.fontFamily = ICON_FONT;
+					}
+					restoreIcons(el);
+				}
+			}
+			if (m.type === "attributes" && m.attributeName === "style") {
+				const el = m.target as HTMLElement;
+				if (el.matches?.(ICON_SELECTOR)) {
+					el.style.fontFamily = ICON_FONT;
+				}
+			}
+		}
+	});
+
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: ["style", "class"],
+	});
+})();
+</script>
