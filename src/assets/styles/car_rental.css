@@ -278,6 +278,19 @@
     display: block;
 }
 
+.car-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8eef5;
+    color: #94a3b8;
+    min-height: 180px;
+}
+
+.car-image-placeholder .material-symbols-outlined {
+    font-size: 3rem;
+}
+
 .car-card-body {
     padding: 0.95rem;
 }

@@ -1,0 +1,899 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Autos · Azulia Admin">
+  <div class="autos-page">
+    <div class="autos-header">
+      <div>
+        <h1 class="autos-title">Renta de Autos</h1>
+        <p class="autos-subtitle">Gestiona la flota de autos disponibles.</p>
+      </div>
+      <div class="header-actions">
+        <button class="seed-btn" id="seedBtn">
+          <span class="material-symbols-outlined">database</span>
+          Seed datos
+        </button>
+        <button class="add-btn" id="addCarBtn">
+          <span class="material-symbols-outlined">add</span>
+          Agregar auto
+        </button>
+      </div>
+    </div>
+
+    <div class="autos-grid" id="carsGrid">
+      <div class="autos-loading" id="carsLoading">Cargando autos...</div>
+    </div>
+  </div>
+
+  <!-- Modal agregar/editar -->
+  <div class="modal-overlay" id="carModal" hidden>
+    <div class="modal-card modal-card-wide">
+      <button class="modal-close" id="modalClose">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h2 class="modal-title" id="modalTitle">Agregar auto</h2>
+
+      <div class="modal-split">
+        <form id="carForm" class="car-form">
+          <input type="hidden" id="carId" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="carModel">Modelo</label>
+              <input type="text" id="carModel" required placeholder="Ej: Volkswagen Jetta" />
+            </div>
+            <div class="form-group form-group-short">
+              <label for="carYear">Anio</label>
+              <input type="number" id="carYear" required placeholder="2024" min="1990" max="2030" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="carType">Tipo</label>
+              <select id="carType" required>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Pickup">Pickup</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Coupe">Coupe</option>
+                <option value="Monovolumen">Monovolumen</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="carTransmission">Transmision</label>
+              <select id="carTransmission">
+                <option value="Automatica">Automatica</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group form-group-short">
+              <label for="carSeats">Pasajeros</label>
+              <input type="number" id="carSeats" value="5" min="2" max="15" />
+            </div>
+            <div class="form-group form-group-short">
+              <label for="carDoors">Puertas</label>
+              <input type="number" id="carDoors" value="4" min="2" max="6" />
+            </div>
+            <div class="form-group form-group-short">
+              <label for="carPrice">Precio/dia</label>
+              <input type="number" id="carPrice" required placeholder="1200" min="0" />
+            </div>
+            <div class="form-group form-group-short">
+              <label for="carRating">Rating</label>
+              <input type="number" id="carRating" value="4.5" min="1" max="5" step="0.1" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="carEngine">Motor</label>
+              <input type="text" id="carEngine" placeholder="Ej: 2.0L TSI" />
+            </div>
+            <div class="form-group">
+              <label for="carFuel">Combustible</label>
+              <select id="carFuel">
+                <option value="Gasolina">Gasolina</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hibrido">Hibrido</option>
+                <option value="Electrico">Electrico</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="carConsumption">Consumo</label>
+              <input type="text" id="carConsumption" placeholder="Ej: 15 km/L" />
+            </div>
+            <div class="form-group">
+              <label for="carDrivetrain">Traccion</label>
+              <select id="carDrivetrain">
+                <option value="FWD">FWD (Delantera)</option>
+                <option value="RWD">RWD (Trasera)</option>
+                <option value="AWD">AWD (Integral)</option>
+                <option value="4WD">4WD (4x4)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="carLuggage">Equipaje</label>
+              <input type="text" id="carLuggage" placeholder="Ej: 3 strapontes" />
+            </div>
+            <div class="form-group">
+              <label for="carTopSpeed">Vel. maxima</label>
+              <div class="input-with-suffix">
+                <input type="number" id="carTopSpeed" placeholder="210" min="0" max="500" />
+                <span class="input-suffix">km/h</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="carHighlight">Chip destacado</label>
+            <input type="text" id="carHighlight" placeholder="Ej: Mas reservado en Bacalar" />
+          </div>
+
+          <div class="form-group">
+            <label for="carDesc">Descripcion corta</label>
+            <textarea id="carDesc" rows="2" placeholder="Breve descripcion del auto..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Caracteristicas</label>
+            <div class="features-list" id="featuresList"></div>
+            <div class="feature-input-row">
+              <input type="text" id="featureInput" placeholder="Ej: Apple CarPlay" />
+              <button type="button" id="featureAddBtn" class="feature-add-btn">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Imagenes (max 6)</label>
+            <div class="photo-slots" id="photoSlots">
+              <div class="photo-slot is-cover" id="photoSlot0" data-index="0">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span><span class="photo-slot-cover-label">Portada</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="0">&times;</button>
+                  <span class="photo-slot-cover-label">Portada</span>
+                </div>
+              </div>
+              <div class="photo-slot" id="photoSlot1" data-index="1">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="1">&times;</button>
+                  <button type="button" class="photo-slot-cover" data-index="1">Hacer portada</button>
+                </div>
+              </div>
+              <div class="photo-slot" id="photoSlot2" data-index="2">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="2">&times;</button>
+                  <button type="button" class="photo-slot-cover" data-index="2">Hacer portada</button>
+                </div>
+              </div>
+              <div class="photo-slot" id="photoSlot3" data-index="3">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="3">&times;</button>
+                  <button type="button" class="photo-slot-cover" data-index="3">Hacer portada</button>
+                </div>
+              </div>
+              <div class="photo-slot" id="photoSlot4" data-index="4">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="4">&times;</button>
+                  <button type="button" class="photo-slot-cover" data-index="4">Hacer portada</button>
+                </div>
+              </div>
+              <div class="photo-slot" id="photoSlot5" data-index="5">
+                <div class="photo-slot-empty"><span class="material-symbols-outlined">add_a_photo</span></div>
+                <div class="photo-slot-filled" hidden>
+                  <img class="photo-slot-img" src="" alt="" />
+                  <button type="button" class="photo-slot-remove" data-index="5">&times;</button>
+                  <button type="button" class="photo-slot-cover" data-index="5">Hacer portada</button>
+                </div>
+              </div>
+            </div>
+            <input type="file" id="carFileInput" accept="image/*" multiple hidden />
+            <p class="upload-error" id="uploadError" hidden></p>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="cancel-btn" id="cancelBtn">Cancelar</button>
+            <button type="submit" class="save-btn" id="saveBtn">
+              <span class="material-symbols-outlined">save</span>
+              Guardar
+            </button>
+          </div>
+        </form>
+
+        <!-- Preview -->
+        <div class="car-preview">
+          <div class="preview-card" id="previewCard">
+            <div class="preview-img-wrap">
+              <img id="prevImg" src="" alt="" />
+              <div class="preview-placeholder" id="prevPlaceholder">
+                <span class="material-symbols-outlined">directions_car</span>
+              </div>
+              <span class="preview-chip" id="prevHighlight"></span>
+            </div>
+            <div class="preview-body">
+              <div class="preview-type" id="prevType">Sedan</div>
+              <div class="preview-model" id="prevModel">Modelo del auto</div>
+              <div class="preview-specs" id="prevSpecs">
+                <span>5</span><span>4</span><span>Automatica</span>
+              </div>
+              <div class="preview-footer">
+                <span class="preview-price" id="prevPrice">$0 MXN</span>
+                <span class="preview-rating" id="prevRating">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div id="confirmModal" class="confirm-overlay" hidden>
+    <div class="confirm-card">
+      <span class="confirm-icon material-symbols-outlined">help</span>
+      <p class="confirm-msg" id="confirmMsg"></p>
+      <div class="confirm-btns">
+        <button class="confirm-btn confirm-cancel" id="confirmCancel">Cancelar</button>
+        <button class="confirm-btn confirm-ok" id="confirmOk">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toastOverlay" class="toast-overlay" hidden>
+    <div class="toast-card" id="toastCard">
+      <span class="material-symbols-outlined toast-icon" id="toastIcon">check_circle</span>
+      <span class="toast-text" id="toastText"></span>
+    </div>
+  </div>
+
+  <style is:global>
+    .autos-page { width: 100%; max-width: 960px; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .autos-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .autos-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+    .autos-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0.25rem 0 0; }
+
+    .header-actions { display: flex; gap: 0.5rem; }
+    .add-btn, .seed-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: 10px; border: none;
+      font-size: 0.85rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .add-btn { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
+    .add-btn:hover { background: rgba(255,255,255,0.25); }
+    .seed-btn { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); }
+    .seed-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .add-btn .material-symbols-outlined, .seed-btn .material-symbols-outlined { font-size: 1.1rem; }
+
+    .autos-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;
+    }
+    .autos-loading { grid-column: 1 / -1; text-align: center; padding: 3rem; color: rgba(255,255,255,0.6); font-style: italic; }
+    .autos-empty { grid-column: 1 / -1; text-align: center; padding: 3rem; color: rgba(255,255,255,0.5); }
+
+    .car-card {
+      background: rgba(255,255,255,0.96); border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .car-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+
+    .car-card-img { width: 100%; height: 160px; object-fit: cover; background: #e8eef5; }
+    .car-card-img-placeholder { width: 100%; height: 160px; display: flex; align-items: center; justify-content: center; background: #e8eef5; color: #94a3b8; }
+    .car-card-img-placeholder .material-symbols-outlined { font-size: 3rem; }
+
+    .car-card-body { padding: 0.85rem 1rem; }
+    .car-card-type { font-size: 0.72rem; font-weight: 600; color: #1c5fa8; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.15rem; }
+    .car-card-model { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .car-card-specs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .car-card-spec { font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 0.15rem 0.45rem; border-radius: 6px; }
+    .car-card-price { font-size: 0.88rem; font-weight: 700; color: #059669; }
+
+    .car-card-actions { display: flex; gap: 0.4rem; padding: 0 1rem 0.85rem; }
+    .car-card-actions button {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
+      padding: 0.4rem; border-radius: 8px; border: none;
+      font-size: 0.75rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .car-edit-btn { background: #e0f2fe; color: #0369a1; }
+    .car-edit-btn:hover { background: #bae6fd; }
+    .car-delete-btn { background: #fee2e2; color: #dc2626; }
+    .car-delete-btn:hover { background: #fecaca; }
+    .car-card-actions .material-symbols-outlined { font-size: 0.95rem; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(10,26,47,0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay[hidden] { display: none !important; }
+    .modal-card { background: #fff; border-radius: 20px; max-width: 720px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); padding: 1.75rem; position: relative; }
+    .modal-card-wide { max-width: 860px; }
+    .modal-card::-webkit-scrollbar { width: 6px; }
+    .modal-card::-webkit-scrollbar-track { background: transparent; }
+    .modal-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #f1f5f9; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s; z-index: 2; }
+    .modal-close:hover { background: #e2e8f0; color: #0a1a2f; }
+    .modal-close .material-symbols-outlined { font-size: 1.25rem; }
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: #0a1a2f; margin: 0 0 1.25rem; }
+
+    .modal-split { display: grid; grid-template-columns: 1fr 240px; gap: 1.5rem; align-items: start; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .form-row:nth-child(3) { grid-template-columns: repeat(4, 1fr); }
+    .form-group { margin-bottom: 0.85rem; }
+    .form-group-short { min-width: 0; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: #475569; margin-bottom: 0.3rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.5rem 0.7rem; border-radius: 8px; border: 1px solid #e2e8f0;
+      font-size: 0.85rem; font-family: inherit; color: #1e293b; background: #fff;
+      transition: border-color 0.2s; box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #1c5fa8; outline: none; }
+    .form-group textarea { resize: vertical; min-height: 50px; }
+
+    .input-with-suffix { display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; transition: border-color 0.2s; }
+    .input-with-suffix:focus-within { border-color: #1c5fa8; outline: none; }
+    .input-with-suffix input { flex: 1; border: none !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; padding-left: 0.7rem; }
+    .input-suffix { padding: 0.5rem 0.7rem; font-size: 0.8rem; font-weight: 600; color: #64748b; background: #f1f5f9; border-left: 1px solid #e2e8f0; white-space: nowrap; user-select: none; }
+
+    .features-list { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.5rem; min-height: 24px; }
+    .feature-tag { display: inline-flex; align-items: center; gap: 0.25rem; background: #eaf2fb; color: #1c5fa8; border: 1px solid #c8dff0; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.75rem; font-weight: 600; }
+    .feature-tag button { border: none; background: none; color: #1c5fa8; cursor: pointer; padding: 0; font-size: 0.9rem; line-height: 1; opacity: 0.6; }
+    .feature-tag button:hover { opacity: 1; }
+
+    .feature-input-row { display: flex; gap: 0.4rem; }
+    .feature-input-row input { flex: 1; }
+    .feature-add-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #1c5fa8; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+    .feature-add-btn:hover { background: #eaf2fb; border-color: #1c5fa8; }
+    .feature-add-btn .material-symbols-outlined { font-size: 1.1rem; }
+
+    .photo-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.5rem; }
+    .photo-slot { aspect-ratio: 4/3; border: 2px dashed #d1dde8; border-radius: 10px; overflow: hidden; position: relative; cursor: pointer; transition: border-color 0.2s; }
+    .photo-slot:hover { border-color: #1c5fa8; }
+    .photo-slot-empty { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; gap: 0.2rem; }
+    .photo-slot-empty[hidden] { display: none !important; }
+    .photo-slot-empty .material-symbols-outlined { font-size: 1.8rem; }
+    .photo-slot-filled { width: 100%; height: 100%; position: relative; }
+    .photo-slot-filled[hidden] { display: none !important; }
+    .photo-slot-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-slot-remove { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .photo-slot-cover { position: absolute; bottom: 2px; left: 2px; padding: 0.15rem 0.4rem; border-radius: 6px; border: none; background: rgba(28,95,168,0.85); color: #fff; font-size: 0.65rem; font-weight: 600; cursor: pointer; }
+    .photo-slot-cover-label { position: absolute; top: 2px; left: 2px; padding: 0.15rem 0.4rem; border-radius: 6px; background: rgba(28,95,168,0.9); color: #fff; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; pointer-events: none; }
+    .photo-slot.is-cover { border-color: #1c5fa8; border-style: solid; }
+    .upload-error { font-size: 0.78rem; color: #dc2626; margin: 0; }
+
+    .form-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.75rem; }
+    .cancel-btn { padding: 0.55rem 1.2rem; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .cancel-btn:hover { background: #f1f5f9; }
+    .save-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.55rem 1.2rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #1c5fa8, #155088); color: #fff; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .save-btn:hover { background: linear-gradient(135deg, #17508f, #114272); }
+    .save-btn .material-symbols-outlined { font-size: 1rem; }
+
+    /* Preview */
+    .car-preview { position: sticky; top: 0; }
+    .preview-card { background: linear-gradient(180deg, #1a2d47 0%, #1a2d47 40%, #f0f4f8 40%); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .preview-img-wrap { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; }
+    .preview-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .preview-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); }
+    .preview-placeholder .material-symbols-outlined { font-size: 3.5rem; }
+    .preview-chip { position: absolute; top: 0.6rem; left: 0.6rem; background: rgba(28,95,168,0.9); color: #fff; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.68rem; font-weight: 600; display: none; }
+    .preview-chip:not(:empty) { display: inline-block; }
+    .preview-body { padding: 0.75rem 0.85rem; }
+    .preview-type { font-size: 0.7rem; font-weight: 600; color: #1c5fa8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .preview-model { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem; }
+    .preview-specs { display: flex; gap: 0.35rem; margin-bottom: 0.5rem; }
+    .preview-specs span { font-size: 0.68rem; color: #64748b; background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 5px; }
+    .preview-footer { display: flex; justify-content: space-between; align-items: center; }
+    .preview-price { font-size: 0.85rem; font-weight: 700; color: #059669; }
+    .preview-rating { font-size: 0.78rem; font-weight: 600; color: #f59e0b; background: #fef3c7; padding: 0.15rem 0.45rem; border-radius: 6px; }
+
+    /* Confirm */
+    .confirm-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(10,26,47,0.5); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .confirm-overlay[hidden] { display: none !important; }
+    .confirm-card { background: #fff; border-radius: 16px; padding: 2rem; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+    .confirm-icon { font-size: 2.5rem; color: #1c5fa8; margin-bottom: 0.75rem; display: block; }
+    .confirm-msg { font-size: 0.95rem; color: #1e293b; line-height: 1.6; margin: 0 0 1.5rem; }
+    .confirm-btns { display: flex; gap: 0.75rem; justify-content: center; }
+    .confirm-btn { padding: 0.6rem 1.5rem; border-radius: 10px; border: none; font-size: 0.88rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .confirm-cancel { background: #f1f5f9; color: #475569; }
+    .confirm-cancel:hover { background: #e2e8f0; }
+    .confirm-ok { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+    .confirm-ok:hover { background: #fecaca; }
+
+    /* Toast */
+    .toast-overlay { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 3000; }
+    .toast-overlay[hidden] { display: none !important; }
+    .toast-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; border-radius: 12px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .toast-success { background: #059669; color: #fff; }
+    .toast-error { background: #dc2626; color: #fff; }
+    .toast-info { background: #1c5fa8; color: #fff; }
+    .toast-icon { font-size: 1.2rem; }
+
+    @media (max-width: 768px) {
+      .modal-split { grid-template-columns: 1fr; }
+      .car-preview { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-row:nth-child(3) { grid-template-columns: 1fr 1fr; }
+      .photo-slots { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+
+  <script>
+    const API = '/api/cars';
+    const grid = document.getElementById('carsGrid')!;
+    const loading = document.getElementById('carsLoading')!;
+
+    const carModal = document.getElementById('carModal') as HTMLDivElement;
+    const confirmModal = document.getElementById('confirmModal') as HTMLDivElement;
+
+    const carForm = document.getElementById('carForm') as HTMLFormElement;
+    const carIdInput = document.getElementById('carId') as HTMLInputElement;
+    const carModel = document.getElementById('carModel') as HTMLInputElement;
+    const carYear = document.getElementById('carYear') as HTMLInputElement;
+    const carType = document.getElementById('carType') as HTMLSelectElement;
+    const carTransmission = document.getElementById('carTransmission') as HTMLSelectElement;
+    const carSeats = document.getElementById('carSeats') as HTMLInputElement;
+    const carDoors = document.getElementById('carDoors') as HTMLInputElement;
+    const carEngine = document.getElementById('carEngine') as HTMLInputElement;
+    const carFuel = document.getElementById('carFuel') as HTMLSelectElement;
+    const carConsumption = document.getElementById('carConsumption') as HTMLInputElement;
+    const carDrivetrain = document.getElementById('carDrivetrain') as HTMLSelectElement;
+    const carLuggage = document.getElementById('carLuggage') as HTMLInputElement;
+    const carTopSpeed = document.getElementById('carTopSpeed') as HTMLInputElement;
+    const carPrice = document.getElementById('carPrice') as HTMLInputElement;
+    const carRating = document.getElementById('carRating') as HTMLInputElement;
+    const carHighlight = document.getElementById('carHighlight') as HTMLInputElement;
+    const carDesc = document.getElementById('carDesc') as HTMLTextAreaElement;
+    const modalTitle = document.getElementById('modalTitle')!;
+    const saveBtn = document.getElementById('saveBtn')!;
+
+    const carFileInput = document.getElementById('carFileInput') as HTMLInputElement;
+    const uploadError = document.getElementById('uploadError')!;
+
+    const toastOverlay = document.getElementById('toastOverlay')!;
+    const toastCard = document.getElementById('toastCard')!;
+    const toastIcon = document.getElementById('toastIcon')!;
+    const toastText = document.getElementById('toastText')!;
+
+    const prevImg = document.getElementById('prevImg') as HTMLImageElement;
+    const prevPlaceholder = document.getElementById('prevPlaceholder')!;
+    const prevHighlight = document.getElementById('prevHighlight')!;
+    const prevType = document.getElementById('prevType')!;
+    const prevModel = document.getElementById('prevModel')!;
+    const prevSpecs = document.getElementById('prevSpecs')!;
+    const prevPrice = document.getElementById('prevPrice')!;
+    const prevRating = document.getElementById('prevRating')!;
+
+    let currentFeatures: string[] = [];
+    let deleteTargetId: string | null = null;
+    let carImages: string[] = [];
+    let carImageFiles: string[] = [];
+    let carCoverIndex: number = 0;
+    let activeSlotIndex: number | null = null;
+
+    function isValidImageUrl(url: string): boolean {
+      if (!url || typeof url !== 'string') return false;
+      if (url.startsWith('blob:')) return true;
+      if (url.startsWith('http://') || url.startsWith('https://')) return true;
+      if (url.startsWith('/api/cars/image/')) return true;
+      return false;
+    }
+
+    function filterValidImages(images: string[]): string[] {
+      return images.filter(isValidImageUrl);
+    }
+
+    function showToast(type: 'success' | 'error' | 'info', msg: string) {
+      toastCard.className = 'toast-card toast-' + type;
+      toastIcon.textContent = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
+      toastText.textContent = msg;
+      toastOverlay.hidden = false;
+      setTimeout(() => { toastOverlay.hidden = true; }, 3500);
+    }
+
+    function showUploadError(msg: string) {
+      uploadError.textContent = msg;
+      uploadError.hidden = false;
+    }
+    function hideUploadError() { uploadError.hidden = true; }
+
+    function renderPhotoSlots() {
+      for (let i = 0; i < 6; i++) {
+        const slot = document.getElementById(`photoSlot${i}`)!;
+        if (!slot) continue;
+        const emptyEl = slot.querySelector('.photo-slot-empty') as HTMLElement;
+        const filledEl = slot.querySelector('.photo-slot-filled') as HTMLElement;
+        const img = slot.querySelector('.photo-slot-img') as HTMLImageElement;
+
+        if (carImages[i] && isValidImageUrl(carImages[i])) {
+          emptyEl.hidden = true;
+          filledEl.hidden = false;
+          img.src = carImages[i];
+        } else {
+          emptyEl.hidden = false;
+          filledEl.hidden = true;
+          img.src = '';
+        }
+
+        slot.classList.toggle('is-cover', i === 0);
+      }
+    }
+
+    function renderFeatures() {
+      const list = document.getElementById('featuresList')!;
+      list.innerHTML = currentFeatures.map((f, i) =>
+        `<span class="feature-tag">${f}<button type="button" data-fi="${i}">&times;</button></span>`
+      ).join('');
+      list.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentFeatures.splice(Number(btn.getAttribute('data-fi')), 1);
+          renderFeatures();
+        });
+      });
+    }
+
+    function updatePreview() {
+      const model = carModel.value.trim() || 'Modelo del auto';
+      const type = carType.value;
+      const price = Number(carPrice.value) || 0;
+      const rating = Number(carRating.value) || 0;
+      const seats = carSeats.value || '5';
+      const doors = carDoors.value || '4';
+      const trans = carTransmission.value;
+
+      prevModel.textContent = model;
+      prevType.textContent = type;
+      prevHighlight.textContent = carHighlight.value.trim();
+      prevPrice.textContent = `$${price.toLocaleString('es-MX')} MXN`;
+      prevRating.textContent = String(rating);
+      prevSpecs.innerHTML = `<span>${seats} pasajeros</span><span>${doors} puertas</span><span>${trans}</span>`;
+
+      const coverUrl = carImages[carCoverIndex] || carImages[0] || '';
+      if (coverUrl) {
+        prevImg.src = coverUrl;
+        prevImg.style.display = 'block';
+        prevPlaceholder.style.display = 'none';
+      } else {
+        prevImg.style.display = 'none';
+        prevPlaceholder.style.display = 'flex';
+      }
+    }
+
+    document.getElementById('addCarBtn')!.addEventListener('click', () => openModal());
+    document.getElementById('cancelBtn')!.addEventListener('click', closeModal);
+    document.getElementById('modalClose')!.addEventListener('click', closeModal);
+    carModal.addEventListener('click', (e) => { if (e.target === carModal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    function openModal(car?: any) {
+      carForm.reset();
+      currentFeatures = [];
+      carImages = [];
+      carImageFiles = [];
+      carCoverIndex = 0;
+      activeSlotIndex = null;
+      hideUploadError();
+      renderFeatures();
+      renderPhotoSlots();
+      updatePreview();
+
+      if (car) {
+        modalTitle.textContent = 'Editar auto';
+        carIdInput.value = car.id;
+        carModel.value = car.model || '';
+        carYear.value = car.year || '';
+        carType.value = car.type || 'Sedan';
+        carTransmission.value = car.transmission || 'Automatica';
+        carSeats.value = car.seats || 5;
+        carDoors.value = car.doors || 4;
+        carEngine.value = car.engine || '';
+        carFuel.value = car.fuel || 'Gasolina';
+        carConsumption.value = car.consumption || '';
+        carDrivetrain.value = car.drivetrain || 'FWD';
+        carLuggage.value = car.luggage || '';
+        carTopSpeed.value = (car.topSpeed || '').replace(/\s*km\/h\s*/i, '').trim();
+        carPrice.value = car.pricePerDay || '';
+        carRating.value = car.rating || '';
+        carHighlight.value = car.highlight || '';
+        carDesc.value = car.shortDescription || '';
+        currentFeatures = [...(car.features || [])];
+        carImages = filterValidImages(car.images || []);
+        carImageFiles = [...(car.imageFiles || [])];
+        renderFeatures();
+        renderPhotoSlots();
+      } else {
+        modalTitle.textContent = 'Agregar auto';
+        carIdInput.value = '';
+      }
+
+      updatePreview();
+      carModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      carModal.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    function escHtml(s: string) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    async function loadCars() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        loading.hidden = true;
+
+        if (!data.ok || !data.cars?.length) {
+          grid.innerHTML = '<div class="autos-empty">No hay autos registrados. Agrega uno o haz seed de datos.</div>';
+          return;
+        }
+
+        grid.innerHTML = data.cars.map((car: any) => {
+          const allImages = Array.isArray(car.images) ? car.images.filter(isValidImageUrl) : [];
+          const img = allImages[0] || '';
+          const imgHtml = img
+            ? `<img class="car-card-img" src="${escHtml(img)}" alt="${escHtml(car.model)}" />`
+            : `<div class="car-card-img-placeholder"><span class="material-symbols-outlined">directions_car</span></div>`;
+          return `<div class="car-card">
+            ${imgHtml}
+            <div class="car-card-body">
+              <div class="car-card-type">${escHtml(car.type)}</div>
+              <div class="car-card-model">${escHtml(car.model)} ${car.year || ''}</div>
+              <div class="car-card-specs">
+                <span class="car-card-spec">${car.seats || 5} pasajeros</span>
+                <span class="car-card-spec">${car.transmission || 'Automatica'}</span>
+                <span class="car-card-spec">${car.fuel || 'Gasolina'}</span>
+              </div>
+              <div class="car-card-price">$${(car.pricePerDay || 0).toLocaleString('es-MX')} MXN/dia</div>
+            </div>
+            <div class="car-card-actions">
+              <button class="car-edit-btn" data-id="${car.id}"><span class="material-symbols-outlined">edit</span> Editar</button>
+              <button class="car-delete-btn" data-id="${car.id}"><span class="material-symbols-outlined">delete</span> Eliminar</button>
+            </div>
+          </div>`;
+        }).join('');
+
+        grid.querySelectorAll('.car-edit-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const car = data.cars.find((c: any) => c.id === btn.getAttribute('data-id'));
+            if (car) openModal(car);
+          });
+        });
+        grid.querySelectorAll('.car-delete-btn').forEach(btn => {
+          btn.addEventListener('click', () => confirmDelete(btn.getAttribute('data-id')!));
+        });
+      } catch (err: any) {
+        loading.textContent = 'Error: ' + (err.message || 'No se pudieron cargar los autos');
+      }
+    }
+
+    async function confirmDelete(id: string) {
+      document.getElementById('confirmMsg')!.textContent = '¿Eliminar este auto? Se movera a la papelera por 30 dias.';
+      confirmModal.hidden = false;
+      document.getElementById('confirmOk')!.onclick = async () => {
+        confirmModal.hidden = true;
+        try {
+          const res = await fetch(API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+          const data = await res.json();
+          if (data.ok) { showToast('success', 'Auto eliminado'); loadCars(); }
+          else showToast('error', data.error || 'Error al eliminar');
+        } catch { showToast('error', 'Error de conexion'); }
+      };
+      document.getElementById('confirmCancel')!.addEventListener('click', () => { confirmModal.hidden = true; }, { once: true });
+    }
+
+    document.getElementById('featureAddBtn')!.addEventListener('click', () => {
+      const input = document.getElementById('featureInput') as HTMLInputElement;
+      const val = input.value.trim();
+      if (val && !currentFeatures.includes(val)) {
+        currentFeatures.push(val);
+        renderFeatures();
+      }
+      input.value = '';
+      input.focus();
+    });
+    document.getElementById('featureInput')!.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('featureAddBtn')!.click(); }
+    });
+
+    for (let i = 0; i < 6; i++) {
+      const slot = document.getElementById(`photoSlot${i}`);
+      if (!slot) continue;
+      slot.addEventListener('click', () => {
+        if (i === 0 || carImages.length >= 6) return;
+        activeSlotIndex = i;
+        carFileInput.click();
+      });
+      const removeBtn = slot.querySelector('.photo-slot-remove');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          carImages.splice(i, 1);
+          carImageFiles.splice(i, 1);
+          if (carCoverIndex >= carImages.length) carCoverIndex = 0;
+          renderPhotoSlots();
+          updatePreview();
+        });
+      }
+      const coverBtn = slot.querySelector('.photo-slot-cover');
+      if (coverBtn) {
+        coverBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const img = carImages.splice(i, 1)[0];
+          const file = carImageFiles.splice(i, 1)[0];
+          carImages.unshift(img);
+          carImageFiles.unshift(file);
+          carCoverIndex = 0;
+          renderPhotoSlots();
+          updatePreview();
+        });
+      }
+    }
+
+    document.getElementById('photoSlot0')!.addEventListener('click', () => {
+      if (carImages.length >= 6) return;
+      carFileInput.click();
+    });
+
+    carFileInput.addEventListener('change', async () => {
+      const files = carFileInput.files;
+      if (!files?.length) return;
+      hideUploadError();
+
+      const emptySlots = 6 - carImages.length;
+      const toUpload = Array.from(files).slice(0, emptySlots);
+
+      try {
+        saveBtn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Subiendo...';
+        saveBtn.setAttribute('disabled', 'true');
+
+        for (const file of toUpload) {
+          const previewUrl = URL.createObjectURL(file);
+          let nextIdx: number;
+          if (activeSlotIndex !== null && activeSlotIndex < 6 && !carImages[activeSlotIndex]) {
+            nextIdx = activeSlotIndex;
+          } else {
+            nextIdx = carImages.length;
+          }
+          carImages[nextIdx] = previewUrl;
+          renderPhotoSlots();
+
+          const fd = new FormData();
+          fd.append('file', file);
+          fd.append('carId', carIdInput.value || 'new');
+          const res = await fetch('/api/cars/upload', { method: 'POST', body: fd });
+          const data = await res.json();
+          if (data.ok) {
+            URL.revokeObjectURL(previewUrl);
+            carImages[nextIdx] = data.url;
+            carImageFiles[nextIdx] = data.filename;
+          } else {
+            URL.revokeObjectURL(previewUrl);
+            delete carImages[nextIdx];
+            carImages = carImages.filter(Boolean);
+            showUploadError(data.error || 'Error al subir una imagen');
+          }
+          renderPhotoSlots();
+          updatePreview();
+        }
+      } catch {
+        showUploadError('Error de conexion al subir');
+      } finally {
+        saveBtn.removeAttribute('disabled');
+        saveBtn.innerHTML = '<span class="material-symbols-outlined">save</span> Guardar';
+        carFileInput.value = '';
+        activeSlotIndex = null;
+      }
+    });
+
+    [carModel, carYear, carType, carTransmission, carSeats, carDoors, carPrice, carRating, carHighlight].forEach(el => {
+      el.addEventListener('input', updatePreview);
+    });
+
+    carForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = carIdInput.value;
+      const payload: any = {
+        model: carModel.value.trim(),
+        year: Number(carYear.value),
+        type: carType.value,
+        transmission: carTransmission.value,
+        seats: Number(carSeats.value),
+        doors: Number(carDoors.value),
+        engine: carEngine.value.trim(),
+        fuel: carFuel.value,
+        consumption: carConsumption.value.trim(),
+        drivetrain: carDrivetrain.value,
+        luggage: carLuggage.value.trim(),
+        topSpeed: carTopSpeed.value.trim() ? carTopSpeed.value.trim() + ' km/h' : '',
+        pricePerDay: Number(carPrice.value),
+        rating: Number(carRating.value),
+        highlight: carHighlight.value.trim(),
+        shortDescription: carDesc.value.trim(),
+        features: currentFeatures,
+        images: filterValidImages(carImages),
+        imageFiles: carImageFiles.filter(Boolean),
+      };
+
+      try {
+        saveBtn.setAttribute('disabled', 'true');
+        const method = id ? 'PUT' : 'POST';
+        if (id) payload.id = id;
+        const res = await fetch(API, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (data.ok) {
+          showToast('success', id ? 'Auto actualizado' : 'Auto agregado');
+          closeModal();
+          loadCars();
+        } else {
+          showToast('error', data.error || 'Error al guardar');
+        }
+      } catch {
+        showToast('error', 'Error de conexion');
+      } finally {
+        saveBtn.removeAttribute('disabled');
+      }
+    });
+
+    document.getElementById('seedBtn')!.addEventListener('click', async () => {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        if (data.cars?.length > 0) {
+          showToast('info', `Ya existen ${data.cars.length} autos. No se hace seed.`);
+          return;
+        }
+      } catch {}
+
+      const { carRentalFleet } = await import('../../components/data/transportation/car_rental_data');
+      let count = 0;
+      for (const car of carRentalFleet) {
+        const payload = {
+          model: car.model, year: car.year, type: car.type, transmission: car.transmission,
+          seats: car.seats, doors: car.doors, engine: car.engine, fuel: car.fuel,
+          consumption: car.consumption, luggage: car.luggage, drivetrain: car.drivetrain,
+          topSpeed: car.topSpeed, pricePerDay: car.pricePerDay, rating: car.rating,
+          shortDescription: car.shortDescription, highlight: car.highlight,
+          features: car.features, images: car.images, imageFiles: [],
+        };
+        try {
+          const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await res.json();
+          if (data.ok) count++;
+        } catch {}
+      }
+      showToast('success', `Seed completado: ${count} autos agregados`);
+      loadCars();
+    });
+
+    loadCars();
+  </script>
+</AdminLayout>

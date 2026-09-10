@@ -2,148 +2,386 @@
 import Layout from "../layouts/Layout.astro";
 import WhatsAppButton from "../components/functions/wha/redirection_button.astro";
 import ContactModal from "../components/contact_modal.astro";
+import Navbar from "../components/navigation.astro";
+import Footer from "../components/footer.astro";
 ---
 
-<Layout>
+<Layout title="Contacto · Azulia Bacalar">
+    <Navbar />
     <WhatsAppButton disabled={true} />
     <ContactModal />
-    <div class="wha-options-container">
-        <div class="wha-options-content">
-            <div class="wha-options-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#25d366" viewBox="0 0 16 16">
-                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                </svg>
-                <h1>Contáctanos</h1>
-                <p>Elige la forma que prefieras para comunicarte con nosotros</p>
-            </div>
 
-            <div class="wha-options-cards">
-                <button class="wha-option-card" id="whaOpenForm">
-                    <span class="material-symbols-outlined">edit_note</span>
-                    <h3>Enviar formulario</h3>
-                    <p>Cuéntanos los detalles de tu reserva y te contactaremos</p>
-                </button>
-                <a href="https://wa.me/529831779754" target="_blank" rel="noopener noreferrer" class="wha-option-card wha-option-card--green">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                    </svg>
-                    <h3>WhatsApp directo</h3>
-                    <p>Chatea con nosotros en tiempo real</p>
-                </a>
+    <main class="contact-page">
+        <section class="contact-hero">
+            <div class="contact-hero-inner">
+                <span class="contact-hero-tag">
+                    <span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
+                    Estamos para ayudarte
+                </span>
+                <h1>Hablemos de tu proxima aventura en Bacalar</h1>
+                <p>
+                    Reserva tours, hospedaje, transporte o renta de autos. Elige la forma
+                    que prefieras y te atendemos con gusto.
+                </p>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <section class="contact-options-section">
+            <div class="contact-options-inner">
+                <div class="contact-cards">
+                    <button class="contact-card contact-card--primary" id="openFormCard">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        <h3>Enviar formulario</h3>
+                        <p>Cuentanos los detalles de tu reserva y te contactaremos en minutos.</p>
+                        <span class="contact-card-action">
+                            Abrir formulario
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
+                    </button>
+
+                    <a href="https://wa.me/529831779754" target="_blank" rel="noopener noreferrer" class="contact-card contact-card--whatsapp">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.228.198-.380.066-.151.033-.279-.017-.398-.05-.119-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.126.403.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                        </svg>
+                        <h3>WhatsApp directo</h3>
+                        <p>Chatea con nosotros en tiempo real, respuesta inmediata.</p>
+                        <span class="contact-card-action">
+                            Abrir WhatsApp
+                            <span class="material-symbols-outlined">open_in_new</span>
+                        </span>
+                    </a>
+
+                    <a href="tel:+529831779754" class="contact-card contact-card--phone">
+                        <span class="material-symbols-outlined">call</span>
+                        <h3>Llamar por telefono</h3>
+                        <p>+52 (983) 177-9754</p>
+                        <span class="contact-card-action">
+                            Llamar ahora
+                            <span class="material-symbols-outlined">call_made</span>
+                        </span>
+                    </a>
+
+                    <a href="mailto:azulia.bacalar@gmail.com" class="contact-card contact-card--email">
+                        <span class="material-symbols-outlined">mail</span>
+                        <h3>Correo electronico</h3>
+                        <p>azulia.bacalar@gmail.com</p>
+                        <span class="contact-card-action">
+                            Enviar correo
+                            <span class="material-symbols-outlined">call_made</span>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="contact-info">
+                    <div class="contact-info-card">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <div>
+                            <h4>Horario de atencion</h4>
+                            <p>Lunes a domingo: 8:00 AM - 9:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="contact-info-card">
+                        <span class="material-symbols-outlined">location_on</span>
+                        <div>
+                            <h4>Bacalar, Quintana Roo</h4>
+                            <p>Atendemos en todo el area de la Laguna de los Siete Colores</p>
+                        </div>
+                    </div>
+                    <div class="contact-social">
+                        <span class="contact-social-label">Siguenos</span>
+                        <div class="contact-social-links">
+                            <a href="https://www.facebook.com/share/19GQZ365Ek/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            </a>
+                            <a href="https://www.instagram.com/azuliabacalar" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <Footer />
 </Layout>
 
 <script>
-    document.getElementById('whaOpenForm')?.addEventListener('click', () => {
+    document.getElementById('openFormCard')?.addEventListener('click', () => {
         (window as any).openContactModal();
     });
 </script>
 
 <style>
-    .wha-options-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .contact-page {
         min-height: 100vh;
-        padding: 20px;
-        background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
+        padding-top: 72px;
     }
 
-    .wha-options-content {
-        max-width: 600px;
-        width: 100%;
-    }
-
-    .wha-options-header {
+    .contact-hero {
+        background: linear-gradient(135deg, #0a1a2f 0%, #1c5fa8 100%);
+        padding: 4rem 1.5rem 3rem;
         text-align: center;
-        margin-bottom: 2rem;
     }
 
-    .wha-options-header svg {
+    .contact-hero-inner {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .contact-hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.9);
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
         margin-bottom: 1rem;
+        backdrop-filter: blur(6px);
     }
 
-    .wha-options-header h1 {
-        color: #0f2a4a;
-        margin: 0 0 0.5rem;
-        font-size: 1.8rem;
+    .contact-hero-tag .material-symbols-outlined {
+        font-size: 1.1rem;
     }
 
-    .wha-options-header p {
-        color: #6b8299;
-        margin: 0;
+    .contact-hero h1 {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.75rem;
+        line-height: 1.25;
+    }
+
+    .contact-hero p {
+        color: rgba(255,255,255,0.75);
         font-size: 1rem;
+        margin: 0;
+        line-height: 1.6;
     }
 
-    .wha-options-cards {
+    .contact-options-section {
+        padding: 3rem 1.5rem 4rem;
+        background: #f4f8fc;
+    }
+
+    .contact-options-inner {
+        max-width: 860px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .contact-cards {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
     }
 
-    .wha-option-card {
+    .contact-card {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 0.75rem;
-        padding: 2rem 1.25rem;
-        border-radius: 16px;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 1.4rem;
+        border-radius: 14px;
         border: 2px solid #e2ecf4;
         background: #fff;
         cursor: pointer;
         text-decoration: none;
         transition: all 0.25s ease;
-        box-shadow: 0 4px 16px rgba(15, 42, 74, 0.06);
+        box-shadow: 0 2px 12px rgba(15, 42, 74, 0.05);
         font-family: inherit;
     }
 
-    .wha-option-card:hover {
-        border-color: #1c5fa8;
-        box-shadow: 0 8px 30px rgba(28, 95, 168, 0.12);
+    .contact-card:hover {
         transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(15, 42, 74, 0.1);
     }
 
-    .wha-option-card .material-symbols-outlined {
-        font-size: 2.5rem;
+    .contact-card .material-symbols-outlined {
+        font-size: 2rem;
         color: #1c5fa8;
     }
 
-    .wha-option-card--green {
+    .contact-card h3 {
+        font-size: 0.95rem;
+        color: #0f2a4a;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .contact-card p {
+        font-size: 0.8rem;
+        color: #6b8299;
+        margin: 0;
+        line-height: 1.45;
+    }
+
+    .contact-card-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #1c5fa8;
+        margin-top: auto;
+        padding-top: 0.3rem;
+    }
+
+    .contact-card-action .material-symbols-outlined {
+        font-size: 1rem;
+    }
+
+    .contact-card--primary {
+        border-color: #1c5fa8;
+        background: linear-gradient(135deg, #f0f6ff, #e8f0fb);
+    }
+
+    .contact-card--primary:hover {
+        border-color: #155088;
+        background: linear-gradient(135deg, #e8f0fb, #dce8f5);
+    }
+
+    .contact-card--whatsapp {
         border-color: #c8f0d8;
     }
 
-    .wha-option-card--green:hover {
+    .contact-card--whatsapp:hover {
         border-color: #25d366;
-        box-shadow: 0 8px 30px rgba(37, 211, 102, 0.15);
+        background: #f0fdf4;
     }
 
-    .wha-option-card--green svg {
+    .contact-card--whatsapp svg {
         color: #25d366;
     }
 
-    .wha-option-card h3 {
-        font-size: 1rem;
-        color: #0f2a4a;
-        margin: 0;
+    .contact-card--phone {
+        border-color: #d4e8d0;
     }
 
-    .wha-option-card p {
+    .contact-card--phone:hover {
+        border-color: #059669;
+        background: #f0fdf4;
+    }
+
+    .contact-card--phone .material-symbols-outlined {
+        color: #059669;
+    }
+
+    .contact-card--email {
+        border-color: #e0d8f0;
+    }
+
+    .contact-card--email:hover {
+            border-color: #7c3aed;
+            background: #f5f0ff;
+        }
+
+    .contact-card--email .material-symbols-outlined {
+        color: #7c3aed;
+    }
+
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .contact-info-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #e2ecf4;
+    }
+
+    .contact-info-card .material-symbols-outlined {
+        font-size: 1.3rem;
+        color: #1c5fa8;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+    }
+
+    .contact-info-card h4 {
         font-size: 0.82rem;
+        font-weight: 700;
+        color: #0f2a4a;
+        margin: 0 0 0.15rem;
+    }
+
+    .contact-info-card p {
+        font-size: 0.75rem;
         color: #6b8299;
         margin: 0;
         line-height: 1.4;
     }
 
-    @media (max-width: 480px) {
-        .wha-options-cards {
+    .contact-social {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #e2ecf4;
+    }
+
+    .contact-social-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .contact-social-links {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .contact-social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #475569;
+        transition: all 0.2s;
+    }
+
+    .contact-social-links a:hover {
+        background: #1c5fa8;
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        .contact-options-inner {
             grid-template-columns: 1fr;
         }
 
-        .wha-options-header h1 {
+        .contact-hero h1 {
             font-size: 1.5rem;
+        }
+
+        .contact-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-hero {
+            padding: 3rem 1rem 2rem;
+        }
+
+        .contact-options-section {
+            padding: 2rem 1rem 3rem;
         }
     }
 </style>

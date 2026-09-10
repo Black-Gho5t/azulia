@@ -68,10 +68,26 @@ const { service = "" } = Astro.props;
             <div class="cmodal-field">
                 <label for="contactInfo">Contacto</label>
                 <div class="cmodal-phone-input" id="contactPhoneGroup" style="display:none;">
-                    <span class="cmodal-phone-prefix">+52</span>
+                    <select class="cmodal-phone-prefix" id="contactPhonePrefix">
+                        <option value="+52">+52 MX</option>
+                        <option value="+1">+1 US</option>
+                        <option value="+54">+54 AR</option>
+                        <option value="+57">+57 CO</option>
+                        <option value="+56">+56 CL</option>
+                        <option value="+51">+51 PE</option>
+                        <option value="+593">+593 EC</option>
+                        <option value="+34">+34 ES</option>
+                        <option value="+44">+44 UK</option>
+                        <option value="+502">+502 GT</option>
+                        <option value="+503">+503 SV</option>
+                        <option value="+504">+504 HN</option>
+                        <option value="+505">+505 NI</option>
+                        <option value="+506">+506 CR</option>
+                        <option value="+507">+507 PA</option>
+                    </select>
                     <input type="tel" id="contactInfoPhone" name="contactInfoPhone" placeholder="999 123 4567" />
                 </div>
-                <input type="email" id="contactInfoEmail" name="contactInfoEmail" disabled placeholder="Selecciona una opcion primero" />
+                <input type="email" id="contactInfoEmail" name="contactInfoEmail" style="display:none;" placeholder="tu@correo.com" />
             </div>
 
             <div class="cmodal-field">
@@ -289,14 +305,17 @@ const { service = "" } = Astro.props;
     }
 
     .cmodal-phone-prefix {
-        padding: 0.65rem 0.7rem;
-        font-size: 0.9rem;
+        padding: 0.65rem 0.5rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #1c5fa8;
         background: #eaf2fb;
+        border: none;
         border-right: 1px solid #d1dde8;
-        white-space: nowrap;
+        cursor: pointer;
+        outline: none;
         user-select: none;
+        font-family: inherit;
     }
 
     .cmodal-phone-input input {
@@ -546,7 +565,7 @@ const { service = "" } = Astro.props;
         const emailInput = document.getElementById('contactInfoEmail') as HTMLInputElement;
         const phoneInput = document.getElementById('contactInfoPhone') as HTMLInputElement;
         if (phoneGroup) phoneGroup.style.display = 'none';
-        if (emailInput) { emailInput.value = ''; emailInput.disabled = true; emailInput.placeholder = 'Selecciona una opcion primero'; }
+        if (emailInput) { emailInput.value = ''; emailInput.style.display = 'none'; }
         if (phoneInput) phoneInput.value = '';
 
         overlay.classList.add('is-open');
@@ -600,8 +619,9 @@ const { service = "" } = Astro.props;
         const contactType = contactTypeEl?.value || '';
         let contactInfo = '';
         if (contactType === 'phone') {
-            contactInfo = ((document.getElementById('contactInfoPhone') as HTMLInputElement)?.value.trim() || '');
-            if (contactInfo) contactInfo = '+52 ' + contactInfo;
+            const prefix = (document.getElementById('contactPhonePrefix') as HTMLSelectElement)?.value || '+52';
+            const phone = (document.getElementById('contactInfoPhone') as HTMLInputElement)?.value.trim() || '';
+            if (phone) contactInfo = prefix + ' ' + phone;
         } else if (contactType === 'email') {
             contactInfo = (document.getElementById('contactInfoEmail') as HTMLInputElement)?.value.trim() || '';
         }
@@ -652,14 +672,13 @@ const { service = "" } = Astro.props;
                 const val = (radio as HTMLInputElement).value;
                 if (val === 'phone') {
                     phoneGroup.style.display = 'flex';
-                    emailInput.disabled = true;
+                    emailInput.style.display = 'none';
                     emailInput.value = '';
-                    emailInput.placeholder = 'Selecciona una opcion primero';
                 } else if (val === 'email') {
                     phoneGroup.style.display = 'none';
                     phoneInput.value = '';
+                    emailInput.style.display = '';
                     emailInput.disabled = false;
-                    emailInput.placeholder = 'tu@correo.com';
                 }
             });
         });

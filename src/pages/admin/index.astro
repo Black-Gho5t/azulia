@@ -51,6 +51,16 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
       <article class="stat-card">
         <div class="stat-icon">
+          <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+        </div>
+        <div class="stat-body">
+          <span class="stat-value">—</span>
+          <span class="stat-label">Autos</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon">
           <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
         </div>
         <div class="stat-body">
@@ -83,6 +93,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           Galería
         </h2>
         <p class="section-desc">Sube y administra imágenes promocionales.</p>
+      </a>
+
+      <a href="/admin/autos" class="section-card">
+        <h2 class="section-title">
+          <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+          Autos
+        </h2>
+        <p class="section-desc">Gestiona la flota de autos para renta.</p>
       </a>
 
       <a href="/admin/papeleria" class="section-card">
