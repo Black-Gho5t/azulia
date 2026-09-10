@@ -116,6 +116,7 @@ import "../../assets/styles/car_rental.css";
         if (url.startsWith('blob:')) return true;
         if (url.startsWith('http://') || url.startsWith('https://')) return true;
         if (url.startsWith('/api/cars/image/')) return true;
+        if (url.startsWith('/src/')) return true;
         return false;
     }
 
@@ -249,7 +250,7 @@ import "../../assets/styles/car_rental.css";
         prevPageBtn?.toggleAttribute("disabled", currentPage === 1);
         nextPageBtn?.toggleAttribute("disabled", currentPage === totalPages);
         if (pageStatus) {
-            pageStatus.textContent = `Pagina ${currentPage} de ${totalPages} · ${cardsPerPage} autos por vista · ${allCars.length} modelos disponibles`;
+            pageStatus.textContent = `Pagina ${currentPage} de ${totalPages} · ${allCars.length} modelos disponibles`;
         }
         renderPagination();
     };
