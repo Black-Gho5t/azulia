@@ -30,7 +30,7 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { name, services, date, people, message } = body;
+    const { name, services, date, people, contactType, contactInfo, message } = body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return new Response(JSON.stringify({ ok: false, error: 'Nombre requerido' }), { status: 400 });
@@ -44,6 +44,8 @@ export const POST: APIRoute = async ({ request }) => {
       services: Array.isArray(services) ? services : [],
       date: date || null,
       people: people ? Number(people) : null,
+      contactType: contactType || null,
+      contactInfo: (contactInfo || '').trim() || null,
       message: (message || '').trim(),
       createdAt: new Date().toISOString(),
       status: 'unread',

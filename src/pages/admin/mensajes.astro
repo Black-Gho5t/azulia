@@ -28,6 +28,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       <h2 class="modal-name" id="modalName"></h2>
       <p class="modal-interests" id="modalInterests"></p>
       <p class="modal-date" id="modalDate"></p>
+      <p class="modal-contact" id="modalContact"></p>
+      <p class="modal-reservation" id="modalReservation"></p>
       <div class="modal-body" id="modalMessage"></div>
       <div class="modal-actions">
         <button class="modal-pendiente-btn" id="modalPendiente">
@@ -80,7 +82,16 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     async function fetchMessages() {
       const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
-      return snap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate?.() ?? null }));
+      return snap.docs.map((d) => {
+        const data = d.data();
+        let createdAt = null;
+        if (data.createdAt?.toDate) {
+          createdAt = data.createdAt.toDate();
+        } else if (typeof data.createdAt === 'string') {
+          createdAt = new Date(data.createdAt);
+        }
+        return { id: d.id, ...data, createdAt };
+      });
     }
 
     async function updateMsgStatus(id, status) {
@@ -102,12 +113,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
 
     const seedMessages = [
-      { name: 'María Fernández', contact: 'maria@ejemplo.com', interests: ['Tours náuticos', 'Hoteles'], message: 'Hola, me interesa conocer los paquetes de tours en velero para 4 personas. ¿Tienen disponibilidad para la próxima semana?', status: 'nuevo' },
-      { name: 'Carlos López', contact: '+52 998 123 4567', interests: ['Transportación'], message: 'Buen día, requiero transporte del aeropuerto de Cancún a Bacalar para 3 personas el 15 de agosto. ¿Podrían cotizarme el servicio?', status: 'nuevo' },
-      { name: 'Ana Martínez', contact: 'ana.mtz@correo.com', interests: ['Tours', 'Transportación', 'Hoteles'], message: 'Estamos planeando un viaje grupal de 10 personas a Bacalar en septiembre. Nos interesaría un paquete completo que incluya hospedaje, tours y transporte desde Cancún. ¿Manejan descuentos por grupo?', status: 'nuevo' },
-      { name: 'Roberto Sánchez', contact: '+52 555 987 6543', interests: ['Tours terrestres'], message: 'Hola, quisiera información sobre el tour a las ruinas de Calakmul. ¿Cuál es la duración? ¿Incluye entrada y guía? Vamos 2 adultos y nos gustaría saber si hay salidas desde Bacalar.', status: 'nuevo' },
-      { name: 'Laura Castillo', contact: 'laura.castillo@mail.com', interests: ['Hoteles'], message: 'Muchas gracias por la atención. Ya revisé las opciones de hotel y me decidí por uno. En unos días confirmo la reservación. Quedo atenta a cualquier promoción.', status: 'nuevo' },
-      { name: 'Pedro Gómez', contact: '+52 998 111 2233', interests: ['Tours náuticos'], message: 'Excelente experiencia en el tour de paddle board. Todo muy bien organizado y el guía excelente. Definitivamente volveremos. Gracias por todo.', status: 'nuevo' },
+      { name: 'María Fernández', contactType: 'email', contactInfo: 'maria@ejemplo.com', interests: ['Tours náuticos', 'Hoteles'], date: '2026-09-15', message: 'Hola, me interesa conocer los paquetes de tours en velero para 4 personas. ¿Tienen disponibilidad para la próxima semana?', status: 'nuevo' },
+      { name: 'Carlos López', contactType: 'phone', contactInfo: '+52 998 123 4567', interests: ['Transportación'], date: '2026-08-15', message: 'Buen día, requiero transporte del aeropuerto de Cancún a Bacalar para 3 personas el 15 de agosto. ¿Podrían cotizarme el servicio?', status: 'nuevo' },
+      { name: 'Ana Martínez', contactType: 'email', contactInfo: 'ana.mtz@correo.com', interests: ['Tours', 'Transportación', 'Hoteles'], date: '2026-09-20', message: 'Estamos planeando un viaje grupal de 10 personas a Bacalar en septiembre. Nos interesaría un paquete completo que incluya hospedaje, tours y transporte desde Cancún. ¿Manejan descuentos por grupo?', status: 'nuevo' },
+      { name: 'Roberto Sánchez', contactType: 'phone', contactInfo: '+52 555 987 6543', interests: ['Tours terrestres'], date: '2026-10-05', message: 'Hola, quisiera información sobre el tour a las ruinas de Calakmul. ¿Cuál es la duración? ¿Incluye entrada y guía? Vamos 2 adultos y nos gustaría saber si hay salidas desde Bacalar.', status: 'nuevo' },
+      { name: 'Laura Castillo', contactType: 'email', contactInfo: 'laura.castillo@mail.com', interests: ['Hoteles'], date: null, message: 'Muchas gracias por la atención. Ya revisé las opciones de hotel y me decidí por uno. En unos días confirmo la reservación. Quedo atenta a cualquier promoción.', status: 'nuevo' },
+      { name: 'Pedro Gómez', contactType: 'phone', contactInfo: '+52 998 111 2233', interests: ['Tours náuticos'], date: '2026-09-01', message: 'Excelente experiencia en el tour de paddle board. Todo muy bien organizado y el guía excelente. Definitivamente volveremos. Gracias por todo.', status: 'nuevo' },
     ];
 
     async function autoSeed() {
@@ -171,6 +182,25 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         ? new Date(m.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
         : '—';
       document.getElementById('modalDate').textContent = date;
+
+      const contactEl = document.getElementById('modalContact');
+      if (m.contactInfo) {
+        const typeLabel = m.contactType === 'email' ? 'Correo' : 'Telefono';
+        contactEl.textContent = `${typeLabel}: ${m.contactInfo}`;
+        contactEl.hidden = false;
+      } else {
+        contactEl.hidden = true;
+      }
+
+      const reservationEl = document.getElementById('modalReservation');
+      if (m.date) {
+        const resDate = new Date(m.date + 'T00:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+        reservationEl.textContent = `Fecha de reservacion: ${resDate}`;
+        reservationEl.hidden = false;
+      } else {
+        reservationEl.hidden = true;
+      }
+
       document.getElementById('modalMessage').textContent = m.message;
 
       const pendBtn = document.getElementById('modalPendiente');
@@ -206,7 +236,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         const dateStr = formatDate(m.createdAt);
         const preview = m.message.length > 100 ? m.message.slice(0, 100) + '…' : m.message;
         const isLeido = m.status === 'leido';
-        const contactInfo = m.contact || (m.services || m.interests || []).join(', ') || '';
+        const contactInfo = m.contactInfo || (m.services || m.interests || []).join(', ') || '';
         return `<div class="inbox-row ${isLeido ? 'inbox-row--leido' : ''}" data-id="${m.id}" style="--row-bg:${meta.bg};--row-border:${meta.border};--row-hover:${meta.hover}">
           <div class="inbox-row-left">
             <div class="inbox-row-name">${escHtml(m.name)}</div>
@@ -403,7 +433,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     .modal-name { font-size: 1.25rem; font-weight: 700; color: #0a1a2f; margin: 0 2rem 0.2rem 0; }
     .modal-interests { font-size: 0.85rem; color: #64748b; margin: 0 0 0.15rem; }
-    .modal-date { font-size: 0.8rem; color: #94a3b8; margin: 0 0 1rem; }
+    .modal-date { font-size: 0.8rem; color: #94a3b8; margin: 0 0 0.5rem; }
+    .modal-contact { font-size: 0.85rem; color: #1c5fa8; margin: 0 0 0.25rem; font-weight: 600; }
+    .modal-reservation { font-size: 0.85rem; color: #059669; margin: 0 0 1rem; font-weight: 600; }
 
     .modal-body {
       background: #f8fafc; border-radius: 12px; padding: 1.25rem;

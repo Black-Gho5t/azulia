@@ -47,6 +47,34 @@ const { service = "" } = Astro.props;
             </div>
 
             <div class="cmodal-field">
+                <label>Forma de contacto</label>
+                <div class="cmodal-radios" id="contactRadios">
+                    <label class="cmodal-radio">
+                        <input type="radio" name="contactType" value="phone" />
+                        <span class="cmodal-radio-box">
+                            <span class="material-symbols-outlined">phone</span>
+                            Telefono
+                        </span>
+                    </label>
+                    <label class="cmodal-radio">
+                        <input type="radio" name="contactType" value="email" />
+                        <span class="cmodal-radio-box">
+                            <span class="material-symbols-outlined">mail</span>
+                            Correo
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="cmodal-field">
+                <label for="contactInfo">Contacto</label>
+                <div class="cmodal-phone-input" id="contactPhoneGroup" style="display:none;">
+                    <span class="cmodal-phone-prefix">+52</span>
+                    <input type="tel" id="contactInfoPhone" name="contactInfoPhone" placeholder="999 123 4567" />
+                </div>
+                <input type="email" id="contactInfoEmail" name="contactInfoEmail" disabled placeholder="Selecciona una opcion primero" />
+            </div>
+
+            <div class="cmodal-field">
                 <label for="contactMessage">Mensaje</label>
                 <textarea id="contactMessage" name="message" rows="3" placeholder="Cuéntanos en qué podemos ayudarte..."></textarea>
             </div>
@@ -182,7 +210,8 @@ const { service = "" } = Astro.props;
     }
 
     .cmodal-field input,
-    .cmodal-field textarea {
+    .cmodal-field textarea,
+    .cmodal-field select {
         border: 1px solid #d1dde8;
         border-radius: 10px;
         padding: 0.65rem 0.85rem;
@@ -203,6 +232,79 @@ const { service = "" } = Astro.props;
     .cmodal-field textarea {
         resize: vertical;
         min-height: 70px;
+    }
+
+    .cmodal-radios {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .cmodal-radio {
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .cmodal-radio input {
+        display: none;
+    }
+
+    .cmodal-radio-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.6rem;
+        border: 2px solid #d1dde8;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #5a6f85;
+        background: #f7fafc;
+        transition: all 0.2s;
+    }
+
+    .cmodal-radio-box .material-symbols-outlined {
+        font-size: 1.1rem;
+    }
+
+    .cmodal-radio input:checked + .cmodal-radio-box {
+        border-color: #1c5fa8;
+        background: #eaf2fb;
+        color: #1c5fa8;
+    }
+
+    .cmodal-phone-input {
+        display: flex;
+        align-items: center;
+        border: 1px solid #d1dde8;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f7fafc;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .cmodal-phone-input:focus-within {
+        border-color: #3a8db8;
+        box-shadow: 0 0 0 3px rgba(58, 141, 184, 0.12);
+    }
+
+    .cmodal-phone-prefix {
+        padding: 0.65rem 0.7rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1c5fa8;
+        background: #eaf2fb;
+        border-right: 1px solid #d1dde8;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .cmodal-phone-input input {
+        flex: 1;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
     }
 
     .cmodal-row {
@@ -439,6 +541,14 @@ const { service = "" } = Astro.props;
         if (success) success.classList.remove('is-visible');
         if (tagInput) tagInput.value = '';
 
+        document.querySelectorAll('input[name="contactType"]').forEach((r: Element) => { (r as HTMLInputElement).checked = false; });
+        const phoneGroup = document.getElementById('contactPhoneGroup') as HTMLElement;
+        const emailInput = document.getElementById('contactInfoEmail') as HTMLInputElement;
+        const phoneInput = document.getElementById('contactInfoPhone') as HTMLInputElement;
+        if (phoneGroup) phoneGroup.style.display = 'none';
+        if (emailInput) { emailInput.value = ''; emailInput.disabled = true; emailInput.placeholder = 'Selecciona una opcion primero'; }
+        if (phoneInput) phoneInput.value = '';
+
         overlay.classList.add('is-open');
         document.body.style.overflow = 'hidden';
     }
@@ -486,8 +596,17 @@ const { service = "" } = Astro.props;
         const name = (document.getElementById('contactName') as HTMLInputElement)?.value.trim() || '';
         const date = (document.getElementById('contactDate') as HTMLInputElement)?.value || '';
         const people = (document.getElementById('contactPeople') as HTMLInputElement)?.value || '';
+        const contactTypeEl = document.querySelector('input[name="contactType"]:checked') as HTMLInputElement | null;
+        const contactType = contactTypeEl?.value || '';
+        let contactInfo = '';
+        if (contactType === 'phone') {
+            contactInfo = ((document.getElementById('contactInfoPhone') as HTMLInputElement)?.value.trim() || '');
+            if (contactInfo) contactInfo = '+52 ' + contactInfo;
+        } else if (contactType === 'email') {
+            contactInfo = (document.getElementById('contactInfoEmail') as HTMLInputElement)?.value.trim() || '';
+        }
         const message = (document.getElementById('contactMessage') as HTMLTextAreaElement)?.value.trim() || '';
-        return { name, services: [...selectedServices], date, people, message };
+        return { name, services: [...selectedServices], date, people, contactType, contactInfo, message };
     }
 
     function buildWhatsAppUrl(data: ReturnType<typeof getFormData>) {
@@ -495,6 +614,10 @@ const { service = "" } = Astro.props;
         if (data.services.length > 0) text += `\nServicio(s): ${data.services.join(', ')}`;
         if (data.date) text += `\nFecha: ${data.date}`;
         if (data.people) text += `\nPersonas: ${data.people}`;
+        if (data.contactInfo) {
+            const label = data.contactType === 'email' ? 'Correo' : 'Telefono';
+            text += `\n${label}: ${data.contactInfo}`;
+        }
         if (data.message) text += `\nMensaje: ${data.message}`;
         if (data.name) text += `\nNombre: ${data.name}`;
         return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -518,6 +641,27 @@ const { service = "" } = Astro.props;
         tagAddBtn?.addEventListener('click', addTag);
         tagInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+        });
+
+        const phoneGroup = document.getElementById('contactPhoneGroup') as HTMLElement;
+        const emailInput = document.getElementById('contactInfoEmail') as HTMLInputElement;
+        const phoneInput = document.getElementById('contactInfoPhone') as HTMLInputElement;
+
+        document.querySelectorAll('input[name="contactType"]').forEach((radio) => {
+            radio.addEventListener('change', () => {
+                const val = (radio as HTMLInputElement).value;
+                if (val === 'phone') {
+                    phoneGroup.style.display = 'flex';
+                    emailInput.disabled = true;
+                    emailInput.value = '';
+                    emailInput.placeholder = 'Selecciona una opcion primero';
+                } else if (val === 'email') {
+                    phoneGroup.style.display = 'none';
+                    phoneInput.value = '';
+                    emailInput.disabled = false;
+                    emailInput.placeholder = 'tu@correo.com';
+                }
+            });
         });
 
         whatsappBtn?.addEventListener('click', () => {
