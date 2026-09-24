@@ -3,50 +3,101 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Mensajes - Azulia Admin">
-  <div class="inbox-page">
-    <header class="inbox-header">
+  <div class="msg-page">
+    <header class="msg-header">
       <div>
-        <h1 class="inbox-title">Bandeja de Entrada</h1>
-        <p class="inbox-subtitle">Mensajes recibidos de clientes</p>
+        <h1 class="msg-title">Mensajes</h1>
+        <p class="msg-subtitle">Bandeja de entrada de clientes</p>
       </div>
-      <div class="inbox-filters" id="filterBar">
-        <button class="inbox-filter active" data-filter="all">Todos</button>
-        <button class="inbox-filter" data-filter="nuevo">Nuevos</button>
-        <button class="inbox-filter" data-filter="pendiente">Pendientes</button>
-        <button class="inbox-filter" data-filter="leido">Leídos</button>
+      <div class="msg-filters" id="filterBar">
+        <button class="msg-filter active" data-filter="all">
+          Todos <span class="filter-count" id="countAll">0</span>
+        </button>
+        <button class="msg-filter" data-filter="nuevo">
+          Nuevos <span class="filter-count" id="countNuevo">0</span>
+        </button>
+        <button class="msg-filter" data-filter="pendiente">
+          Pendientes <span class="filter-count" id="countPendiente">0</span>
+        </button>
+        <button class="msg-filter" data-filter="leido">
+          Leídos <span class="filter-count" id="countLeido">0</span>
+        </button>
       </div>
     </header>
 
-    <div class="inbox-list" id="inboxList">
-      <div class="inbox-loading">Cargando mensajes...</div>
-    </div>
-  </div>
+    <div class="msg-container">
+      <!-- Lista de mensajes -->
+      <div class="msg-list-panel">
+        <div class="msg-list" id="msgList">
+          <div class="msg-loading">
+            <span class="material-symbols-outlined spinning notranslate" translate="no">sync</span>
+            <span>Cargando mensajes...</span>
+          </div>
+        </div>
+      </div>
 
-  <div id="msgModal" class="modal-overlay" hidden>
-    <div class="modal-card">
-      <button class="modal-close" id="modalClose"><span class="material-symbols-outlined">close</span></button>
-      <h2 class="modal-name" id="modalName"></h2>
-      <p class="modal-interests" id="modalInterests"></p>
-      <p class="modal-date" id="modalDate"></p>
-      <p class="modal-contact" id="modalContact"></p>
-      <p class="modal-reservation" id="modalReservation"></p>
-      <div class="modal-body" id="modalMessage"></div>
-      <div class="modal-actions">
-        <button class="modal-pendiente-btn" id="modalPendiente">
-          <span class="material-symbols-outlined">schedule</span>
-          Marcar como pendiente
-        </button>
-        <button class="modal-trash-btn" id="modalTrash">
-          <span class="material-symbols-outlined">delete</span>
-          Mover a papelera
-        </button>
+      <!-- Panel de detalle -->
+      <div class="msg-detail-panel" id="detailPanel">
+        <div class="msg-detail-empty" id="detailEmpty">
+          <span class="material-symbols-outlined notranslate" translate="no" style="font-size: 3rem; color: #cbd5e1;">mail</span>
+          <p>Selecciona un mensaje para ver su contenido</p>
+        </div>
+        <div class="msg-detail-content" id="detailContent" hidden>
+          <div class="detail-header">
+            <div class="detail-avatar" id="detailAvatar">M</div>
+            <div class="detail-header-info">
+              <h2 class="detail-name" id="detailName"></h2>
+              <span class="detail-status-badge" id="detailBadge"></span>
+            </div>
+          </div>
+
+          <div class="detail-meta-grid">
+            <div class="detail-meta-item" id="metaContact">
+              <span class="material-symbols-outlined notranslate" translate="no">contact_mail</span>
+              <span id="detailContactText"></span>
+            </div>
+            <div class="detail-meta-item" id="metaDate">
+              <span class="material-symbols-outlined notranslate" translate="no">calendar_today</span>
+              <span id="detailDateText"></span>
+            </div>
+            <div class="detail-meta-item" id="metaReservation" hidden>
+              <span class="material-symbols-outlined notranslate" translate="no">event_available</span>
+              <span id="detailReservationText"></span>
+            </div>
+            <div class="detail-meta-item" id="metaInterests" hidden>
+              <span class="material-symbols-outlined notranslate" translate="no">interests</span>
+              <span id="detailInterestsText"></span>
+            </div>
+          </div>
+
+          <div class="detail-message-box">
+            <p class="detail-message-label">Mensaje</p>
+            <div class="detail-message-body" id="detailMessage"></div>
+          </div>
+
+          <div class="detail-actions">
+            <button class="action-btn action-pending" id="btnPendiente">
+              <span class="material-symbols-outlined notranslate" translate="no">schedule</span>
+              Marcar pendiente
+            </button>
+            <button class="action-btn action-read" id="btnLeido">
+              <span class="material-symbols-outlined notranslate" translate="no">done_all</span>
+              Marcar leído
+            </button>
+            <button class="action-btn action-trash" id="btnTrash">
+              <span class="material-symbols-outlined notranslate" translate="no">delete</span>
+              Papelera
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Confirmación modal -->
   <div id="confirmModal" class="confirm-overlay" hidden>
     <div class="confirm-card">
-      <span class="confirm-icon material-symbols-outlined">help</span>
+      <span class="material-symbols-outlined notranslate confirm-icon" translate="no">help</span>
       <p class="confirm-msg" id="confirmMsg"></p>
       <div class="confirm-btns">
         <button class="confirm-btn confirm-cancel" id="confirmCancel">Cancelar</button>
@@ -59,24 +110,20 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     import { collection, addDoc, query, orderBy, getDocs, doc, updateDoc, deleteDoc, getDoc, Timestamp, serverTimestamp } from 'firebase/firestore';
     import { db } from '../../lib/firebase';
 
-    const statusMeta = {
-      nuevo: { label: 'Nuevo', bg: '#eff6ff', border: '#93c5fd', hover: '#dbeafe' },
-      pendiente: { label: 'Pendiente', bg: '#fffbeb', border: '#fcd34d', hover: '#fef3c7' },
-      leido: { label: 'Leído', bg: '#fff', border: 'transparent', hover: '#f8fafc' },
+    const statusMeta: Record<string, { label: string; color: string; bg: string }> = {
+      nuevo:     { label: 'Nuevo',     color: '#1d4ed8', bg: '#dbeafe' },
+      pendiente: { label: 'Pendiente', color: '#92400e', bg: '#fef3c7' },
+      leido:     { label: 'Leído',     color: '#64748b', bg: '#f1f5f9' },
     };
 
     let currentFilter = 'all';
-    let messages = [];
+    let messages: any[] = [];
+    let selectedId: string | null = null;
 
-    function escHtml(s) {
+    function escHtml(s: string) {
       const d = document.createElement('div');
       d.textContent = s;
       return d.innerHTML;
-    }
-
-    function showError(msg) {
-      const list = document.getElementById('inboxList');
-      list.innerHTML = `<div class="inbox-empty" style="color:#ef4444;">Error: ${msg}</div>`;
     }
 
     async function fetchMessages() {
@@ -84,7 +131,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       const snap = await getDocs(q);
       return snap.docs.map((d) => {
         const data = d.data();
-        let createdAt = null;
+        let createdAt: Date | null = null;
         if (data.createdAt?.toDate) {
           createdAt = data.createdAt.toDate();
         } else if (typeof data.createdAt === 'string') {
@@ -94,11 +141,11 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       });
     }
 
-    async function updateMsgStatus(id, status) {
+    async function updateMsgStatus(id: string, status: string) {
       await updateDoc(doc(db, 'messages', id), { status });
     }
 
-    async function trashMsg(id) {
+    async function trashMsg(id: string) {
       const ref = doc(db, 'messages', id);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -112,402 +159,744 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       await deleteDoc(ref);
     }
 
-    const seedMessages = [
-      { name: 'María Fernández', contactType: 'email', contactInfo: 'maria@ejemplo.com', interests: ['Tours náuticos', 'Hoteles'], date: '2026-09-15', message: 'Hola, me interesa conocer los paquetes de tours en velero para 4 personas. ¿Tienen disponibilidad para la próxima semana?', status: 'nuevo' },
-      { name: 'Carlos López', contactType: 'phone', contactInfo: '+52 998 123 4567', interests: ['Transportación'], date: '2026-08-15', message: 'Buen día, requiero transporte del aeropuerto de Cancún a Bacalar para 3 personas el 15 de agosto. ¿Podrían cotizarme el servicio?', status: 'nuevo' },
-      { name: 'Ana Martínez', contactType: 'email', contactInfo: 'ana.mtz@correo.com', interests: ['Tours', 'Transportación', 'Hoteles'], date: '2026-09-20', message: 'Estamos planeando un viaje grupal de 10 personas a Bacalar en septiembre. Nos interesaría un paquete completo que incluya hospedaje, tours y transporte desde Cancún. ¿Manejan descuentos por grupo?', status: 'nuevo' },
-      { name: 'Roberto Sánchez', contactType: 'phone', contactInfo: '+52 555 987 6543', interests: ['Tours terrestres'], date: '2026-10-05', message: 'Hola, quisiera información sobre el tour a las ruinas de Calakmul. ¿Cuál es la duración? ¿Incluye entrada y guía? Vamos 2 adultos y nos gustaría saber si hay salidas desde Bacalar.', status: 'nuevo' },
-      { name: 'Laura Castillo', contactType: 'email', contactInfo: 'laura.castillo@mail.com', interests: ['Hoteles'], date: null, message: 'Muchas gracias por la atención. Ya revisé las opciones de hotel y me decidí por uno. En unos días confirmo la reservación. Quedo atenta a cualquier promoción.', status: 'nuevo' },
-      { name: 'Pedro Gómez', contactType: 'phone', contactInfo: '+52 998 111 2233', interests: ['Tours náuticos'], date: '2026-09-01', message: 'Excelente experiencia en el tour de paddle board. Todo muy bien organizado y el guía excelente. Definitivamente volveremos. Gracias por todo.', status: 'nuevo' },
-    ];
-
-    async function autoSeed() {
-      for (const s of seedMessages) {
-        await addDoc(collection(db, 'messages'), {
-          ...s,
-          createdAt: Timestamp.fromDate(new Date(Date.now() - Math.random() * 7 * 86400000)),
-        });
-      }
-    }
-
-    let selectedId = null;
-
-    let confirmResolve = null;
-    function showConfirm(msg) {
+    // --- Confirm dialog ---
+    let confirmResolve: ((val: boolean) => void) | null = null;
+    function showConfirm(msg: string): Promise<boolean> {
       return new Promise((resolve) => {
         confirmResolve = resolve;
-        document.getElementById('confirmMsg').textContent = msg;
-        document.getElementById('confirmModal').hidden = false;
+        document.getElementById('confirmMsg')!.textContent = msg;
+        document.getElementById('confirmModal')!.hidden = false;
       });
     }
-    document.getElementById('confirmOk').addEventListener('click', () => {
-      document.getElementById('confirmModal').hidden = true;
+    document.getElementById('confirmOk')!.addEventListener('click', () => {
+      document.getElementById('confirmModal')!.hidden = true;
       if (confirmResolve) confirmResolve(true);
     });
-    document.getElementById('confirmCancel').addEventListener('click', () => {
-      document.getElementById('confirmModal').hidden = true;
+    document.getElementById('confirmCancel')!.addEventListener('click', () => {
+      document.getElementById('confirmModal')!.hidden = true;
       if (confirmResolve) confirmResolve(false);
     });
 
-    function closeModal() {
-      document.getElementById('msgModal').hidden = true;
-      document.body.style.overflow = '';
-      selectedId = null;
-    }
-
-    function formatDate(d) {
+    // --- Formatting ---
+    function formatDate(d: Date | null): string {
       if (!d) return '—';
       const now = new Date();
-      const diff = now - d;
+      const diff = now.getTime() - d.getTime();
       const sameDay = diff < 86400000 && d.getDate() === now.getDate();
-      if (sameDay) return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-      const thisYear = d.getFullYear() === now.getFullYear();
-      return d.toLocaleDateString('es-MX', { day: 'numeric', month: thisYear ? 'short' : 'numeric' });
+      if (sameDay) return 'Hoy, ' + d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+      const yesterday = diff < 172800000 && new Date(now.getTime() - 86400000).getDate() === d.getDate();
+      if (yesterday) return 'Ayer, ' + d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+      return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
     }
 
-    async function openModal(m) {
-      selectedId = m.id;
-      document.getElementById('modalName').textContent = m.name;
+    function formatDateLong(d: Date | null): string {
+      if (!d) return '—';
+      return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
 
-      const interestsEl = document.getElementById('modalInterests');
-      const items = m.services || m.interests || [];
-      if (items.length) {
-        interestsEl.textContent = items.join(' · ');
-        interestsEl.hidden = false;
-      } else {
-        interestsEl.hidden = true;
+    function getInitials(name: string): string {
+      return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    // --- Update counters ---
+    function updateCounts() {
+      const all = messages.length;
+      const nuevo = messages.filter(m => m.status === 'nuevo').length;
+      const pendiente = messages.filter(m => m.status === 'pendiente').length;
+      const leido = messages.filter(m => m.status === 'leido').length;
+      document.getElementById('countAll')!.textContent = String(all);
+      document.getElementById('countNuevo')!.textContent = String(nuevo);
+      document.getElementById('countPendiente')!.textContent = String(pendiente);
+      document.getElementById('countLeido')!.textContent = String(leido);
+    }
+
+    // --- Render list ---
+    function render() {
+      const list = document.getElementById('msgList')!;
+      const filtered = currentFilter === 'all' ? messages : messages.filter(m => m.status === currentFilter);
+      updateCounts();
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="msg-empty"><span class="material-symbols-outlined notranslate" translate="no" style="font-size: 2rem; color: #cbd5e1;">inbox</span><p>No hay mensajes en esta categoría</p></div>';
+        return;
       }
 
-      const date = m.createdAt
-        ? new Date(m.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-        : '—';
-      document.getElementById('modalDate').textContent = date;
+      list.innerHTML = filtered.map((m) => {
+        const meta = statusMeta[m.status] || statusMeta.nuevo;
+        const dateStr = formatDate(m.createdAt);
+        const preview = m.message && m.message.length > 80 ? m.message.slice(0, 80) + '…' : (m.message || '');
+        const isActive = m.id === selectedId;
+        const isUnread = m.status === 'nuevo';
+        return `<div class="msg-item ${isActive ? 'msg-item--active' : ''} ${isUnread ? 'msg-item--unread' : ''}" data-id="${m.id}">
+          <div class="msg-item-avatar">${getInitials(m.name)}</div>
+          <div class="msg-item-body">
+            <div class="msg-item-top">
+              <span class="msg-item-name">${escHtml(m.name)}</span>
+              <span class="msg-item-date">${escHtml(dateStr)}</span>
+            </div>
+            <div class="msg-item-preview">${escHtml(preview)}</div>
+            ${isUnread ? '<span class="msg-item-dot"></span>' : ''}
+          </div>
+        </div>`;
+      }).join('');
 
-      const contactEl = document.getElementById('modalContact');
+      list.querySelectorAll('.msg-item').forEach((row) => {
+        (row as HTMLElement).addEventListener('click', () => {
+          const msg = messages.find(m => m.id === (row as HTMLElement).dataset.id);
+          if (msg) openDetail(msg);
+        });
+      });
+    }
+
+    // --- Open detail panel ---
+    async function openDetail(m: any) {
+      selectedId = m.id;
+
+      document.getElementById('detailEmpty')!.hidden = true;
+      document.getElementById('detailContent')!.hidden = false;
+
+      document.getElementById('detailAvatar')!.textContent = getInitials(m.name);
+      document.getElementById('detailName')!.textContent = m.name;
+
+      const badge = document.getElementById('detailBadge')!;
+      const meta = statusMeta[m.status] || statusMeta.nuevo;
+      badge.textContent = meta.label;
+      badge.style.color = meta.color;
+      badge.style.background = meta.bg;
+
+      // Contact
+      const contactEl = document.getElementById('metaContact')!;
+      const contactText = document.getElementById('detailContactText')!;
       if (m.contactInfo) {
-        const typeLabel = m.contactType === 'email' ? 'Correo' : 'Telefono';
-        contactEl.textContent = `${typeLabel}: ${m.contactInfo}`;
+        const typeLabel = m.contactType === 'email' ? 'Correo' : 'Teléfono';
+        contactText.textContent = `${typeLabel}: ${m.contactInfo}`;
         contactEl.hidden = false;
       } else {
         contactEl.hidden = true;
       }
 
-      const reservationEl = document.getElementById('modalReservation');
+      // Date
+      document.getElementById('detailDateText')!.textContent = formatDateLong(m.createdAt);
+
+      // Reservation
+      const resEl = document.getElementById('metaReservation')!;
+      const resText = document.getElementById('detailReservationText')!;
       if (m.date) {
         const resDate = new Date(m.date + 'T00:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
-        reservationEl.textContent = `Fecha de reservacion: ${resDate}`;
-        reservationEl.hidden = false;
+        resText.textContent = `Fecha solicitada: ${resDate}`;
+        resEl.hidden = false;
       } else {
-        reservationEl.hidden = true;
+        resEl.hidden = true;
       }
 
-      document.getElementById('modalMessage').textContent = m.message;
+      // Interests
+      const intEl = document.getElementById('metaInterests')!;
+      const intText = document.getElementById('detailInterestsText')!;
+      const items = m.services || m.interests || [];
+      if (items.length) {
+        intText.textContent = items.join(' · ');
+        intEl.hidden = false;
+      } else {
+        intEl.hidden = true;
+      }
 
-      const pendBtn = document.getElementById('modalPendiente');
-      pendBtn.hidden = m.status === 'pendiente';
-      pendBtn.onclick = async () => {
-        await updateMsgStatus(m.id, 'pendiente');
-        const msg = messages.find(x => x.id === m.id);
-        if (msg) msg.status = 'pendiente';
-        pendBtn.hidden = true;
-        render();
-      };
+      // Message body
+      document.getElementById('detailMessage')!.textContent = m.message;
 
-      document.getElementById('msgModal').hidden = false;
-      document.body.style.overflow = 'hidden';
+      // Action buttons visibility
+      const btnPend = document.getElementById('btnPendiente')!;
+      const btnLeido = document.getElementById('btnLeido')!;
+      btnPend.hidden = m.status === 'pendiente';
+      btnLeido.hidden = m.status === 'leido';
 
+      // Mark as read if new
       if (m.status === 'nuevo') {
         await updateMsgStatus(m.id, 'leido');
         m.status = 'leido';
+        badge.textContent = statusMeta.leido.label;
+        badge.style.color = statusMeta.leido.color;
+        badge.style.background = statusMeta.leido.bg;
+        btnLeido.hidden = true;
         render();
+      } else {
+        render(); // re-render to highlight active
       }
     }
 
-    function render() {
-      const list = document.getElementById('inboxList');
-      if (!list) return;
-      const filtered = currentFilter === 'all' ? messages : messages.filter(m => m.status === currentFilter);
-      if (filtered.length === 0) {
-        list.innerHTML = '<div class="inbox-empty">No hay mensajes que mostrar.</div>';
-        return;
+    // --- Action buttons ---
+    document.getElementById('btnPendiente')!.addEventListener('click', async () => {
+      if (!selectedId) return;
+      await updateMsgStatus(selectedId, 'pendiente');
+      const msg = messages.find(m => m.id === selectedId);
+      if (msg) {
+        msg.status = 'pendiente';
+        openDetail(msg);
       }
-      list.innerHTML = filtered.map((m) => {
-        const meta = statusMeta[m.status] || statusMeta.nuevo;
-        const dateStr = formatDate(m.createdAt);
-        const preview = m.message.length > 100 ? m.message.slice(0, 100) + '…' : m.message;
-        const isLeido = m.status === 'leido';
-        const contactInfo = m.contactInfo || (m.services || m.interests || []).join(', ') || '';
-        return `<div class="inbox-row ${isLeido ? 'inbox-row--leido' : ''}" data-id="${m.id}" style="--row-bg:${meta.bg};--row-border:${meta.border};--row-hover:${meta.hover}">
-          <div class="inbox-row-left">
-            <div class="inbox-row-name">${escHtml(m.name)}</div>
-            <div class="inbox-row-preview">${escHtml(preview)}</div>
-          </div>
-          <div class="inbox-row-right">
-            <div class="inbox-row-contact">${escHtml(contactInfo)}</div>
-            <div class="inbox-row-date">${escHtml(dateStr)}</div>
-          </div>
-        </div>`;
-      }).join('');
-      list.querySelectorAll('.inbox-row').forEach((row) => {
-        row.addEventListener('click', () => {
-          const msg = messages.find(m => m.id === row.dataset.id);
-          if (msg) openModal(msg);
-        });
-      });
-    }
-
-    document.querySelectorAll('[data-filter]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        render();
-      });
     });
 
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('msgModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
+    document.getElementById('btnLeido')!.addEventListener('click', async () => {
+      if (!selectedId) return;
+      await updateMsgStatus(selectedId, 'leido');
+      const msg = messages.find(m => m.id === selectedId);
+      if (msg) {
+        msg.status = 'leido';
+        openDetail(msg);
+      }
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-    document.getElementById('modalTrash').addEventListener('click', async () => {
+
+    document.getElementById('btnTrash')!.addEventListener('click', async () => {
       if (!selectedId) return;
       if (!await showConfirm('¿Mover este mensaje a la papelera?')) return;
       await trashMsg(selectedId);
       messages = messages.filter(m => m.id !== selectedId);
-      closeModal();
+      selectedId = null;
+      document.getElementById('detailContent')!.hidden = true;
+      document.getElementById('detailEmpty')!.hidden = false;
       render();
     });
 
+    // --- Filters ---
+    document.querySelectorAll('[data-filter]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = (btn as HTMLElement).dataset.filter || 'all';
+        render();
+      });
+    });
+
+    // --- Init ---
     (async () => {
       try {
         messages = await fetchMessages();
-        if (messages.length === 0) {
-          await autoSeed();
-          messages = await fetchMessages();
-        }
         render();
-      } catch (err) {
-        showError(err.message || 'Error al cargar mensajes. Verifica la consola (F12).');
+      } catch (err: any) {
+        const list = document.getElementById('msgList')!;
+        list.innerHTML = `<div class="msg-empty" style="color:#ef4444;">Error al cargar mensajes</div>`;
         console.error('[Mensajes]', err);
       }
     })();
   </script>
 
   <style is:global>
-    .inbox-page { width: 100%; max-width: 880px; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-    .inbox-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .inbox-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
-    .inbox-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin: 0.25rem 0 0; }
-
-    .inbox-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .inbox-filter { padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-size: 0.82rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-    .inbox-filter:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .inbox-filter.active { background: rgba(168,230,247,0.15); border-color: #a8e6f7; color: #a8e6f7; }
-
-    .inbox-list {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(24px);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.25);
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
+    .msg-page {
+      width: 100%;
+      max-width: 1200px;
+      animation: msgFadeIn 0.35s ease;
     }
 
-    .inbox-row {
+    @keyframes msgFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .msg-header {
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.5rem 1rem 1.75rem;
-      cursor: pointer;
-      user-select: none;
-      background: var(--row-bg);
-      border-bottom: 1px solid #e8ecf1;
-      transition: background 0.18s ease, box-shadow 0.18s ease;
-      position: relative;
-    }
-    .inbox-row::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 5px;
-      background: var(--row-border);
-    }
-    .inbox-row:hover {
-      background: var(--row-hover);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-    }
-    .inbox-row:last-child { border-bottom: none; }
-    .inbox-row:active { transform: scale(0.998); }
-
-    .inbox-row--leido { background: #fff; opacity: 0.7; }
-    .inbox-row--leido::before { background: transparent; }
-    .inbox-row--leido .inbox-row-name { font-weight: 500; color: #64748b; }
-    .inbox-row--leido .inbox-row-preview { color: #a1a1aa; }
-    .inbox-row--leido:hover { opacity: 0.85; background: #fafbfc; }
-
-    .inbox-row-left { flex: 1; min-width: 0; }
-    .inbox-row-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 0.25rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: -0.01em;
-    }
-    .inbox-row-preview {
-      font-size: 0.84rem;
-      color: #64748b;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.45;
-    }
-
-    .inbox-row-right {
-      flex-shrink: 0;
-      text-align: right;
-      min-width: 100px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.2rem;
-    }
-    .inbox-row-contact {
-      font-size: 0.78rem;
-      color: #64748b;
-      white-space: nowrap;
-      max-width: 170px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .inbox-row-date {
-      font-size: 0.76rem;
-      color: #94a3b8;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .inbox-loading, .inbox-empty {
-      text-align: center;
-      padding: 3.5rem 1rem;
-      color: #94a3b8;
-      font-style: italic;
-      font-size: 0.9rem;
-    }
-
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(10, 26, 47, 0.55); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 1.5rem;
-    }
-    .modal-overlay[hidden] { display: none !important; }
-
-    .modal-card {
-      background: #fff; border-radius: 20px;
-      max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-      padding: 2rem 2rem 1.5rem;
-      position: relative;
-    }
-    .modal-card::-webkit-scrollbar { width: 6px; }
-    .modal-card::-webkit-scrollbar-track { background: transparent; }
-    .modal-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-    .modal-close {
-      position: absolute; top: 1rem; right: 1rem;
-      width: 36px; height: 36px; border-radius: 50%;
-      border: none; background: #f1f5f9;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: #64748b; transition: all 0.2s;
-    }
-    .modal-close:hover { background: #e2e8f0; color: #0a1a2f; }
-    .modal-close .material-symbols-outlined { font-size: 1.25rem; }
-
-    .modal-name { font-size: 1.25rem; font-weight: 700; color: #0a1a2f; margin: 0 2rem 0.2rem 0; }
-    .modal-interests { font-size: 0.85rem; color: #64748b; margin: 0 0 0.15rem; }
-    .modal-date { font-size: 0.8rem; color: #94a3b8; margin: 0 0 0.5rem; }
-    .modal-contact { font-size: 0.85rem; color: #1c5fa8; margin: 0 0 0.25rem; font-weight: 600; }
-    .modal-reservation { font-size: 0.85rem; color: #059669; margin: 0 0 1rem; font-weight: 600; }
-
-    .modal-body {
-      background: #f8fafc; border-radius: 12px; padding: 1.25rem;
-      font-size: 0.95rem; line-height: 1.7; color: #1e293b;
-      margin-bottom: 1.25rem; white-space: pre-wrap; word-break: break-word;
-    }
-
-    .modal-actions {
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
     }
 
-    .modal-pendiente-btn {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.6rem 1.25rem; border-radius: 10px;
-      border: 1px solid #fde68a; background: #fffbeb;
-      font-size: 0.88rem; font-weight: 600; font-family: inherit;
-      color: #92400e; cursor: pointer; transition: all 0.15s;
+    .msg-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
     }
-    .modal-pendiente-btn:hover { background: #fef3c7; border-color: #fcd34d; }
-    .modal-pendiente-btn .material-symbols-outlined { font-size: 1.15rem; }
 
-    .modal-trash-btn {
+    .msg-subtitle {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.55);
+      margin: 0.2rem 0 0;
+    }
+
+    .msg-filters {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .msg-filter {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.6rem 1.25rem;
-      border-radius: 10px;
-      border: 1px solid #fecaca;
-      background: #fef2f2;
-      font-size: 0.88rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.65);
+      font-size: 0.8rem;
       font-weight: 600;
       font-family: inherit;
-      color: #dc2626;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .msg-filter:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .msg-filter.active {
+      background: rgba(168,230,247,0.12);
+      border-color: rgba(168,230,247,0.5);
+      color: #a8e6f7;
+    }
+
+    .filter-count {
+      font-size: 0.7rem;
+      font-weight: 800;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .msg-filter.active .filter-count {
+      background: rgba(168,230,247,0.2);
+      color: #a8e6f7;
+    }
+
+    /* Container: split panel */
+    .msg-container {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 0;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(24px);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06);
+      min-height: 520px;
+    }
+
+    /* List panel */
+    .msg-list-panel {
+      border-right: 1px solid #e8ecf1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .msg-list::-webkit-scrollbar { width: 4px; }
+    .msg-list::-webkit-scrollbar-track { background: transparent; }
+    .msg-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+    .msg-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.9rem 1.1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s ease;
+      position: relative;
+    }
+
+    .msg-item:hover {
+      background: #f8fafc;
+    }
+
+    .msg-item--active {
+      background: #eff6ff !important;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .msg-item--unread .msg-item-name {
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .msg-item--unread .msg-item-preview {
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .msg-item-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .msg-item-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .msg-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .msg-item-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .msg-item-date {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .msg-item-preview {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.4;
+    }
+
+    .msg-item-dot {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3b82f6;
+    }
+
+    /* Detail panel */
+    .msg-detail-panel {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .msg-detail-panel::-webkit-scrollbar { width: 4px; }
+    .msg-detail-panel::-webkit-scrollbar-track { background: transparent; }
+    .msg-detail-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+    .msg-detail-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .msg-detail-empty[hidden],
+    .msg-detail-content[hidden] {
+      display: none !important;
+    }
+
+    .msg-detail-empty p {
+      margin: 0;
+    }
+
+    .msg-detail-content {
+      padding: 1.75rem 2rem;
+      flex: 1;
+      animation: detailSlide 0.2s ease;
+    }
+
+    @keyframes detailSlide {
+      from { opacity: 0; transform: translateX(8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Detail header */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .detail-header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .detail-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .detail-status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      width: fit-content;
+    }
+
+    /* Meta grid */
+    .detail-meta-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .detail-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+      color: #475569;
+    }
+
+    .detail-meta-item .material-symbols-outlined {
+      font-size: 1.1rem;
+      color: #94a3b8;
+    }
+
+    /* Message box */
+    .detail-message-box {
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-message-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .detail-message-body {
+      background: #f8fafc;
+      border: 1px solid #e8ecf1;
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-size: 0.925rem;
+      line-height: 1.75;
+      color: #1e293b;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Actions */
+    .detail-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .modal-trash-btn:hover { background: #fee2e2; border-color: #fca5a5; }
-    .modal-trash-btn .material-symbols-outlined { font-size: 1.15rem; }
 
-    @media (max-width: 768px) {
-      .inbox-row { padding: 0.75rem 1rem; gap: 0.75rem; }
-      .inbox-row-right { min-width: 60px; }
-      .inbox-row-contact { display: none; }
-      .modal-card { padding: 1.5rem; margin: 0.5rem; border-radius: 16px; }
+    .action-btn .material-symbols-outlined {
+      font-size: 1.05rem;
     }
 
+    .action-btn[hidden] { display: none !important; }
+
+    .action-pending {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+    .action-pending:hover {
+      background: #fef3c7;
+      border-color: #fcd34d;
+    }
+
+    .action-read {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+    .action-read:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+
+    .action-trash {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    .action-trash:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+
+    /* Loading & empty */
+    .msg-loading, .msg-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 4rem 1rem;
+      color: #94a3b8;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .spinning {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Confirm modal */
     .confirm-overlay {
       position: fixed; inset: 0; z-index: 2000;
-      background: rgba(10, 26, 47, 0.5); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
+      background: rgba(10, 26, 47, 0.5);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 1.5rem;
     }
     .confirm-overlay[hidden] { display: none !important; }
+
     .confirm-card {
-      background: #fff; border-radius: 16px; padding: 2rem;
-      max-width: 400px; width: 100%; text-align: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
       box-shadow: 0 20px 50px rgba(0,0,0,0.25);
     }
-    .confirm-icon { font-size: 2.5rem; color: #1c5fa8; margin-bottom: 0.75rem; display: block; }
-    .confirm-msg { font-size: 0.95rem; color: #1e293b; line-height: 1.6; margin: 0 0 1.5rem; }
-    .confirm-btns { display: flex; gap: 0.75rem; justify-content: center; }
-    .confirm-btn {
-      padding: 0.6rem 1.5rem; border-radius: 10px; border: none;
-      font-size: 0.88rem; font-weight: 600; font-family: inherit;
-      cursor: pointer; transition: all 0.15s;
+
+    .confirm-icon {
+      font-size: 2.5rem;
+      color: #3b82f6;
+      margin-bottom: 0.75rem;
+      display: block;
     }
-    .confirm-cancel { background: #f1f5f9; color: #475569; }
-    .confirm-cancel:hover { background: #e2e8f0; }
-    .confirm-ok { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-    .confirm-ok:hover { background: #fecaca; }
+
+    .confirm-msg {
+      font-size: 0.95rem;
+      color: #1e293b;
+      line-height: 1.6;
+      margin: 0 0 1.5rem;
+    }
+
+    .confirm-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .confirm-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .confirm-cancel {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .confirm-cancel:hover {
+      background: #e2e8f0;
+    }
+
+    .confirm-ok {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .confirm-ok:hover {
+      background: #fecaca;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .msg-container {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .msg-list-panel {
+        border-right: none;
+        border-bottom: 1px solid #e8ecf1;
+        max-height: 320px;
+      }
+
+      .msg-detail-content {
+        padding: 1.25rem;
+      }
+
+      .detail-actions {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   </style>
 </AdminLayout>

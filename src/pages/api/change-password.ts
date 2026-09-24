@@ -1,15 +1,7 @@
 import type { APIRoute } from 'astro';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
+import { getAdminAuth } from '../../lib/firebase-admin';
 
 const FIREBASE_API_KEY = import.meta.env.PUBLIC_FIREBASE_API_KEY;
-
-function getAdminApp() {
-  if (getApps().length > 0) return getApps()[0];
-  const sa = import.meta.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!sa) throw new Error('FIREBASE_SERVICE_ACCOUNT no configurado');
-  return initializeApp({ credential: cert(JSON.parse(sa)) });
-}
 
 export const prerender = false;
 
@@ -38,8 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Contraseña incorrecta' }), { status: 401 });
     }
 
-    const app = getAdminApp();
-    const auth = getAuth(app);
+    const auth = getAdminAuth();
 
     const userRecord = await auth.getUserByEmail(targetEmail);
     await auth.updateUser(userRecord.uid, { password: newPassword });

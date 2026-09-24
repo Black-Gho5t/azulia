@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { beliceTours, modalData } from "../../components/data/tours/belice_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("belice");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__4.webp", alt: "Costa caribeña de Belice" },
@@ -41,8 +43,8 @@ const galleryImages = [
             carouselSubtitle="Belice"
             carouselDescription="Cruza la frontera y descubre Belice: selva tropical, ciudades mayas y el Arrecife Mesoamericano, todo a pocas horas de Bacalar."
             sectionTitle="Tours a Belice Disponibles"
-            tours={beliceTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

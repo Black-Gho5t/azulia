@@ -28,40 +28,44 @@ const { title, hideNav } = Astro.props;
       {!hideNav && (
       <nav class="admin-topbar">
         <a href="/admin" class="admin-topbar-brand">
-          <span class="material-symbols-outlined" aria-hidden="true">sailing</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">sailing</span>
           Azulia Admin
         </a>
         <a href="/admin" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">dashboard</span>
           <span>Dashboard</span>
         </a>
         <a href="/admin/mensajes" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">mail</span>
           <span>Mensajes</span>
         </a>
         <a href="/admin/perfiles" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">badge</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">badge</span>
           <span>Perfiles</span>
         </a>
         <a href="/admin/galeria" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">wallpaper</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">wallpaper</span>
           <span>Galería</span>
         </a>
+        <a href="/admin/tours" class="admin-nav-link" data-nav>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">tour</span>
+          <span>Tours</span>
+        </a>
         <a href="/admin/hoteles" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">apartment</span>
           <span>Hoteles</span>
         </a>
         <a href="/admin/autos" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">car_rental</span>
           <span>Autos</span>
         </a>
         <a href="/admin/papeleria" class="admin-nav-link" data-nav>
-          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">delete</span>
           <span>Papelera</span>
         </a>
         <span class="admin-nav-spacer"></span>
         <button class="admin-nav-logout" data-logout>
-          <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">logout</span>
           <span>Salir</span>
         </button>
       </nav>
@@ -72,6 +76,7 @@ const { title, hideNav } = Astro.props;
     </div>
 
     <script>
+      import "../scripts/protect-icons";
       import { auth, db } from '../lib/firebase';
       import { onAuthStateChanged, signOut } from 'firebase/auth';
       import { doc, getDoc } from 'firebase/firestore';
@@ -93,7 +98,7 @@ const { title, hideNav } = Astro.props;
       });
 
       document.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-logout]');
+        const btn = (e.target as HTMLElement)?.closest('[data-logout]');
         if (btn) {
           e.preventDefault();
           signOut(auth);
@@ -120,6 +125,13 @@ const { title, hideNav } = Astro.props;
   html, body {
     height: 100%;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .material-symbols-outlined,
+  .notranslate {
+    translate: no !important;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .admin-bg {

@@ -1,20 +1,11 @@
 import type { APIRoute } from 'astro';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-
-function getAdminApp() {
-  if (getApps().length > 0) return getApps()[0];
-  const sa = import.meta.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!sa) throw new Error('FIREBASE_SERVICE_ACCOUNT no configurado');
-  return initializeApp({ credential: cert(JSON.parse(sa)) });
-}
+import { getAdminDb } from '../../lib/firebase-admin';
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
-    const app = getAdminApp();
-    const db = getFirestore(app);
+    const db = getAdminDb();
     const snap = await db.collection('posters').orderBy('createdAt', 'desc').get();
     const posters = snap.docs.map((d) => {
       const data = d.data();

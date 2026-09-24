@@ -2,119 +2,197 @@
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
-<AdminLayout title="Panel - Azulia Admin">
+<AdminLayout title="Panel de Monitoreo - Azulia Admin">
   <div class="dashboard">
-    <div class="dashboard-header">
+    <!-- Header -->
+    <header class="dashboard-header">
       <div class="header-left">
         <img src="/src/assets/Designer.png" alt="Azulia Logo" class="header-logo" />
         <div>
-          <h1>Panel de Administración</h1>
-          <p class="header-subtitle" id="userGreeting">Bienvenido</p>
+          <div class="header-title-row">
+            <h1>Panel de Administración</h1>
+            <span class="system-status-badge">
+              <span class="status-pulse-dot"></span>
+              Sistema en línea
+            </span>
+          </div>
+          <p class="header-subtitle" id="userGreeting">Bienvenido al centro de control</p>
         </div>
       </div>
       <button class="btn-logout" data-logout>
-        <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+        <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">logout</span>
         Cerrar sesión
       </button>
-    </div>
+    </header>
 
+    <!-- Stat Cards Grid -->
     <div class="dashboard-grid">
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+      <!-- Clientes / Visitas Semanales & Simultáneas -->
+      <article class="stat-card stat-card-featured" id="cardClients">
+        <div class="stat-top">
+          <div class="stat-icon stat-icon-blue">
+            <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">visibility</span>
+          </div>
+          <span class="badge-weekly" title="Conteo consolidado de visitas en los últimos 7 días">
+            <span class="material-symbols-outlined notranslate badge-icon" translate="no">date_range</span>
+            SEMANAL
+          </span>
         </div>
         <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Clientes</span>
+          <span class="stat-value" id="weeklyVisitsValue">—</span>
+          <span class="stat-label">Visitas al sitio web</span>
+          <div class="stat-live-row">
+            <span class="live-pulse-dot"></span>
+            <span class="stat-live-text"><strong id="activeUsersCount">1</strong> visualizando simultáneamente</span>
+          </div>
         </div>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">tour</span>
+      <!-- Tours -->
+      <article class="stat-card" id="cardTours">
+        <div class="stat-top">
+          <div class="stat-icon stat-icon-teal">
+            <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">tour</span>
+          </div>
+          <a href="/admin/tours" class="stat-quick-link" title="Gestionar tours">
+            <span class="material-symbols-outlined notranslate" translate="no">open_in_new</span>
+          </a>
         </div>
         <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Tours</span>
+          <span class="stat-value" id="toursCount"><span class="material-symbols-outlined spinning notranslate" translate="no" style="font-size: 1.5rem; color: #94a3b8;">sync</span></span>
+          <span class="stat-label">Tours disponibles</span>
+          <span class="stat-sub">Aventuras y náuticos</span>
         </div>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">hotel</span>
+      <!-- Hoteles -->
+      <article class="stat-card" id="cardHotels">
+        <div class="stat-top">
+          <div class="stat-icon stat-icon-indigo">
+            <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">hotel</span>
+          </div>
+          <a href="/admin/hoteles" class="stat-quick-link" title="Gestionar hoteles">
+            <span class="material-symbols-outlined notranslate" translate="no">open_in_new</span>
+          </a>
         </div>
         <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Hoteles</span>
+          <span class="stat-value" id="hotelsCount"><span class="material-symbols-outlined spinning notranslate" translate="no" style="font-size: 1.5rem; color: #94a3b8;">sync</span></span>
+          <span class="stat-label">Hoteles registrados</span>
+          <span class="stat-sub">En el sistema</span>
         </div>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
+      <!-- Autos -->
+      <article class="stat-card" id="cardCars">
+        <div class="stat-top">
+          <div class="stat-icon stat-icon-amber">
+            <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">car_rental</span>
+          </div>
+          <a href="/admin/autos" class="stat-quick-link" title="Gestionar autos">
+            <span class="material-symbols-outlined notranslate" translate="no">open_in_new</span>
+          </a>
         </div>
         <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Autos</span>
+          <span class="stat-value" id="carsCount"><span class="material-symbols-outlined spinning notranslate" translate="no" style="font-size: 1.5rem; color: #94a3b8;">sync</span></span>
+          <span class="stat-label">Autos en flota</span>
+          <span class="stat-sub">Unidades para renta</span>
         </div>
       </article>
 
-      <article class="stat-card">
-        <div class="stat-icon">
-          <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+      <!-- Mensajes -->
+      <article class="stat-card" id="cardMessages">
+        <div class="stat-top">
+          <div class="stat-icon stat-icon-rose">
+            <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">mail</span>
+          </div>
+          <a href="/admin/mensajes" class="stat-quick-link" title="Ver mensajes">
+            <span class="material-symbols-outlined notranslate" translate="no">open_in_new</span>
+          </a>
         </div>
         <div class="stat-body">
-          <span class="stat-value">—</span>
-          <span class="stat-label">Reservaciones</span>
+          <span class="stat-value" id="messagesCount"><span class="material-symbols-outlined spinning notranslate" translate="no" style="font-size: 1.5rem; color: #94a3b8;">sync</span></span>
+          <span class="stat-label">Mensajes recibidos</span>
         </div>
       </article>
     </div>
 
+    <!-- Administrative Quick Nav Sections -->
     <div class="dashboard-sections">
+      <a href="/admin/tours" class="section-card">
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">tour</span>
+        </div>
+        <div>
+          <h2 class="section-title">Gestión de Tours</h2>
+          <p class="section-desc">Administra cards y modales de subpáginas (náuticos, ruinas, etc.).</p>
+        </div>
+      </a>
+
       <a href="/admin/mensajes" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">mail</span>
-          Mensajes
-        </h2>
-        <p class="section-desc">Bandeja de entrada con mensajes de clientes.</p>
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">mail</span>
+        </div>
+        <div>
+          <h2 class="section-title">Mensajes de Clientes</h2>
+          <p class="section-desc">Bandeja de entrada con solicitudes y consultas de contacto.</p>
+        </div>
       </a>
 
-      <a href="/admin/perfiles" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">badge</span>
-          Perfiles
-        </h2>
-        <p class="section-desc">Administradores del sistema y sus permisos.</p>
-      </a>
-
-      <a href="/admin/galeria" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">wallpaper</span>
-          Galería
-        </h2>
-        <p class="section-desc">Sube y administra imágenes promocionales.</p>
+      <a href="/admin/hoteles" class="section-card">
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">hotel</span>
+        </div>
+        <div>
+          <h2 class="section-title">Gestión de Hoteles</h2>
+          <p class="section-desc">Administra tarifas, imágenes, puntuaciones y amenidades.</p>
+        </div>
       </a>
 
       <a href="/admin/autos" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">car_rental</span>
-          Autos
-        </h2>
-        <p class="section-desc">Gestiona la flota de autos para renta.</p>
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">car_rental</span>
+        </div>
+        <div>
+          <h2 class="section-title">Flota de Autos</h2>
+          <p class="section-desc">Gestiona catálogo de vehículos para renta y especificaciones.</p>
+        </div>
+      </a>
+
+      <a href="/admin/galeria" class="section-card">
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">wallpaper</span>
+        </div>
+        <div>
+          <h2 class="section-title">Galería de Imágenes</h2>
+          <p class="section-desc">Sube y organiza material fotográfico de alta resolución.</p>
+        </div>
+      </a>
+
+      <a href="/admin/perfiles" class="section-card">
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">badge</span>
+        </div>
+        <div>
+          <h2 class="section-title">Perfiles de Administrador</h2>
+          <p class="section-desc">Control de cuentas administrativas y permisos de acceso.</p>
+        </div>
       </a>
 
       <a href="/admin/papeleria" class="section-card">
-        <h2 class="section-title">
-          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-          Papelera
-        </h2>
-        <p class="section-desc">Elementos eliminados con retención de 30 días.</p>
+        <div class="section-icon">
+          <span class="material-symbols-outlined notranslate" translate="no" aria-hidden="true">delete</span>
+        </div>
+        <div>
+          <h2 class="section-title">Papelera de Reciclaje</h2>
+          <p class="section-desc">Restauración y purga segura de elementos eliminados.</p>
+        </div>
       </a>
     </div>
   </div>
 
   <script>
-    import { getAuthState } from '../../components/admin/auth.ts';
+    import { getAuthState, signOut } from '../../components/admin/auth.ts';
+    import { adminFetch } from '../../lib/admin-client.ts';
 
     (async () => {
       const auth = await getAuthState();
@@ -122,58 +200,178 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         window.location.href = '/admin/login';
         return;
       }
+
       const greeting = document.getElementById('userGreeting');
       if (greeting && auth.user) {
-        greeting.textContent = `Bienvenido, ${auth.user.name}`;
+        greeting.textContent = `Sesión iniciada como ${auth.user.name || auth.user.email}`;
       }
+
+      // Logout handler
+      document.querySelectorAll('[data-logout]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          btn.setAttribute('disabled', 'true');
+          await signOut();
+          window.location.href = '/admin/login';
+        });
+      });
+
+      // Load analytics and messages asynchronously
+      loadAnalytics();
+      loadMessages();
+      loadSystemCounts();
+
+      // Periodic live heartbeat refresh for presence counter (every 30 seconds)
+      setInterval(loadAnalytics, 30000);
     })();
+
+    // 1. Analytics (Simultaneous + Weekly visits)
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('/api/analytics');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.ok) {
+          const weeklyEl = document.getElementById('weeklyVisitsValue');
+          const activeEl = document.getElementById('activeUsersCount');
+          if (weeklyEl) weeklyEl.textContent = (data.weeklyVisits || 1).toLocaleString('es-MX');
+          if (activeEl) activeEl.textContent = String(data.activeUsers || 1);
+        }
+      } catch (err) {
+        console.warn('[Dashboard] Error cargando analítica:', err);
+      }
+    }
+
+    // 2. Messages (Counters only)
+    async function loadMessages() {
+      try {
+        const res = await adminFetch('/api/messages');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.messages)) {
+          const countEl = document.getElementById('messagesCount');
+          if (countEl) countEl.textContent = String(data.messages.length);
+        }
+      } catch (err) {
+        console.warn('[Dashboard] Error cargando mensajes:', err);
+      }
+    }
+
+    // 3. System Counts (Tours, Hotels, Cars)
+    async function loadSystemCounts() {
+      try {
+        const [toursRes, hotelsRes, carsRes] = await Promise.allSettled([
+          fetch('/api/tours'),
+          fetch('/api/hotels'),
+          fetch('/api/cars')
+        ]);
+
+        if (toursRes.status === 'fulfilled') {
+          const td = await toursRes.value.json();
+          if (td.ok && Array.isArray(td.tours)) {
+            const countEl = document.getElementById('toursCount');
+            if (countEl) countEl.textContent = String(td.tours.length);
+          }
+        }
+        
+        if (hotelsRes.status === 'fulfilled') {
+          const hd = await hotelsRes.value.json();
+          if (hd.ok && Array.isArray(hd.hotels)) {
+            const countEl = document.getElementById('hotelsCount');
+            if (countEl) countEl.textContent = String(hd.hotels.length);
+          }
+        }
+
+        if (carsRes.status === 'fulfilled') {
+          const cd = await carsRes.value.json();
+          if (cd.ok && Array.isArray(cd.cars)) {
+            const countEl = document.getElementById('carsCount');
+            if (countEl) countEl.textContent = String(cd.cars.length);
+          }
+        }
+      } catch (err) {
+        console.warn('[Dashboard] Error cargando conteos del sistema:', err);
+      }
+    }
+
+
   </script>
 
   <style>
+    /* Main Layout */
     .dashboard {
       width: 100%;
-      max-width: 900px;
-      animation: dashEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 1200px;
+      margin: 0 auto;
+      animation: dashFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes dashEntrance {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes dashFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Header */
     .dashboard-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border-radius: 20px;
       padding: 1.5rem 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .header-logo {
       height: 48px;
       width: auto;
+      border-radius: 10px;
     }
 
-    .header-left h1 {
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-title-row h1 {
       font-size: 1.5rem;
       font-weight: 700;
       color: #0a1a2f;
       margin: 0;
     }
 
+    .system-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    }
+
     .header-subtitle {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: #64748b;
       margin: 0.25rem 0 0;
     }
@@ -183,27 +381,25 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       align-items: center;
       gap: 0.5rem;
       padding: 0.625rem 1.25rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
       background: #fff;
-      color: #64748b;
-      font-size: 0.9rem;
+      color: #475569;
+      font-size: 0.875rem;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
 
     .btn-logout:hover {
       border-color: #ef4444;
       color: #ef4444;
       background: #fef2f2;
+      transform: translateY(-1px);
     }
 
-    .btn-logout .material-symbols-outlined {
-      font-size: 1.25rem;
-    }
-
+    /* Stat Cards Grid */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -215,113 +411,287 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
-      padding: 1.5rem;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s, box-shadow 0.2s;
+      padding: 1.25rem;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .stat-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .stat-card-featured {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 249, 255, 0.95) 100%);
+      border: 1.5px solid #bae6fd;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.12);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
     }
 
     .stat-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 0.75rem;
-      background: linear-gradient(135deg, #eff6ff, #dbeafe);
-      border-radius: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    .stat-icon-blue { background: #e0f2fe; color: #0284c7; }
+    .stat-icon-teal { background: #ccfbf1; color: #0d9488; }
+    .stat-icon-indigo { background: #e0e7ff; color: #4f46e5; }
+    .stat-icon-amber { background: #fef3c7; color: #d97706; }
+    .stat-icon-rose { background: #ffe4e6; color: #e11d48; }
+
     .stat-icon .material-symbols-outlined {
-      font-size: 1.5rem;
-      color: #1c5fa8;
+      font-size: 1.35rem;
+    }
+
+    /* Highlighted SEMANAL Badge */
+    .badge-weekly {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      animation: badgeGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes badgeGlow {
+      from { box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3); }
+      to { box-shadow: 0 3px 12px rgba(2, 132, 199, 0.55); }
+    }
+
+    .badge-weekly .badge-icon {
+      font-size: 0.9rem;
+    }
+
+    .stat-badge-db {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #0f766e;
+      background: #ccfbf1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-quick-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #64748b;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .stat-quick-link:hover {
+      background: #1c5fa8;
+      color: #fff;
+      transform: scale(1.08);
+    }
+
+    .stat-quick-link .material-symbols-outlined {
+      font-size: 1rem;
     }
 
     .stat-value {
       display: block;
       font-size: 1.75rem;
-      font-weight: 700;
+      font-weight: 800;
       color: #0a1a2f;
+      line-height: 1.2;
     }
 
     .stat-label {
       display: block;
       font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 0.25rem;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 0.2rem;
     }
 
+    .stat-sub {
+      display: block;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+    }
+
+    .stat-live-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.45rem;
+      padding: 0.3rem 0.5rem;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e0f2fe;
+    }
+
+    .live-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulseGreen 1.8s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulseGreen {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .stat-live-text {
+      font-size: 0.75rem;
+      color: #0369a1;
+      font-weight: 500;
+    }
+
+    .stat-live-text strong {
+      font-weight: 800;
+      color: #0284c7;
+    }
+
+    .spinning {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Administrative Section Links */
     .dashboard-sections {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
     }
 
     .section-card {
-      display: block;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      padding: 1.35rem;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
       cursor: pointer;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.25s ease;
     }
 
     .section-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-color: #0284c7;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #f0f9ff;
+      color: #0284c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .section-card:hover .section-icon {
+      background: #0284c7;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .section-icon .material-symbols-outlined {
+      font-size: 1.4rem;
     }
 
     .section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #0a1a2f;
-      margin: 0 0 0.5rem;
-    }
-
-    .section-title .material-symbols-outlined {
-      font-size: 1.5rem;
-      color: #1c5fa8;
+      margin: 0 0 0.3rem;
     }
 
     .section-desc {
-      font-size: 0.9rem;
+      font-size: 0.825rem;
       color: #64748b;
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.45;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .dashboard-sections {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
+      .dashboard-header {
+        flex-direction: column;
+        gap: 1.25rem;
+        text-align: center;
+      }
+      .header-left {
+        flex-direction: column;
+        text-align: center;
+      }
+      .header-title-row {
+        justify-content: center;
+      }
       .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
       .dashboard-sections {
         grid-template-columns: 1fr;
-      }
-
-      .dashboard-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-      }
-
-      .header-left {
-        flex-direction: column;
-        text-align: center;
       }
     }
 

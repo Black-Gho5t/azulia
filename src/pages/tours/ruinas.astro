@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { ruinasTours, modalData } from "../../components/data/tours/ruinas_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("ruinas");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/ruinas/Calakmul/calakmul (1).webp", alt: "Gran pirámide de Calakmul" },
@@ -42,8 +44,8 @@ const galleryImages = [
             carouselSubtitle="Ruinas"
             carouselDescription="Explora las ruinas de un mundo antiguo y una civilización avanzada. Aventúrate en las ruinas de Bacalar y el sur de México."
             sectionTitle="Tours en las Ruinas"
-            tours={ruinasTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

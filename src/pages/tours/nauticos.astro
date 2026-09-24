@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { nauticosTours, modalData } from "../../components/data/tours/nauticos_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("nauticos");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/velero/velero_2.webp", alt: "Velero en la laguna de Bacalar" },
@@ -46,8 +48,8 @@ const galleryImages = [
             carouselSubtitle="Náuticos"
             carouselDescription="Vive la aventura en el agua con nuestros tours marítimos exclusivos. Explora el Caribe en barcos tradicionales y actividades acuáticas."
             sectionTitle="Tours Náuticos Disponibles"
-            tours={nauticosTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

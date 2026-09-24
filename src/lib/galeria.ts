@@ -1,4 +1,5 @@
 import { db } from './firebase';
+import { adminFetch } from './admin-client';
 import { collection, doc, deleteDoc, getDoc, getDocs, query, orderBy, serverTimestamp, addDoc, Timestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 export interface UploadProgress {
@@ -27,7 +28,7 @@ export function uploadPoster(
 
       onProgress({ progress: 30 });
 
-      const resp = await fetch('/api/posters/upload', {
+      const resp = await adminFetch('/api/posters/upload', {
         method: 'POST',
         body: formData,
         signal: controller.signal,
@@ -57,7 +58,7 @@ export function uploadPoster(
 }
 
 export async function deletePoster(id: string): Promise<void> {
-  const resp = await fetch(`/api/posters/${id}`, { method: 'DELETE' });
+  const resp = await adminFetch(`/api/posters/${id}`, { method: 'DELETE' });
   if (!resp.ok) {
     const result = await resp.json();
     throw new Error(result.error || 'Error al eliminar');
@@ -65,7 +66,7 @@ export async function deletePoster(id: string): Promise<void> {
 }
 
 export async function renamePoster(id: string, name: string): Promise<void> {
-  const resp = await fetch(`/api/posters/${id}`, {
+  const resp = await adminFetch(`/api/posters/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name }),

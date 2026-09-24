@@ -1,20 +1,16 @@
 import type { APIRoute } from 'astro';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-
-function getAdminApp() {
-  if (getApps().length > 0) return getApps()[0];
-  const sa = import.meta.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!sa) throw new Error('FIREBASE_SERVICE_ACCOUNT no configurado');
-  return initializeApp({ credential: cert(JSON.parse(sa)) });
-}
+import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
 
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+  const auth = await verifyAdminRequest(request);
+  if (!auth.ok) {
+    return new Response(JSON.stringify({ ok: false, error: auth.error, messages: [] }), { status: auth.status });
+  }
+
   try {
-    const app = getAdminApp();
-    const db = getFirestore(app);
+    const db = getAdminDb();
     const snap = await db.collection('messages').orderBy('createdAt', 'desc').get();
     const messages = snap.docs.map((d) => ({
       id: d.id,
@@ -36,8 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Nombre requerido' }), { status: 400 });
     }
 
-    const app = getAdminApp();
-    const db = getFirestore(app);
+    const db = getAdminDb();
 
     await db.collection('messages').add({
       name: name.trim(),

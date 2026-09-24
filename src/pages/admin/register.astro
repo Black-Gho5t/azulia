@@ -17,7 +17,11 @@ import Layout from "../../layouts/Layout.astro";
       <div class="auth-card" role="main">
         <header class="auth-header">
           <div class="auth-logo">
-            <img src="/src/assets/Designer.png" alt="Azulia Logo" class="auth-logo-img" />
+            <img
+              src="/src/assets/Designer.png"
+              alt="Azulia Logo"
+              class="auth-logo-img"
+            />
           </div>
           <h1 class="auth-title">Crear cuenta de administrador</h1>
           <p class="auth-subtitle">Regístrate con tu correo electrónico</p>
@@ -26,7 +30,9 @@ import Layout from "../../layouts/Layout.astro";
         <form id="registerForm" class="auth-form" novalidate>
           <div class="form-group">
             <label for="name" class="form-label">
-              <span class="material-symbols-outlined" aria-hidden="true">badge</span>
+              <span class="material-symbols-outlined" aria-hidden="true"
+                >badge</span
+              >
               Nombre completo
             </label>
             <input
@@ -39,12 +45,14 @@ import Layout from "../../layouts/Layout.astro";
               autocomplete="name"
               aria-describedby="nameHint"
             />
-            <span id="nameHint" class="form-hint">Mínimo 2 caracteres</span>
+            <span id="nameHint" class="form-hint"></span>
           </div>
 
           <div class="form-group">
             <label for="email" class="form-label">
-              <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+              <span class="material-symbols-outlined" aria-hidden="true"
+                >mail</span
+              >
               Correo electrónico
             </label>
             <input
@@ -57,12 +65,14 @@ import Layout from "../../layouts/Layout.astro";
               autocomplete="email"
               aria-describedby="emailHint"
             />
-            <span id="emailHint" class="form-hint">Ingresa un correo válido</span>
+            <span id="emailHint" class="form-hint"></span>
           </div>
 
           <div class="form-group">
             <label for="password" class="form-label">
-              <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+              <span class="material-symbols-outlined" aria-hidden="true"
+                >lock</span
+              >
               Contraseña
             </label>
             <div class="password-wrapper">
@@ -83,7 +93,9 @@ import Layout from "../../layouts/Layout.astro";
                 aria-label="Mostrar/ocultar contraseña"
                 aria-pressed="false"
               >
-                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                <span class="material-symbols-outlined" aria-hidden="true"
+                  >visibility</span
+                >
               </button>
             </div>
             <span id="passwordHint" class="form-hint">Mínimo 8 caracteres</span>
@@ -91,13 +103,17 @@ import Layout from "../../layouts/Layout.astro";
               <div class="strength-bar">
                 <div class="strength-fill" id="strengthFill"></div>
               </div>
-              <span class="strength-text" id="strengthText">Seguridad de la contraseña</span>
+              <span class="strength-text" id="strengthText"
+                >Seguridad de la contraseña</span
+              >
             </div>
           </div>
 
           <div class="form-group">
             <label for="confirmPassword" class="form-label">
-              <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+              <span class="material-symbols-outlined" aria-hidden="true"
+                >lock</span
+              >
               Confirmar contraseña
             </label>
             <input
@@ -110,57 +126,67 @@ import Layout from "../../layouts/Layout.astro";
               autocomplete="new-password"
               aria-describedby="confirmHint"
             />
-            <span id="confirmHint" class="form-hint">Debe coincidir con la anterior</span>
           </div>
 
           <div class="form-group checkbox-group">
             <input type="checkbox" id="terms" name="terms" required />
             <label for="terms" class="checkbox-label">
-              Acepto los <a href="/terminos" target="_blank" rel="noopener">Términos de Servicio</a> y la <a href="/privacidad" target="_blank" rel="noopener">Política de Privacidad</a>
+              Acepto los <a href="/terminos" target="_blank" rel="noopener"
+                >Términos de Servicio</a
+              > y la <a href="/privacidad" target="_blank" rel="noopener"
+                >Política de Privacidad</a
+              >
             </label>
           </div>
 
-          <div id="formMessage" class="form-message" aria-live="polite" hidden></div>
+          <div id="formMessage" class="form-message" aria-live="polite" hidden>
+          </div>
 
           <button type="submit" class="btn btn-primary btn-block">
             <span class="btn-text">Crear cuenta</span>
-            <span class="btn-loader" hidden>
-              <span class="material-symbols-outlined spin" aria-hidden="true">sync</span>
+            <span class="btn-loader hidden" aria-hidden="true" hidden>
+              <span class="material-symbols-outlined spin notranslate" translate="no"
+                >sync</span
+              >
             </span>
           </button>
         </form>
 
         <div id="confirmStep" class="confirm-step" hidden>
           <div class="confirm-icon">
-            <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+            <span class="material-symbols-outlined" aria-hidden="true"
+              >mail</span
+            >
           </div>
           <h2 class="confirm-title">Confirma tu cuenta</h2>
           <p class="confirm-desc" id="confirmDesc">
             Se ha enviado un correo de confirmación al administrador.
           </p>
           <div class="confirm-link-box">
-            <p class="confirm-link-label">Enlace de confirmación (copia y comparte):</p>
+            <p class="confirm-link-label">
+              Enlace de confirmación (copia y comparte):
+            </p>
             <div class="confirm-link-row">
               <code class="confirm-link" id="confirmLink"></code>
-              <button type="button" class="btn-copy" id="copyLinkBtn" aria-label="Copiar enlace">
-                <span class="material-symbols-outlined" aria-hidden="true">content_copy</span>
+              <button
+                type="button"
+                class="btn-copy"
+                id="copyLinkBtn"
+                aria-label="Copiar enlace"
+              >
+                <span class="material-symbols-outlined" aria-hidden="true"
+                  >content_copy</span
+                >
               </button>
             </div>
           </div>
-          <a href="/admin/login" class="btn btn-primary btn-block">Ir a iniciar sesión</a>
+          <a href="/admin/login" class="btn btn-primary btn-block"
+            >Ir a iniciar sesión</a
+          >
         </div>
 
         <footer class="auth-footer">
           <p>¿Ya tienes cuenta? <a href="/admin/login">Iniciar sesión</a></p>
-          
-          <details class="demo-info">
-            <summary>Información de prueba (solo desarrollo)</summary>
-            <div class="demo-content">
-              <p><strong>Correo:</strong> admin@azulia.com</p>
-              <p><strong>Contraseña:</strong> azulia2024</p>
-              <p class="demo-note">Cuenta preconfigurada. Registra cualquier correo nuevo.</p>
-            </div>
-          </details>
         </footer>
       </div>
     </div>
@@ -214,7 +240,7 @@ import Layout from "../../layouts/Layout.astro";
       backdrop-filter: blur(20px);
       border-radius: 28px;
       padding: 3rem 2.5rem;
-      box-shadow: 
+      box-shadow:
         0 25px 50px -12px rgba(10, 26, 47, 0.25),
         0 0 0 1px rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -222,13 +248,13 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     @keyframes cardEntrance {
-      from { 
-        opacity: 0; 
-        transform: translateY(20px) scale(0.98); 
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
       }
-      to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
       }
     }
 
@@ -397,10 +423,22 @@ import Layout from "../../layouts/Layout.astro";
       transition: all 0.3s ease;
     }
 
-    .strength-fill.weak { width: 25%; background: #ef4444; }
-    .strength-fill.fair { width: 50%; background: #f97316; }
-    .strength-fill.good { width: 75%; background: #eab308; }
-    .strength-fill.strong { width: 100%; background: #22c55e; }
+    .strength-fill.weak {
+      width: 25%;
+      background: #ef4444;
+    }
+    .strength-fill.fair {
+      width: 50%;
+      background: #f97316;
+    }
+    .strength-fill.good {
+      width: 75%;
+      background: #eab308;
+    }
+    .strength-fill.strong {
+      width: 100%;
+      background: #22c55e;
+    }
 
     .strength-text {
       display: block;
@@ -480,7 +518,7 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     .form-message::before {
-      content: '';
+      content: "";
       width: 22px;
       height: 22px;
       flex-shrink: 0;
@@ -503,8 +541,14 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Button */
@@ -552,9 +596,15 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     .btn-loader {
+      position: absolute;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .btn-loader.hidden,
+    .btn-loader[hidden] {
+      display: none !important;
     }
 
     .spin {
@@ -562,8 +612,12 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* Auth Footer */
@@ -592,67 +646,6 @@ import Layout from "../../layouts/Layout.astro";
       text-decoration: underline;
     }
 
-    /* Demo Info */
-    .demo-info {
-      margin-top: 1.5rem;
-    }
-
-    .demo-info summary {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      cursor: pointer;
-      padding: 0.5rem 1rem;
-      background: #f1f5f9;
-      border-radius: 8px;
-      transition: all 0.2s;
-      user-select: none;
-      list-style: none;
-    }
-
-    .demo-info summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .demo-info summary::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-right: 2px solid #94a3b8;
-      border-bottom: 2px solid #94a3b8;
-      transform: rotate(45deg);
-      display: inline-block;
-      margin-left: 0.5rem;
-      transition: transform 0.2s;
-    }
-
-    .demo-info[open] summary::after {
-      transform: rotate(-135deg);
-    }
-
-    .demo-info summary:hover {
-      background: #e2e8f0;
-      color: #64748b;
-    }
-
-    .demo-content {
-      margin-top: 0.75rem;
-      padding: 1rem;
-      background: #f8fafc;
-      border-radius: 10px;
-      text-align: left;
-      font-size: 0.8rem;
-      color: #475569;
-    }
-
-    .demo-content p {
-      margin: 0.375rem 0;
-    }
-
-    .demo-note {
-      color: #94a3b8 !important;
-      font-style: italic;
-      margin-top: 0.5rem !important;
-    }
 
     /* Confirmation Step */
     .confirm-step {
@@ -789,83 +782,91 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     function updateStrengthUI(password) {
-      const fill = document.getElementById('strengthFill');
-      const text = document.getElementById('strengthText');
+      const fill = document.getElementById("strengthFill");
+      const text = document.getElementById("strengthText");
       if (!fill || !text) return;
 
       const strength = calculateStrength(password);
-      const labels = ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Muy fuerte'];
-      const classes = ['', 'weak', 'fair', 'good', 'strong'];
+      const labels = ["Muy débil", "Débil", "Media", "Fuerte", "Muy fuerte"];
+      const classes = ["", "weak", "fair", "good", "strong"];
 
-      fill.className = 'strength-fill ' + classes[strength];
+      fill.className = "strength-fill " + classes[strength];
       text.textContent = labels[strength];
-      text.style.color = strength <= 1 ? '#ef4444' : strength === 2 ? '#f97316' : strength === 3 ? '#eab308' : '#22c55e';
+      text.style.color =
+        strength <= 1
+          ? "#ef4444"
+          : strength === 2
+            ? "#f97316"
+            : strength === 3
+              ? "#eab308"
+              : "#22c55e";
     }
 
     // Password toggle
-    document.querySelectorAll('.password-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const input = btn.parentElement.querySelector('input');
-        const icon = btn.querySelector('.material-symbols-outlined');
-        const isHidden = input.type === 'password';
-        input.type = isHidden ? 'text' : 'password';
-        icon.textContent = isHidden ? 'visibility_off' : 'visibility';
-        btn.setAttribute('aria-pressed', isHidden);
+    document.querySelectorAll(".password-toggle").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const input = btn.parentElement.querySelector("input");
+        const icon = btn.querySelector(".material-symbols-outlined");
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        icon.textContent = isHidden ? "visibility_off" : "visibility";
+        btn.setAttribute("aria-pressed", isHidden);
       });
     });
 
     // Real-time password strength
-    const passwordInput = document.getElementById('password');
+    const passwordInput = document.getElementById("password");
     if (passwordInput) {
-      passwordInput.addEventListener('input', (e) => {
+      passwordInput.addEventListener("input", (e) => {
         updateStrengthUI(e.target.value);
       });
     }
 
     // Form validation & submission
-    const form = document.getElementById('registerForm');
-    const messageEl = document.getElementById('formMessage');
+    const form = document.getElementById("registerForm");
+    const messageEl = document.getElementById("formMessage");
 
     function showMessage(type, text) {
-      messageEl.className = 'form-message ' + type;
+      messageEl.className = "form-message " + type;
       messageEl.textContent = text;
       messageEl.hidden = false;
     }
 
     function hideMessage() {
       messageEl.hidden = true;
-      messageEl.className = 'form-message';
+      messageEl.className = "form-message";
     }
 
     function setFieldError(input, error) {
       if (error) {
-        input.classList.add('error');
-        input.classList.remove('success');
+        input.classList.add("error");
+        input.classList.remove("success");
       } else {
-        input.classList.remove('error');
-        if (input.value) input.classList.add('success');
+        input.classList.remove("error");
+        if (input.value) input.classList.add("success");
       }
     }
 
     function validateField(input) {
       const value = input.value.trim();
-      let error = '';
+      let error = "";
 
       switch (input.id) {
-        case 'name':
-          if (value.length < 2) error = 'El nombre debe tener al menos 2 caracteres';
+        case "name":
+          if (value.length < 2)
+            error = "El nombre debe tener al menos 2 caracteres";
           break;
-        case 'email':
+        case "email":
           if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            error = 'Ingresa un correo válido';
+            error = "Ingresa un correo válido";
           }
           break;
-        case 'password':
-          if (value.length < 8) error = 'Mínimo 8 caracteres';
+        case "password":
+          if (value.length < 8) error = "Mínimo 8 caracteres";
           break;
-        case 'confirmPassword':
-          const pwd = document.getElementById('password').value;
-          if (value !== pwd) error = 'Las contraseñas no coinciden';
+        case "confirmPassword":
+          const pwd = document.getElementById("password").value;
+          if (value !== pwd) error = "Las contraseñas no coinciden";
           break;
       }
 
@@ -874,103 +875,119 @@ import Layout from "../../layouts/Layout.astro";
     }
 
     // Real-time validation
-    form.querySelectorAll('input[required]').forEach(input => {
-      input.addEventListener('blur', () => validateField(input));
-      input.addEventListener('input', () => {
-        if (input.classList.contains('error')) validateField(input);
+    form.querySelectorAll("input[required]").forEach((input) => {
+      input.addEventListener("blur", () => validateField(input));
+      input.addEventListener("input", () => {
+        if (input.classList.contains("error")) validateField(input);
       });
     });
 
     // Form submit
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMessage();
 
       const formData = new FormData(form);
       const data = {
-        name: formData.get('name').trim(),
-        email: formData.get('email').trim().toLowerCase(),
-        password: formData.get('password'),
-        confirmPassword: formData.get('confirmPassword'),
-        terms: formData.get('terms') === 'on'
+        name: formData.get("name").trim(),
+        email: formData.get("email").trim().toLowerCase(),
+        password: formData.get("password"),
+        confirmPassword: formData.get("confirmPassword"),
+        terms: formData.get("terms") === "on",
       };
 
       // Validate all
       let valid = true;
-      form.querySelectorAll('input[required]').forEach(input => {
+      form.querySelectorAll("input[required]").forEach((input) => {
         if (!validateField(input)) valid = false;
       });
 
       if (!valid) {
-        showMessage('error', 'Por favor corrige los errores marcados');
+        showMessage("error", "Por favor corrige los errores marcados");
         return;
       }
 
       if (data.password !== data.confirmPassword) {
-        setFieldError(document.getElementById('confirmPassword'), true);
-        showMessage('error', 'Las contraseñas no coinciden');
+        setFieldError(document.getElementById("confirmPassword"), true);
+        showMessage("error", "Las contraseñas no coinciden");
         return;
       }
 
       // Submit
       const submitBtn = form.querySelector('button[type="submit"]');
-      const btnText = submitBtn.querySelector('.btn-text');
-      const btnLoader = submitBtn.querySelector('.btn-loader');
+      const btnText = submitBtn.querySelector(".btn-text");
+      const btnLoader = submitBtn.querySelector(".btn-loader");
 
       submitBtn.disabled = true;
       btnText.hidden = true;
       btnLoader.hidden = false;
+      btnLoader.classList.remove("hidden");
 
       try {
-        const { registerUser } = await import('../../components/admin/auth.ts');
-        
+        const { registerUser } = await import("../../components/admin/auth.ts");
+
         const result = await registerUser(data.email, data.password, data.name);
-        
-        if ('error' in result) {
-          showMessage('error', result.error);
-          if (result.error.includes('correo')) {
-            setFieldError(document.getElementById('email'), true);
+
+        if ("error" in result) {
+          showMessage("error", result.error);
+          if (result.error.includes("correo")) {
+            setFieldError(document.getElementById("email"), true);
           }
           submitBtn.disabled = false;
           btnText.hidden = false;
           btnLoader.hidden = true;
+          btnLoader.classList.add("hidden");
           return;
         }
 
         const link = `${window.location.origin}/admin/confirm?token=${result.pendingToken}&email=${encodeURIComponent(result.email)}`;
 
         form.hidden = true;
-        document.getElementById('confirmStep')!.hidden = false;
-        document.getElementById('confirmLink')!.textContent = link;
+        document.getElementById("confirmStep")!.hidden = false;
+        document.getElementById("confirmLink")!.textContent = link;
 
-        const confirmDesc = document.getElementById('confirmDesc')!;
+        const confirmDesc = document.getElementById("confirmDesc")!;
         try {
-          const { sendConfirmationEmail } = await import('../../components/admin/email.ts');
-          const emailResult = await sendConfirmationEmail(result.name, result.email, link);
+          const { sendConfirmationEmail } =
+            await import("../../components/admin/email.ts");
+          const emailResult = await sendConfirmationEmail(
+            result.name,
+            result.email,
+            link,
+          );
           if (emailResult.success) {
-            confirmDesc.textContent = 'Se ha enviado un correo de confirmación al administrador.';
+            confirmDesc.textContent =
+              "Se ha enviado un correo de confirmación al administrador.";
           } else {
             confirmDesc.innerHTML = `No se pudo enviar el correo. <strong>Error:</strong> ${emailResult.error}`;
           }
         } catch (importErr) {
-          console.warn('[Registro] Error al cargar módulo de email:', importErr);
-          confirmDesc.textContent = 'Copia y comparte este enlace con el administrador para confirmar la cuenta.';
+          console.warn(
+            "[Registro] Error al cargar módulo de email:",
+            importErr,
+          );
+          confirmDesc.textContent =
+            "Copia y comparte este enlace con el administrador para confirmar la cuenta.";
         }
 
-        document.getElementById('copyLinkBtn')!.addEventListener('click', () => {
-          navigator.clipboard.writeText(link).then(() => {
-            const btn = document.getElementById('copyLinkBtn')!;
-            btn.classList.add('copied');
-            btn.querySelector('.material-symbols-outlined')!.textContent = 'check';
-            setTimeout(() => {
-              btn.classList.remove('copied');
-              btn.querySelector('.material-symbols-outlined')!.textContent = 'content_copy';
-            }, 2000);
+        document
+          .getElementById("copyLinkBtn")!
+          .addEventListener("click", () => {
+            navigator.clipboard.writeText(link).then(() => {
+              const btn = document.getElementById("copyLinkBtn")!;
+              btn.classList.add("copied");
+              btn.querySelector(".material-symbols-outlined")!.textContent =
+                "check";
+              setTimeout(() => {
+                btn.classList.remove("copied");
+                btn.querySelector(".material-symbols-outlined")!.textContent =
+                  "content_copy";
+              }, 2000);
+            });
           });
-        });
       } catch (err) {
-        console.error('Registration error:', err);
-        showMessage('error', 'Error de conexión. Intenta de nuevo.');
+        console.error("Registration error:", err);
+        showMessage("error", "Error de conexión. Intenta de nuevo.");
         submitBtn.disabled = false;
         btnText.hidden = false;
         btnLoader.hidden = true;
@@ -978,9 +995,9 @@ import Layout from "../../layouts/Layout.astro";
     });
 
     // Redirect if already authenticated
-    import('../../components/admin/auth.ts').then(({ getAuthState }) => {
-      getAuthState().then(auth => {
-        if (auth.isAuthenticated) window.location.href = '/admin';
+    import("../../components/admin/auth.ts").then(({ getAuthState }) => {
+      getAuthState().then((auth) => {
+        if (auth.isAuthenticated) window.location.href = "/admin";
       });
     });
   </script>

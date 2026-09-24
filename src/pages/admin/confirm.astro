@@ -36,8 +36,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <div id="loginError" class="form-message error" role="alert" hidden></div>
           <button type="submit" class="btn btn-primary btn-block">
             <span class="btn-text">Confirmar identidad</span>
-            <span class="btn-loader" hidden>
-              <span class="material-symbols-outlined spinning">refresh</span>
+            <span class="btn-loader hidden" aria-hidden="true" hidden>
+              <span class="material-symbols-outlined spinning notranslate" translate="no">refresh</span>
             </span>
           </button>
         </form>
@@ -353,7 +353,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     .btn-block { width: 100%; }
 
     .btn-loader { position: absolute; display: flex; }
-    .btn-loader[hidden] { display: none; }
+    .btn-loader[hidden],
+    .btn-loader.hidden { display: none !important; }
     .btn-text[hidden] { display: none; }
 
     @media (max-width: 480px) {

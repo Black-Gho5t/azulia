@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getAdminDb, verifyAdminRequest } from '../../../../lib/firebase-admin';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -8,24 +7,21 @@ import path from 'node:path';
 const HOTELS_DIR = path.resolve('uploads/hotels');
 const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
 
-function getAdminApp() {
-  if (getApps().length > 0) return getApps()[0];
-  const sa = import.meta.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!sa) throw new Error('FIREBASE_SERVICE_ACCOUNT no configurado');
-  return initializeApp({ credential: cert(JSON.parse(sa)) });
-}
-
 export const prerender = false;
 
-export const POST: APIRoute = async ({ params }) => {
+export const POST: APIRoute = async ({ params, request }) => {
+  const auth = await verifyAdminRequest(request);
+  if (!auth.ok) {
+    return new Response(JSON.stringify({ ok: false, error: auth.error }), { status: auth.status });
+  }
+
   try {
     const trashId = params.id;
     if (!trashId) {
       return new Response(JSON.stringify({ ok: false, error: 'ID requerido' }), { status: 400 });
     }
 
-    const app = getAdminApp();
-    const db = getFirestore(app);
+    const db = getAdminDb();
     const trashDoc = await db.collection('trash').doc(trashId).get();
 
     if (!trashDoc.exists) {

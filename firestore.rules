@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function adminDoc() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()));
+    }
+
+    function isActiveAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower())) &&
+        adminDoc().data.status == 'active';
+    }
+
+    function isSuperAdmin() {
+      return isActiveAdmin() && adminDoc().data.role == 'superadmin';
+    }
+
+    // Hotels & Cars & Posters: Public catalog reading, Admin write
+    match /hotels/{hotelId} {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    match /cars/{carId} {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    match /posters/{posterId} {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    // Contact messages: Visitors can create messages; only active admins can read/update/delete
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isActiveAdmin();
+    }
+
+    // Admins collection: Active admins can read list; superadmins can update roles/status
+    match /admins/{email} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (request.auth.token.email.lower() == email || isSuperAdmin());
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // Confirmation tokens for registration
+    match /confirm_tokens/{token} {
+      allow read, write: if true;
+    }
+
+    // Recycle bin: Only active admins
+    match /trash/{trashId} {
+      allow read, write: if isActiveAdmin();
+    }
+  }
+}

@@ -134,6 +134,8 @@ export async function restoreFromTrash(id: string, type: string, originalId: str
     await updateDoc(doc(db, 'admins', originalId), { status: 'active' });
   } else if (type === 'poster') {
     await setDoc(doc(db, 'posters', originalId), data);
+  } else if (type === 'tour') {
+    await setDoc(doc(db, 'tours', originalId), data);
   }
   await deleteDoc(doc(db, 'trash', id));
 }

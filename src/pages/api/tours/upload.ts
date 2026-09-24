@@ -5,7 +5,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-const UPLOADS_DIR = path.resolve('uploads/cars');
+const UPLOADS_DIR = path.resolve('uploads/tours');
 const MAX_SIZE_MB = 20;
 
 export const prerender = false;
@@ -19,32 +19,32 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    const carId = (formData.get('carId') as string || '').trim();
+    const tourId = (formData.get('tourId') as string || '').trim();
 
     if (!file) {
       return new Response(JSON.stringify({ ok: false, error: 'No se envió ningún archivo' }), { status: 400 });
     }
 
     if (!file.type.startsWith('image/')) {
-      return new Response(JSON.stringify({ ok: false, error: 'Formato no soportado' }), { status: 400 });
+      return new Response(JSON.stringify({ ok: false, error: 'El formato de archivo no es soportado. Por favor selecciona una imagen válida (JPG, PNG, etc.).' }), { status: 400 });
     }
 
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      return new Response(JSON.stringify({ ok: false, error: `El archivo supera los ${MAX_SIZE_MB} MB` }), { status: 400 });
+      return new Response(JSON.stringify({ ok: false, error: `La imagen supera el límite permitido de ${MAX_SIZE_MB} MB.` }), { status: 400 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const inputBuffer = Buffer.from(arrayBuffer);
 
     const webpBuffer = await sharp(inputBuffer)
-      .webp({ lossless: true, quality: 100 })
+      .webp({ quality: 90 })
       .toBuffer();
 
     if (!existsSync(UPLOADS_DIR)) {
       await mkdir(UPLOADS_DIR, { recursive: true });
     }
 
-    const safeName = (carId || 'car')
+    const safeName = (tourId || 'tour')
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-zA-Z0-9_-]/g, '_')
       .slice(0, 60);
@@ -56,11 +56,10 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({
       ok: true,
       filename,
-      url: `/api/cars/image/${filename}`,
+      url: `/api/tours/image/${filename}`,
     }), { status: 200 });
-
   } catch (err: any) {
-    console.error('[api/cars/upload]', err);
-    return new Response(JSON.stringify({ ok: false, error: err.message || 'Error al subir' }), { status: 500 });
+    console.error('[api/tours/upload POST]', err);
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500 });
   }
 };

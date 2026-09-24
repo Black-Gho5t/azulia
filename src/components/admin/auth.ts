@@ -28,9 +28,11 @@ export interface AuthState {
 
 function generateConfirmToken(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
   let token = '';
   for (let i = 0; i < 32; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
+    token += chars.charAt(array[i] % chars.length);
   }
   return token;
 }
@@ -54,12 +56,22 @@ async function buildAuthState(email: string): Promise<AuthState> {
 
 export function getAuthState(): Promise<AuthState> {
   return new Promise((resolve) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        resolve({ user: null, isAuthenticated: false });
+      }
+    }, 12000);
+
     const unsub = onAuthStateChanged(auth, async (user) => {
       unsub();
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
       if (!user?.email) return resolve({ user: null, isAuthenticated: false });
       resolve(await buildAuthState(user.email.toLowerCase()));
     });
-    setTimeout(() => resolve({ user: null, isAuthenticated: false }), 4000);
   });
 }
 
@@ -78,19 +90,25 @@ export async function signIn(email: string, password: string): Promise<{ user: A
     const adminRef = doc(db, 'admins', normalizedEmail);
     const adminSnap = await getDoc(adminRef);
 
-    // First login for manually-created auth user (eg default admin)
+    // Only allow auto-creation for the designated main superadmin email
     if (!adminSnap.exists()) {
-      const newUser = {
-        name: cred.user.displayName || 'Administrador',
-        role: 'superadmin' as const,
-        status: 'active',
-        uid: cred.user.uid,
-        createdAt: serverTimestamp(),
-      };
-      await setDoc(adminRef, newUser);
-      return {
-        user: { email: normalizedEmail, name: newUser.name, role: newUser.role, createdAt: new Date().toISOString() },
-      };
+      const mainAdminEmail = (import.meta.env.PUBLIC_MAIN_ADMIN_EMAIL || 'azulia.bacalar@gmail.com').toLowerCase().trim();
+      if (normalizedEmail === mainAdminEmail) {
+        const newUser = {
+          name: cred.user.displayName || 'Administrador Principal',
+          role: 'superadmin' as const,
+          status: 'active',
+          uid: cred.user.uid,
+          createdAt: serverTimestamp(),
+        };
+        await setDoc(adminRef, newUser);
+        return {
+          user: { email: normalizedEmail, name: newUser.name, role: newUser.role, createdAt: new Date().toISOString() },
+        };
+      } else {
+        await fbSignOut(auth);
+        return { error: 'Acceso denegado: este correo no tiene permisos de administrador.' };
+      }
     }
 
     const data = adminSnap.data();

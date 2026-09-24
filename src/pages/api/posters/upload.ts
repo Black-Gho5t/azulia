@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getAdminDb, verifyAdminRequest } from '../../../lib/firebase-admin';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -10,16 +9,14 @@ const UPLOADS_DIR = path.resolve('uploads/posters');
 const MAX_POSTERS = 10;
 const MAX_SIZE_MB = 20;
 
-function getAdminApp() {
-  if (getApps().length > 0) return getApps()[0];
-  const sa = import.meta.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!sa) throw new Error('FIREBASE_SERVICE_ACCOUNT no configurado');
-  return initializeApp({ credential: cert(JSON.parse(sa)) });
-}
-
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
+  const auth = await verifyAdminRequest(request);
+  if (!auth.ok) {
+    return new Response(JSON.stringify({ ok: false, error: auth.error }), { status: auth.status });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -37,8 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }), { status: 400 });
     }
 
-    const app = getAdminApp();
-    const db = getFirestore(app);
+    const db = getAdminDb();
 
     const countSnap = await db.collection('posters').count().get();
     if (countSnap.data().count >= MAX_POSTERS) {

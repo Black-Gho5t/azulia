@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { verifyAdminRequest } from '../../../lib/firebase-admin';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -10,6 +11,11 @@ const MAX_SIZE_MB = 20;
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
+  const auth = await verifyAdminRequest(request);
+  if (!auth.ok) {
+    return new Response(JSON.stringify({ ok: false, error: auth.error }), { status: auth.status });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;

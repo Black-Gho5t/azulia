@@ -1,0 +1,17 @@
+---
+interface Props {
+  name: string;
+  class?: string;
+  ariaHidden?: boolean;
+  style?: string;
+}
+
+const { name, class: className = '', ariaHidden = true, style } = Astro.props;
+---
+<span
+  class={`material-symbols-outlined notranslate ${className}`.trim()}
+  translate="no"
+  aria-hidden={ariaHidden ? "true" : undefined}
+  data-icon={name}
+  style={style}
+>{name}</span>

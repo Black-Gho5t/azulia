@@ -25,6 +25,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       <button class="trash-filter" data-filter="hotel">
         <span class="material-symbols-outlined">apartment</span> Hoteles
       </button>
+      <button class="trash-filter" data-filter="tour">
+        <span class="material-symbols-outlined">tour</span> Tours
+      </button>
     </div>
 
     <div class="trash-card">
@@ -62,12 +65,14 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
   <script>
     import { restoreFromTrash } from '../../lib/admin';
+    import { adminFetch } from '../../lib/admin-client';
 
     const typeConfig: Record<string, { label: string; icon: string; color: string; bg: string }> = {
       message: { label: 'Mensaje', icon: 'mail', color: '#1c5fa8', bg: '#eff6ff' },
       admin: { label: 'Perfil', icon: 'badge', color: '#7c3aed', bg: '#f5f3ff' },
       poster: { label: 'Poster', icon: 'wallpaper', color: '#059669', bg: '#ecfdf5' },
       hotel: { label: 'Hotel', icon: 'apartment', color: '#d97706', bg: '#fffbeb' },
+      tour: { label: 'Tour', icon: 'tour', color: '#0284c7', bg: '#e0f2fe' },
     };
 
     interface TrashItemClient {
@@ -135,7 +140,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     async function fetchTrash(): Promise<TrashItemClient[]> {
       try {
-        const resp = await fetch('/api/trash');
+        const resp = await adminFetch('/api/trash');
         const result = await resp.json();
         if (!result.ok) { console.error('[trash]', result.error); return []; }
         return result.items || [];
@@ -146,7 +151,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
 
     async function permanentDelete(trashId: string): Promise<void> {
-      const resp = await fetch(`/api/trash/${trashId}`, { method: 'DELETE' });
+      const resp = await adminFetch(`/api/trash/${trashId}`, { method: 'DELETE' });
       if (!resp.ok) {
         const result = await resp.json();
         throw new Error(result.error || 'Error al eliminar');
@@ -167,6 +172,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         else if (item.type === 'admin') summary = (item.data as any)?.email || item.originalId;
         else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
         else if (item.type === 'hotel') summary = (item.data as any)?.name || 'Hotel';
+        else if (item.type === 'tour') summary = (item.data as any)?.name || 'Tour';
 
         const isUrgent = daysRemaining(item.expiresAt).includes('Hoy');
 
@@ -217,7 +223,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
             if (type === 'poster') {
               try {
-                const resp = await fetch(`/api/posters/restore/${id}`, { method: 'POST' });
+                const resp = await adminFetch(`/api/posters/restore/${id}`, { method: 'POST' });
                 if (!resp.ok) {
                   const result = await resp.json();
                   alert(result.error || 'No se pudo restaurar');
@@ -227,7 +233,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               }
             } else if (type === 'hotel') {
               try {
-                const resp = await fetch(`/api/hotels/restore/${id}`, { method: 'POST' });
+                const resp = await adminFetch(`/api/hotels/restore/${id}`, { method: 'POST' });
                 if (!resp.ok) {
                   const result = await resp.json();
                   alert(result.error || 'No se pudo restaurar');

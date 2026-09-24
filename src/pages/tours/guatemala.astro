@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { guatemalaTours, modalData } from "../../components/data/tours/guatemala_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("guatemala");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/ruinas/Ichkabal/ichkabal (4).webp", alt: "Pirámide maya en Guatemala" },
@@ -41,8 +43,8 @@ const galleryImages = [
             carouselSubtitle="Guatemala"
             carouselDescription="Adéntrate en el corazón del mundo maya. Tikal, Flores y Semuc Champey te esperan a pocas horas de Bacalar."
             sectionTitle="Tours a Guatemala Disponibles"
-            tours={guatemalaTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

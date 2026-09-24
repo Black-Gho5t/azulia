@@ -10,12 +10,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <p class="hoteles-subtitle">Gestiona los hoteles que se muestran en el sitio público.</p>
       </div>
       <div class="header-actions">
-        <button class="seed-btn" id="seedBtn">
-          <span class="material-symbols-outlined">database</span>
-          Seed datos
-        </button>
         <button class="add-btn" id="addHotelBtn">
-          <span class="material-symbols-outlined">add</span>
+          <span class="material-symbols-outlined notranslate" translate="no">add</span>
           Agregar hotel
         </button>
       </div>
@@ -480,6 +476,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   </style>
 
   <script>
+    import { adminFetch } from '../../lib/admin-client';
     const API = '/api/hotels';
     const grid = document.getElementById('hotelsGrid')!;
     const loading = document.getElementById('hotelsLoading')!;
@@ -625,7 +622,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         formData.append('file', file);
         formData.append('hotelId', hotelIdInput.value || 'new');
 
-        const resp = await fetch('/api/hotels/upload', { method: 'POST', body: formData });
+        const resp = await adminFetch('/api/hotels/upload', { method: 'POST', body: formData });
         progressFill.style.width = '80%';
         const result = await resp.json();
         if (!resp.ok || !result.ok) throw new Error(result.error || 'Error al subir');
@@ -764,7 +761,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     async function loadHotels() {
       try {
-        const res = await fetch(API);
+        const res = await adminFetch(API);
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
 
@@ -847,12 +844,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     document.getElementById('cancelBtn')!.addEventListener('click', closeModal);
     hotelModal.addEventListener('click', (e) => { if (e.target === hotelModal) closeModal(); });
 
-    document.getElementById('seedBtn')!.addEventListener('click', async () => {
-      const btn = document.getElementById('seedBtn')!;
+    document.getElementById('seedBtn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('seedBtn');
+      if (!btn) return;
       btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Cargando...';
       btn.setAttribute('disabled', 'true');
       try {
-        const res = await fetch('/api/hotels/seed', { method: 'POST' });
+        const res = await adminFetch('/api/hotels/seed', { method: 'POST' });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
         showToast('success', `Seed completo: ${data.seeded} hoteles agregados de ${data.total} totales.`);
@@ -899,7 +897,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
       try {
         const method = id ? 'PUT' : 'POST';
-        const res = await fetch(API, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const res = await adminFetch(API, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
         closeModal();
@@ -917,7 +915,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     document.getElementById('confirmDelete')!.addEventListener('click', async () => {
       if (!deleteTargetId) return;
       try {
-        const res = await fetch(API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: deleteTargetId }) });
+        const res = await adminFetch(API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: deleteTargetId }) });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error);
         confirmModal.hidden = true;

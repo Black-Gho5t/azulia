@@ -61,8 +61,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
         <button type="submit" class="btn btn-primary btn-block">
           <span class="btn-text">Iniciar sesión</span>
-          <span class="btn-loader" aria-hidden="true">
-            <span class="material-symbols-outlined spinning">refresh</span>
+          <span class="btn-loader hidden" aria-hidden="true" hidden>
+            <span class="material-symbols-outlined spinning notranslate" translate="no">refresh</span>
           </span>
         </button>
 
@@ -72,7 +72,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
       <div class="auth-footer">
         <p>¿No tienes cuenta? <a href="/admin/register">Crear cuenta de administrador</a></p>
-        <p class="demo-hint">Demo prueba: admin@azulia.com / azulia2024</p>
       </div>
     </div>
   </div>
@@ -140,10 +139,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
     function setLoading(loading: boolean) {
       submitBtn.disabled = loading;
-      const btnText = submitBtn.querySelector('.btn-text');
-      const btnLoader = submitBtn.querySelector('.btn-loader');
+      const btnText = submitBtn.querySelector('.btn-text') as HTMLElement | null;
+      const btnLoader = submitBtn.querySelector('.btn-loader') as HTMLElement | null;
       if (btnText) btnText.classList.toggle('hidden', loading);
-      if (btnLoader) btnLoader.classList.toggle('hidden', !loading);
+      if (btnLoader) {
+        btnLoader.classList.toggle('hidden', !loading);
+        btnLoader.hidden = !loading;
+      }
     }
 
     form.addEventListener('submit', async (e) => {
@@ -411,10 +413,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     position: absolute;
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 
-  .btn-loader.hidden {
-    display: none;
+  .btn-loader.hidden,
+  .btn-loader[hidden] {
+    display: none !important;
   }
 
   .spinning {
@@ -503,17 +507,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   .auth-footer a:hover {
     color: #0f4f8c;
     text-decoration: underline;
-  }
-
-  .demo-hint {
-    font-size: 0.8rem !important;
-    color: #94a3b8 !important;
-    font-family: 'Monaco', 'Menlo', monospace;
-    background: #f1f5f9;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    display: inline-block;
-    margin-top: 1rem !important;
   }
 
   @media (max-width: 480px) {

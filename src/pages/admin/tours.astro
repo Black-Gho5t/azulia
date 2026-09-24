@@ -1,0 +1,2752 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import "../../assets/styles/modal.css";
+---
+
+<AdminLayout title="Gestión de Tours · Azulia Admin">
+  <div class="tours-page">
+    <!-- Header -->
+    <div class="tours-header">
+      <div>
+        <div class="title-badge-row">
+          <h1 class="tours-title">Tours y Experiencias</h1>
+          <span class="catalog-badge">Catálogo en Línea</span>
+        </div>
+        <p class="tours-subtitle">
+          Administra las tarjetas y la información de los tours disponibles en el sitio web.
+        </p>
+      </div>
+      <div class="header-actions">
+        <!-- El botón para agregar tour sólo se muestra cuando se selecciona una categoría específica -->
+        <button class="add-btn" id="addTourBtn" style="display: none;">
+          <span class="material-symbols-outlined notranslate" translate="no">add</span>
+          <span id="addBtnLabel">Agregar Tour</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-Barra de Navegación por Categorías (Filtros) -->
+    <div class="subpage-nav-bar" id="subpageNavBar">
+      <div class="subpage-pills">
+        <button class="subpage-pill active" data-filter="all">
+          <span class="material-symbols-outlined notranslate" translate="no">travel_explore</span>
+          <span>Todos los tours</span>
+          <span class="pill-count" id="countAll">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="nauticos">
+          <span class="material-symbols-outlined notranslate" translate="no">sailing</span>
+          <span>Náuticos</span>
+          <span class="pill-count" id="countNauticos">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="ruinas">
+          <span class="material-symbols-outlined notranslate" translate="no">temple_hindu</span>
+          <span>Ruinas Mayas</span>
+          <span class="pill-count" id="countRuinas">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="mahahual">
+          <span class="material-symbols-outlined notranslate" translate="no">beach_access</span>
+          <span>Mahahual</span>
+          <span class="pill-count" id="countMahahual">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="belice">
+          <span class="material-symbols-outlined notranslate" translate="no">flag</span>
+          <span>Belice</span>
+          <span class="pill-count" id="countBelice">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="guatemala">
+          <span class="material-symbols-outlined notranslate" translate="no">landscape</span>
+          <span>Guatemala</span>
+          <span class="pill-count" id="countGuatemala">0</span>
+        </button>
+        <button class="subpage-pill" data-filter="honduras">
+          <span class="material-symbols-outlined notranslate" translate="no">wb_sunny</span>
+          <span>Honduras</span>
+          <span class="pill-count" id="countHonduras">0</span>
+        </button>
+      </div>
+
+      <!-- Buscador de Tours -->
+      <div class="subbar-search">
+        <span class="material-symbols-outlined notranslate" translate="no">search</span>
+        <input type="text" id="toursSearchInput" placeholder="Buscar por nombre o descripción..." />
+      </div>
+    </div>
+
+    <!-- Aviso en la pestaña 'Todos' -->
+    <div class="all-tab-notice" id="allTabNotice">
+      <span class="material-symbols-outlined notranslate" translate="no">info</span>
+      <span>
+        Estás en la vista general de todos los tours. Para agregar uno nuevo, selecciona la categoría correspondiente (Náuticos, Ruinas, etc.).
+      </span>
+    </div>
+
+    <!-- Tours Grid Container -->
+    <div class="tours-grid" id="toursGrid">
+      <div class="tours-loading" id="toursLoading">
+        <span class="material-symbols-outlined spinning notranslate" translate="no">sync</span>
+        Cargando catálogo de tours...
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Agregar / Editar Tour (con Split View) -->
+  <div class="modal-overlay" id="tourModal" hidden>
+    <div class="modal-card modal-card-wide">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar modal">
+        <span class="material-symbols-outlined notranslate" translate="no">close</span>
+      </button>
+      <div class="modal-header-box">
+        <h2 class="modal-title" id="modalTitle">Agregar Tour</h2>
+        <span class="modal-category-badge" id="modalCategoryBadge">Náuticos</span>
+      </div>
+
+      <div class="modal-split">
+        <!-- Formulario Izquierdo -->
+        <form id="tourForm" class="tour-form">
+          <input type="hidden" id="tourId" />
+          <input type="hidden" id="tourSubpageHidden" value="nauticos" />
+          <input type="hidden" id="tourIconHidden" value="sailing" />
+          <input type="hidden" id="tourImageHidden" value="" />
+
+          <!-- Nombre del Tour -->
+          <div class="form-group">
+            <label for="tourName">Nombre de la experiencia o tour *</label>
+            <input type="text" id="tourName" required placeholder="Ej: Tour Pontón Clásico por la Laguna" />
+          </div>
+
+          <!-- Selector Visual de Íconos -->
+          <div class="form-group">
+            <label>Selección icono</label>
+            <div class="icon-selector-grid" id="iconSelectorGrid"></div>
+          </div>
+
+          <!-- Descripción Corta (para la Tarjeta) -->
+          <div class="form-group">
+            <label for="tourDesc">Descripción breve para la tarjeta principal *</label>
+            <textarea id="tourDesc" rows="2" required placeholder="Escribe un resumen atractivo que invite al visitante a conocer más..."></textarea>
+          </div>
+
+          <!-- Foto Principal de la Tarjeta (Solo local) -->
+          <div class="form-group">
+            <label>Foto de portada de la tarjeta *</label>
+            <div class="main-photo-uploader">
+              <div class="main-photo-preview" id="mainPhotoPreview">
+                <img id="mainPhotoImg" alt="Foto principal" src="" style="display: none;" />
+                <div class="main-photo-empty" id="mainPhotoEmpty">
+                  <span class="material-symbols-outlined notranslate" translate="no">add_photo_alternate</span>
+                  <span>Sin foto seleccionada</span>
+                </div>
+              </div>
+              <div class="main-photo-controls">
+                <button type="button" class="btn-upload-file" id="uploadMainPhotoBtn">
+                  <span class="material-symbols-outlined notranslate" translate="no">cloud_upload</span>
+                  Subir foto
+                </button>
+                <input type="file" id="mainPhotoFileInput" accept="image/*" hidden />
+                <span class="upload-status" id="mainUploadStatus"></span>
+                <span class="field-hint">Puedes subir archivos JPG, PNG, etc. Se adaptarán con la mejor calidad.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor Detalles de la Experiencia -->
+          <div class="form-section-divider">
+            <span class="material-symbols-outlined notranslate" translate="no">hotel_class</span>
+            <span>Detalles de la experiencia completa (Ventana informativa)</span>
+          </div>
+
+          <!-- Tarifa y Calificación Numérica -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="priceNumInput">Tarifa por persona o tour (MXN) *</label>
+              <div class="input-with-addon">
+                <span class="input-addon">$</span>
+                <input type="number" id="priceNumInput" required min="0" step="50" placeholder="1800" />
+                <span class="input-addon">MXN</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ratingInput">Calificación (del 1 al 5) *</label>
+              <div class="input-with-addon">
+                <span class="input-addon">★</span>
+                <input type="number" id="ratingInput" required min="1" max="5" step="0.1" value="4.9" placeholder="4.9" />
+                <span class="input-addon">/ 5.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Horario y Opiniones -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="modalSchedule">Horario disponible o turnos *</label>
+              <input type="text" id="modalSchedule" required placeholder="Ej: 10:00 AM - 1:00 PM o Salidas cada 2 horas" />
+            </div>
+          </div>
+
+          <!-- Duración (Mínima y Máxima) -->
+          <div class="form-group">
+            <label>Duración estimada del tour</label>
+            <div class="duration-fields-row">
+              <div class="duration-col">
+                <span class="sub-label">Mínimo:</span>
+                <input type="number" id="durationMinInput" min="0.5" step="0.5" value="2" placeholder="2" />
+              </div>
+              <div class="duration-col">
+                <span class="sub-label">Máximo:</span>
+                <input type="number" id="durationMaxInput" min="0.5" step="0.5" value="3" placeholder="3" />
+              </div>
+              <div class="duration-col duration-col-unit">
+                <span class="sub-label">Unidad:</span>
+                <select id="durationUnitSelect">
+                  <option value="horas" selected>Horas</option>
+                  <option value="días">Días</option>
+                  <option value="minutos">Minutos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Capacidad y Edad Mínima (Campos numéricos) -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="capacityNumInput">Capacidad máxima (número de personas)</label>
+              <div class="input-with-addon">
+                <span class="input-addon">👥</span>
+                <input type="number" id="capacityNumInput" min="1" step="1" value="10" placeholder="10" />
+                <span class="input-addon">personas</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ageMinNumInput">Edad mínima requerida</label>
+              <div class="input-with-addon">
+                <span class="input-addon">🎂</span>
+                <input type="number" id="ageMinNumInput" min="0" max="99" step="1" value="0" placeholder="0" />
+                <span class="input-addon">años</span>
+              </div>
+              <span class="field-hint">Coloca 0 si es apto para todas las edades.</span>
+            </div>
+          </div>
+
+          <!-- Descripción Completa -->
+          <div class="form-group">
+            <label for="modalFullText">Descripción detallada de la experiencia *</label>
+            <textarea id="modalFullText" rows="3" required placeholder="Detalla el recorrido, atracciones a visitar, recomendaciones y lo que vivirán los visitantes..."></textarea>
+          </div>
+
+          <!-- Galería de Fotos (Solo archivos locales) -->
+          <div class="form-group">
+            <label>Fotos de la galería (carrusel de fotos)</label>
+            <div class="gallery-chips" id="galleryChips"></div>
+            <div class="gallery-actions-box">
+              <button type="button" class="btn-upload-file" id="uploadGalleryPhotoBtn">
+                <span class="material-symbols-outlined notranslate" translate="no">add_photo_alternate</span>
+                Seleccionar fotos para la galería desde tu equipo
+              </button>
+              <input type="file" id="galleryPhotoFileInput" accept="image/*" multiple hidden />
+              <span class="field-hint">Puedes seleccionar una o varias fotos a la vez.</span>
+            </div>
+          </div>
+
+          <!-- Qué Incluye (Lista amigable) -->
+          <div class="form-group">
+            <label>¿Qué incluye este tour?</label>
+            <div class="tags-container" id="includesTags"></div>
+            <div class="tag-add-row">
+              <input type="text" id="includeInput" placeholder="Ej: Chalecos salvavidas certificados" />
+              <button type="button" class="btn-add-tag" id="addIncludeBtn">
+                <span class="material-symbols-outlined notranslate" translate="no">add</span>
+                Agregar
+              </button>
+            </div>
+          </div>
+
+          <!-- Lugares Cercanos (Lista amigable) -->
+          <div class="form-group">
+            <label>Puntos de interés o lugares que se visitan</label>
+            <div class="tags-container" id="nearbyTags"></div>
+            <div class="tag-add-row">
+              <input type="text" id="nearbyInput" placeholder="Ej: Canal de los Piratas, Cenote Negro" />
+              <button type="button" class="btn-add-tag" id="addNearbyBtn">
+                <span class="material-symbols-outlined notranslate" translate="no">add</span>
+                Agregar
+              </button>
+            </div>
+          </div>
+
+          <!-- Acciones del Formulario -->
+          <div class="form-actions">
+            <button type="button" class="modal-btn modal-btn-cancel" id="cancelBtn">Cancelar</button>
+            <button type="submit" class="modal-btn modal-btn-primary" id="saveTourBtn">
+              <span class="material-symbols-outlined notranslate" translate="no">save</span>
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+
+        <!-- Columna Derecha: Vista Previa en Vivo de la Tarjeta y Acceso al Modal Resultante -->
+        <div class="preview-panel">
+          <div class="preview-header">
+            <span class="preview-badge">VISTA PREVIA EN VIVO</span>
+            <span class="preview-note">Así se verá la tarjeta en la página web</span>
+          </div>
+
+          <!-- Card Preview Real -->
+          <div class="live-card-container">
+            <article class="live-tour-card" id="liveCard">
+              <div class="live-card-img">
+                <img id="prevImg" alt="Vista previa" src="" style="display: none;" />
+                <div class="live-card-placeholder" id="prevImgPlaceholder">
+                  <span class="material-symbols-outlined notranslate" translate="no">landscape</span>
+                </div>
+                <span class="live-subpage-chip" id="prevSubpageChip">Náuticos</span>
+              </div>
+              <div class="live-card-header">
+                <span class="material-symbols-outlined notranslate live-card-icon" id="prevIcon" translate="no">sailing</span>
+                <h3 class="live-card-title" id="prevTitle">Nombre de la experiencia</h3>
+              </div>
+              <div class="live-card-body">
+                <p class="live-card-desc" id="prevDesc">La descripción del tour se actualizará en tiempo real conforme vayas escribiendo...</p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Botón Destacado: Ver Ventana Resultante -->
+          <div class="preview-modal-action-box">
+            <p class="modal-preview-hint">
+              Comprueba cómo se verá la ventana de información completa (fotos, precios, itinerario y botón de reserva):
+            </p>
+            <button type="button" class="btn-open-modal-preview" id="btnPreviewResultingModal">
+              <span class="material-symbols-outlined notranslate" translate="no">visibility</span>
+              Ver cómo se verá la ventana completa
+            </button>
+          </div>
+
+          <!-- Resumen de Datos -->
+          <div class="modal-specs-summary">
+            <div class="spec-summary-item">
+              <span class="spec-label">Tarifa</span>
+              <span class="spec-val" id="prevPriceTag">$0 MXN</span>
+            </div>
+            <div class="spec-summary-item">
+              <span class="spec-label">Duración</span>
+              <span class="spec-val" id="prevDurationTag">—</span>
+            </div>
+            <div class="spec-summary-item">
+              <span class="spec-label">Fotos Galería</span>
+              <span class="spec-val" id="prevPhotosCount">0 fotos</span>
+            </div>
+            <div class="spec-summary-item">
+              <span class="spec-label">Inclusiones</span>
+              <span class="spec-val" id="prevInclusionsCount">0 ítems</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Interactivo: Vista Previa de la Ventana Resultante -->
+  <div class="destination-preview-overlay" id="destinationPreviewOverlay" hidden>
+    <div class="dmodal-preview-wrapper">
+      <div class="dmodal-preview-topbar">
+        <div class="dmodal-preview-topbar-info">
+          <span class="material-symbols-outlined notranslate" translate="no">visibility</span>
+          <span>Vista Previa · Así lo verá el visitante al dar clic en la tarjeta</span>
+        </div>
+        <button class="dmodal-preview-close" id="closeDestinationPreviewBtn">
+          <span class="material-symbols-outlined notranslate" translate="no">close</span>
+          Cerrar Vista Previa
+        </button>
+      </div>
+
+      <!-- Contenedor con la estructura y estilos fieles de DestinationModal -->
+      <div class="dmodal-content" id="dmodalPreviewContent">
+        <!-- Carrusel de imágenes -->
+        <div class="dmodal-images">
+          <div class="dmodal-imgs-container" id="destModalImgs">
+            <img class="dmodal-img active" id="destMainImg" src="" alt="Foto 1" />
+          </div>
+          <div class="dmodal-img-nav" id="destImgNav">
+            <button class="dmodal-img-prev" id="destImgPrevBtn" aria-label="Anterior">&#8592;</button>
+            <span class="dmodal-img-counter" id="destImgCounter">1 / 1</span>
+            <button class="dmodal-img-next" id="destImgNextBtn" aria-label="Siguiente">&#8594;</button>
+          </div>
+        </div>
+
+        <!-- Contenido derecho -->
+        <div class="dmodal-info">
+          <!-- Encabezado con título y rating -->
+          <div class="dmodal-header">
+            <h2 class="dmodal-title" id="destModalTitle">Título del Tour</h2>
+            <div class="dmodal-rating" id="destModalRatingWrap">
+              <span class="stars">★★★★★</span>
+              <span class="rating-text" id="destModalRating">4.9 (120 reseñas)</span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <p class="dmodal-description" id="destModalDesc">Descripción del tour...</p>
+
+          <!-- Sección Overview -->
+          <div class="dmodal-overview">
+            <h3 class="overview-title">Información del Tour</h3>
+            <div class="overview-grid">
+              <div class="overview-item" id="destDurationItem">
+                <span class="overview-label">Duración</span>
+                <span class="overview-value duration" id="destDurationVal">3 horas</span>
+              </div>
+              <div class="overview-item" id="destAgeItem">
+                <span class="overview-label">Edad mínima</span>
+                <span class="overview-value" id="destAgeVal">Todas las edades</span>
+              </div>
+              <div class="overview-item" id="destCapacityItem">
+                <span class="overview-label">Capacidad</span>
+                <span class="overview-value" id="destCapacityVal">10 personas</span>
+              </div>
+              <div class="overview-item">
+                <span class="overview-label">Horario</span>
+                <span class="overview-value" id="destScheduleVal">10:00 AM - 1:00 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lo que incluye -->
+          <div class="dmodal-includes" id="destIncludesWrap">
+            <h3 class="includes-title">Qué incluye</h3>
+            <ul class="includes-list" id="destIncludesList"></ul>
+          </div>
+
+          <!-- Ubicación y alrededores -->
+          <div class="dmodal-nearby" id="destNearbyWrap">
+            <h3 class="nearby-title">Lugares que se visitan</h3>
+            <div class="nearby-list" id="destNearbyList"></div>
+          </div>
+
+          <!-- Pie de página con precio y botón -->
+          <div class="dmodal-footer">
+            <div class="footer-left">
+              <span class="footer-label">Precio</span>
+              <span class="dmodal-price" id="destPriceVal">$0 MXN</span>
+            </div>
+            <button type="button" class="reserve-btn" id="destReservePreviewBtn" title="Botón interactivo en web pública">
+              Reservar ahora
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación (Papelera) -->
+  <div class="modal-overlay" id="confirmModal" hidden>
+    <div class="modal-card confirm-modal-card">
+      <button class="modal-close" id="confirmClose" aria-label="Cerrar">
+        <span class="material-symbols-outlined notranslate" translate="no">close</span>
+      </button>
+      <span class="material-symbols-outlined notranslate confirm-icon" translate="no">delete_outline</span>
+      <h2 class="confirm-title">Mover a papelera</h2>
+      <p class="confirm-text" id="confirmText">
+        ¿Seguro que deseas eliminar este tour? Podrás restaurarlo en cualquier momento desde la sección de Papelera.
+      </p>
+      <div class="confirm-actions">
+        <button class="modal-btn modal-btn-cancel" id="confirmCancel">Cancelar</button>
+        <button class="modal-btn modal-btn-danger" id="confirmDelete">Mover a Papelera</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notificación -->
+  <div class="toast-overlay" id="toastOverlay" hidden>
+    <div class="toast-card" id="toastCard">
+      <span class="material-symbols-outlined notranslate toast-icon" id="toastIcon" translate="no">check_circle</span>
+      <p class="toast-text" id="toastText"></p>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  /* Base Layout */
+  .tours-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem 3rem;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .tours-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .title-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tours-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+  .catalog-badge {
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(33, 123, 150, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #8be5ff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tours-subtitle {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0.35rem 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.3rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(135deg, rgba(38, 117, 165, 0.95), rgba(33, 123, 150, 0.95));
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  }
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(33, 123, 150, 0.4);
+    background: linear-gradient(135deg, rgba(46, 137, 192, 1), rgba(38, 142, 173, 1));
+  }
+  .add-btn .material-symbols-outlined {
+    font-size: 1.15rem;
+  }
+
+  /* Sub-Barra de Navegación (Categorías) */
+  .subpage-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    flex-wrap: wrap;
+  }
+  .subpage-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .subpage-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .subpage-pill:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .subpage-pill.active {
+    background: linear-gradient(135deg, #1c5fa8, #217b96);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(28, 95, 168, 0.35);
+  }
+  .subpage-pill .material-symbols-outlined {
+    font-size: 0.95rem;
+  }
+  .pill-count {
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .subbar-search {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 0.35rem 0.75rem;
+    min-width: 250px;
+  }
+  .subbar-search .material-symbols-outlined {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .subbar-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.82rem;
+    font-family: inherit;
+    width: 100%;
+  }
+  .subbar-search input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .all-tab-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.82rem;
+    margin-bottom: 1.5rem;
+  }
+  .all-tab-notice .material-symbols-outlined {
+    color: #7dd3fc;
+    font-size: 1.15rem;
+  }
+
+  /* Grid de Tarjetas de Tours */
+  .tours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .tours-loading {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 4rem 1rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.95rem;
+  }
+  .spinning {
+    animation: spin 1s linear infinite;
+    font-size: 2rem !important;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Tour Card Admin */
+  :global(.tour-card-admin) {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 8px 24px rgba(10, 37, 64, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  :global(.tour-card-admin:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(10, 37, 64, 0.18);
+  }
+
+  :global(.admin-card-img-wrap) {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #e2e8f0;
+    overflow: hidden;
+  }
+  :global(.admin-card-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  :global(.admin-card-placeholder) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #94a3b8;
+  }
+  :global(.admin-card-placeholder .material-symbols-outlined) {
+    font-size: 3rem;
+    opacity: 0.4;
+  }
+  :global(.admin-subpage-badge) {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(14, 43, 71, 0.85);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 0.73rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  :global(.admin-rating-badge) {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(14, 43, 71, 0.85);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  :global(.admin-rating-badge .material-symbols-outlined) {
+    font-size: 0.85rem;
+    color: #ffd35f;
+  }
+
+  :global(.admin-card-body) {
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  :global(.admin-card-title-row) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  :global(.admin-card-icon) {
+    font-size: 1.25rem;
+    color: #1c5fa8;
+    background: #e9f3fb;
+    padding: 0.35rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  :global(.admin-card-name) {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1c5fa8;
+    line-height: 1.25;
+  }
+  :global(.admin-card-desc) {
+    margin: 0.4rem 0 0.85rem;
+    font-size: 0.84rem;
+    color: #475569;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  :global(.admin-card-meta-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  :global(.admin-meta-chip) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  :global(.admin-meta-chip .material-symbols-outlined) {
+    font-size: 0.85rem;
+    color: #217b96;
+  }
+
+  :global(.admin-card-footer) {
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  :global(.admin-card-price) {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1c5fa8;
+  }
+  :global(.admin-card-actions) {
+    display: flex;
+    gap: 0.35rem;
+  }
+  :global(.admin-action-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  :global(.admin-action-btn .material-symbols-outlined) {
+    font-size: 0.95rem;
+  }
+  :global(.btn-view-modal) {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+  :global(.btn-view-modal:hover) {
+    background: #bae6fd;
+    transform: translateY(-1px);
+  }
+  :global(.btn-edit) {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+  :global(.btn-edit:hover) {
+    background: #bfdbfe;
+    transform: translateY(-1px);
+  }
+  :global(.btn-delete) {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  :global(.btn-delete:hover) {
+    background: #fecaca;
+    transform: translateY(-1px);
+  }
+
+  :global(.tours-empty-state) {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  :global(.tours-empty-state .material-symbols-outlined) {
+    font-size: 3.5rem;
+    opacity: 0.4;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Modal Formulario Estilo Split */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+  .modal-overlay[hidden] {
+    display: none !important;
+  }
+  .modal-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.28);
+    padding: 1.5rem;
+    width: min(1180px, 96vw);
+    max-height: 88vh;
+    position: relative;
+    animation: modalIn 0.22s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 5;
+  }
+  .modal-close:hover {
+    background: rgba(0, 0, 0, 0.12);
+    color: #1e293b;
+  }
+
+  .modal-header-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+  .modal-category-badge {
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid #bae6fd;
+  }
+
+  .modal-split {
+    display: flex;
+    gap: 1.5rem;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Formulario Izquierdo */
+  .tour-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding-right: 0.65rem;
+  }
+  .tour-form::-webkit-scrollbar {
+    width: 6px;
+  }
+  .tour-form::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .form-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #334155;
+  }
+  .field-hint {
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.5rem 0.75rem;
+    border-radius: 9px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.84rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #217b96;
+    box-shadow: 0 0 0 2px rgba(33, 123, 150, 0.15);
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 55px;
+  }
+
+  .input-with-addon {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .input-with-addon:focus-within {
+    border-color: #217b96;
+    box-shadow: 0 0 0 2px rgba(33, 123, 150, 0.15);
+  }
+  .input-with-addon input {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.5rem 0.65rem;
+  }
+  .input-addon {
+    padding: 0.5rem 0.7rem;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  /* Selector Visual de Íconos */
+  .icon-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 0.45rem;
+    max-height: 140px;
+    overflow-y: auto;
+    padding: 0.4rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+  }
+  :global(.icon-option-btn) {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #334155;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+  :global(.icon-option-btn:hover) {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+  :global(.icon-option-btn.active) {
+    background: #0284c7;
+    color: #fff;
+    border-color: #0369a1;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+  }
+  :global(.icon-option-btn .material-symbols-outlined) {
+    font-size: 1.05rem;
+  }
+
+  /* Campos de Duración */
+  .duration-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 0.65rem;
+    align-items: flex-end;
+  }
+  .duration-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .sub-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  /* Divisor de Sección */
+  .form-section-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.85rem;
+    background: #f1f5f9;
+    border-radius: 10px;
+    color: #1c5fa8;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-top: 0.4rem;
+  }
+  .form-section-divider .material-symbols-outlined {
+    font-size: 1.1rem;
+  }
+
+  /* Uploader de Fotos Locales */
+  .main-photo-uploader {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .main-photo-preview {
+    width: 120px;
+    height: 90px;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e1;
+    overflow: hidden;
+    position: relative;
+    background: #f8fafc;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .main-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .main-photo-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.68rem;
+    text-align: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+  .main-photo-empty .material-symbols-outlined {
+    font-size: 1.5rem;
+  }
+  .main-photo-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .btn-upload-file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #bae6fd;
+    background: #f0f9ff;
+    color: #0369a1;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: fit-content;
+  }
+  .btn-upload-file:hover {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    transform: translateY(-1px);
+  }
+  .btn-upload-file .material-symbols-outlined {
+    font-size: 1.15rem;
+  }
+  .upload-status {
+    font-size: 0.78rem;
+    color: #0284c7;
+    font-weight: 600;
+  }
+
+  /* Tags / Chips Builders */
+  .tags-container,
+  .gallery-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 28px;
+    margin-bottom: 0.3rem;
+  }
+  :global(.admin-tag) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-size: 0.76rem;
+    font-weight: 600;
+  }
+  :global(.admin-tag button) {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+  :global(.admin-tag button:hover) {
+    color: #dc2626;
+  }
+
+  :global(.gallery-thumb-tag) {
+    position: relative;
+    width: 75px;
+    height: 55px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  :global(.gallery-thumb-tag img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  :global(.gallery-thumb-remove) {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(220, 38, 38, 0.9);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: transform 0.15s;
+  }
+  :global(.gallery-thumb-remove:hover) {
+    transform: scale(1.1);
+  }
+
+  .gallery-actions-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .tag-add-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .tag-add-row input {
+    flex: 1;
+  }
+  .btn-add-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    border: none;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-add-tag:hover {
+    background: #cbd5e1;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.8rem;
+    flex-shrink: 0;
+  }
+  .modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .modal-btn-primary {
+    background: linear-gradient(135deg, #1c5fa8, #217b96);
+    color: #fff;
+  }
+  .modal-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(28, 95, 168, 0.35);
+  }
+  .modal-btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
+  .modal-btn-cancel:hover {
+    background: #e2e8f0;
+  }
+  .modal-btn-danger {
+    background: #dc2626;
+    color: #fff;
+  }
+  .modal-btn-danger:hover {
+    background: #b91c1c;
+  }
+
+  /* Columna Derecha: Vista Previa Panel */
+  .preview-panel {
+    flex: 0 0 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background: linear-gradient(135deg, #0e2a4a 0%, #153965 50%, #18487b 100%);
+    border-radius: 16px;
+    padding: 1.25rem;
+    align-self: stretch;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .preview-panel::-webkit-scrollbar {
+    display: none;
+  }
+  .preview-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .preview-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #7dd3fc;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .preview-note {
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Live Tour Card en el Preview */
+  .live-card-container {
+    display: flex;
+    justify-content: center;
+  }
+  .live-tour-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .live-card-img {
+    position: relative;
+    width: 100%;
+    height: 155px;
+    background: #f1f5f9;
+    overflow: hidden;
+  }
+  .live-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .live-card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #cbd5e1;
+  }
+  .live-card-placeholder .material-symbols-outlined {
+    font-size: 2.8rem;
+  }
+  .live-subpage-chip {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(14, 43, 71, 0.85);
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    backdrop-filter: blur(4px);
+  }
+  .live-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.75rem 0.85rem 0.2rem;
+  }
+  .live-card-icon {
+    font-size: 1.15rem;
+    color: #1c5fa8;
+  }
+  .live-card-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.25;
+  }
+  .live-card-body {
+    padding: 0.35rem 0.85rem 0.85rem;
+  }
+  .live-card-desc {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Botón Destacado: Ver Ventana Resultante */
+  .preview-modal-action-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .modal-preview-hint {
+    margin: 0;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.35;
+  }
+  .btn-open-modal-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  }
+  .btn-open-modal-preview:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
+    background: linear-gradient(135deg, #0369a1, #0284c7);
+  }
+
+  /* Resumen de Datos */
+  .modal-specs-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .spec-summary-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .spec-label {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+  }
+  .spec-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Overlay de Vista Previa de la Ventana Resultante */
+  .destination-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+  .destination-preview-overlay[hidden] {
+    display: none !important;
+  }
+  .dmodal-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    width: 100%;
+    max-width: 1100px;
+    animation: modalIn 0.22s ease;
+  }
+  .dmodal-preview-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(14, 43, 71, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    color: #fff;
+  }
+  .dmodal-preview-topbar-info {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #7dd3fc;
+  }
+  .dmodal-preview-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dmodal-preview-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .dmodal-imgs-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  /* Confirm Modal */
+  .confirm-modal-card {
+    width: min(420px, 94vw);
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+  .confirm-icon {
+    font-size: 3.2rem;
+    color: #dc2626;
+    margin-bottom: 0.5rem;
+  }
+  .confirm-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem;
+  }
+  .confirm-text {
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.45;
+    margin: 0 0 1.5rem;
+  }
+  .confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  /* Toast Notification */
+  .toast-overlay {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 3000;
+    animation: toastIn 0.3s ease;
+  }
+  .toast-overlay[hidden] {
+    display: none !important;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .toast-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1.25rem;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    color: #fff;
+  }
+  .toast-icon {
+    font-size: 1.35rem;
+    color: #10b981;
+  }
+  .toast-card.toast-error .toast-icon {
+    color: #ef4444;
+  }
+  .toast-text {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .modal-split {
+      flex-direction: column;
+    }
+    .preview-panel {
+      flex: none;
+      width: 100%;
+    }
+    .form-row, .duration-fields-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import type { TourRecord } from "../../components/data/tours/all_tours_catalog";
+  import { auth } from "../../lib/firebase";
+
+  // Catálogo visual amigable de íconos disponibles
+  const AVAILABLE_ICONS = [
+    { icon: "sailing", label: "Velero" },
+    { icon: "directions_boat", label: "Lancha" },
+    { icon: "kayaking", label: "Kayak" },
+    { icon: "rowing", label: "Paddle / Remo" },
+    { icon: "scuba_diving", label: "Buceo / Snorkel" },
+    { icon: "anchor", label: "Ancla" },
+    { icon: "snowmobile", label: "Moto acuática" },
+    { icon: "beach_access", label: "Playa" },
+    { icon: "temple_hindu", label: "Ruinas Mayas" },
+    { icon: "landscape", label: "Paisaje / Selva" },
+    { icon: "explore", label: "Aventura" },
+    { icon: "hiking", label: "Caminata" },
+    { icon: "wb_sunny", label: "Atardecer / Sol" },
+    { icon: "water", label: "Laguna / Agua" },
+    { icon: "park", label: "Naturaleza" },
+    { icon: "flag", label: "Expedición" },
+    { icon: "travel_explore", label: "Tour general" },
+    { icon: "airport_shuttle", label: "Transporte" }
+  ];
+
+  // State
+  let allTours: TourRecord[] = [];
+  let currentFilter = "all";
+  let searchQuery = "";
+  let tourToDelete: TourRecord | null = null;
+  let activeSelectedIcon = "sailing";
+
+  // Form collections
+  let currentIncludes: string[] = [];
+  let currentNearby: string[] = [];
+  let currentModalImages: string[] = [];
+
+  // Preview Carousel State
+  let previewCarouselIndex = 0;
+  let previewCarouselList: string[] = [];
+
+  // Elements
+  const toursGrid = document.getElementById("toursGrid")!;
+  const toursSearchInput = document.getElementById("toursSearchInput") as HTMLInputElement;
+  const subpageNavBar = document.getElementById("subpageNavBar")!;
+  const addTourBtn = document.getElementById("addTourBtn") as HTMLButtonElement;
+  const addBtnLabel = document.getElementById("addBtnLabel")!;
+  const allTabNotice = document.getElementById("allTabNotice")!;
+
+  // Count elements
+  const countAll = document.getElementById("countAll")!;
+  const countNauticos = document.getElementById("countNauticos")!;
+  const countRuinas = document.getElementById("countRuinas")!;
+  const countMahahual = document.getElementById("countMahahual")!;
+  const countBelice = document.getElementById("countBelice")!;
+  const countGuatemala = document.getElementById("countGuatemala")!;
+  const countHonduras = document.getElementById("countHonduras")!;
+
+  // Form Modal Elements
+  const tourModal = document.getElementById("tourModal")!;
+  const modalClose = document.getElementById("modalClose")!;
+  const modalTitle = document.getElementById("modalTitle")!;
+  const modalCategoryBadge = document.getElementById("modalCategoryBadge")!;
+  const tourForm = document.getElementById("tourForm") as HTMLFormElement;
+  const cancelBtn = document.getElementById("cancelBtn")!;
+
+  // Inputs
+  const tourIdInput = document.getElementById("tourId") as HTMLInputElement;
+  const tourSubpageHidden = document.getElementById("tourSubpageHidden") as HTMLInputElement;
+  const tourIconHidden = document.getElementById("tourIconHidden") as HTMLInputElement;
+  const tourImageHidden = document.getElementById("tourImageHidden") as HTMLInputElement;
+  const tourNameInput = document.getElementById("tourName") as HTMLInputElement;
+  const tourDescInput = document.getElementById("tourDesc") as HTMLTextAreaElement;
+
+  // Icon Selector Grid
+  const iconSelectorGrid = document.getElementById("iconSelectorGrid")!;
+
+  // Numeric Form Inputs
+  const priceNumInput = document.getElementById("priceNumInput") as HTMLInputElement;
+  const ratingInput = document.getElementById("ratingInput") as HTMLInputElement;
+  const modalScheduleInput = document.getElementById("modalSchedule") as HTMLInputElement;
+
+  const durationMinInput = document.getElementById("durationMinInput") as HTMLInputElement;
+  const durationMaxInput = document.getElementById("durationMaxInput") as HTMLInputElement;
+  const durationUnitSelect = document.getElementById("durationUnitSelect") as HTMLSelectElement;
+
+  const capacityNumInput = document.getElementById("capacityNumInput") as HTMLInputElement;
+  const ageMinNumInput = document.getElementById("ageMinNumInput") as HTMLInputElement;
+  const modalFullTextInput = document.getElementById("modalFullText") as HTMLTextAreaElement;
+
+  // Photo uploader elements
+  const mainPhotoPreview = document.getElementById("mainPhotoPreview")!;
+  const mainPhotoImg = document.getElementById("mainPhotoImg") as HTMLImageElement;
+  const mainPhotoEmpty = document.getElementById("mainPhotoEmpty")!;
+  const uploadMainPhotoBtn = document.getElementById("uploadMainPhotoBtn")!;
+  const mainPhotoFileInput = document.getElementById("mainPhotoFileInput") as HTMLInputElement;
+  const mainUploadStatus = document.getElementById("mainUploadStatus")!;
+
+  // Gallery Elements
+  const galleryChips = document.getElementById("galleryChips")!;
+  const uploadGalleryPhotoBtn = document.getElementById("uploadGalleryPhotoBtn")!;
+  const galleryPhotoFileInput = document.getElementById("galleryPhotoFileInput") as HTMLInputElement;
+
+  // Tag Builders
+  const includesTags = document.getElementById("includesTags")!;
+  const includeInput = document.getElementById("includeInput") as HTMLInputElement;
+  const addIncludeBtn = document.getElementById("addIncludeBtn")!;
+
+  const nearbyTags = document.getElementById("nearbyTags")!;
+  const nearbyInput = document.getElementById("nearbyInput") as HTMLInputElement;
+  const addNearbyBtn = document.getElementById("addNearbyBtn")!;
+
+  // Live Card Preview Elements
+  const prevImg = document.getElementById("prevImg") as HTMLImageElement;
+  const prevImgPlaceholder = document.getElementById("prevImgPlaceholder")!;
+  const prevSubpageChip = document.getElementById("prevSubpageChip")!;
+  const prevIcon = document.getElementById("prevIcon")!;
+  const prevTitle = document.getElementById("prevTitle")!;
+  const prevDesc = document.getElementById("prevDesc")!;
+
+  const prevPriceTag = document.getElementById("prevPriceTag")!;
+  const prevDurationTag = document.getElementById("prevDurationTag")!;
+  const prevPhotosCount = document.getElementById("prevPhotosCount")!;
+  const prevInclusionsCount = document.getElementById("prevInclusionsCount")!;
+
+  // Resulting Modal Preview Elements
+  const btnPreviewResultingModal = document.getElementById("btnPreviewResultingModal")!;
+  const destinationPreviewOverlay = document.getElementById("destinationPreviewOverlay")!;
+  const closeDestinationPreviewBtn = document.getElementById("closeDestinationPreviewBtn")!;
+  const destModalImgs = document.getElementById("destModalImgs")!;
+  const destImgPrevBtn = document.getElementById("destImgPrevBtn")!;
+  const destImgNextBtn = document.getElementById("destImgNextBtn")!;
+  const destImgCounter = document.getElementById("destImgCounter")!;
+  const destModalTitle = document.getElementById("destModalTitle")!;
+  const destModalRating = document.getElementById("destModalRating")!;
+  const destModalRatingWrap = document.getElementById("destModalRatingWrap")!;
+  const destModalDesc = document.getElementById("destModalDesc")!;
+  const destDurationVal = document.getElementById("destDurationVal")!;
+  const destAgeVal = document.getElementById("destAgeVal")!;
+  const destCapacityVal = document.getElementById("destCapacityVal")!;
+  const destScheduleVal = document.getElementById("destScheduleVal")!;
+  const destIncludesWrap = document.getElementById("destIncludesWrap")!;
+  const destIncludesList = document.getElementById("destIncludesList")!;
+  const destNearbyWrap = document.getElementById("destNearbyWrap")!;
+  const destNearbyList = document.getElementById("destNearbyList")!;
+  const destPriceVal = document.getElementById("destPriceVal")!;
+  const destReservePreviewBtn = document.getElementById("destReservePreviewBtn")!;
+
+  // Confirm Modal Elements
+  const confirmModal = document.getElementById("confirmModal")!;
+  const confirmClose = document.getElementById("confirmClose")!;
+  const confirmCancel = document.getElementById("confirmCancel")!;
+  const confirmDelete = document.getElementById("confirmDelete")!;
+  const confirmText = document.getElementById("confirmText")!;
+
+  // Toast
+  const toastOverlay = document.getElementById("toastOverlay")!;
+  const toastCard = document.getElementById("toastCard")!;
+  const toastIcon = document.getElementById("toastIcon")!;
+  const toastText = document.getElementById("toastText")!;
+  let toastTimer: number;
+
+  function showToast(msg: string, isError = false) {
+    clearTimeout(toastTimer);
+    toastText.textContent = msg;
+    toastIcon.textContent = isError ? "error" : "check_circle";
+    toastCard.classList.toggle("toast-error", isError);
+    toastOverlay.hidden = false;
+    toastTimer = window.setTimeout(() => {
+      toastOverlay.hidden = true;
+    }, 3500);
+  }
+
+  // Render Visual Icon Picker
+  function renderIconSelector() {
+    iconSelectorGrid.innerHTML = AVAILABLE_ICONS.map(item => `
+      <div class="icon-option-btn ${item.icon === activeSelectedIcon ? 'active' : ''}" data-icon="${item.icon}">
+        <span class="material-symbols-outlined notranslate" translate="no">${item.icon}</span>
+        <span>${item.label}</span>
+      </div>
+    `).join("");
+  }
+
+  iconSelectorGrid.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".icon-option-btn") as HTMLElement;
+    if (!btn) return;
+    const icon = btn.dataset.icon || "sailing";
+    activeSelectedIcon = icon;
+    tourIconHidden.value = icon;
+    renderIconSelector();
+    updateLiveCardPreview();
+  });
+
+  // Helper formatting functions
+  function formatPriceText(val: number | string): string {
+    const num = Number(val);
+    if (!isNaN(num) && num > 0) {
+      return `$${num.toLocaleString('es-MX')} MXN`;
+    }
+    return "$0 MXN";
+  }
+
+  function formatDurationText(min: number, max: number, unit: string): string {
+    if (min === max || !max) {
+      return `${min} ${unit}`;
+    }
+    return `${min} a ${max} ${unit}`;
+  }
+
+  function formatRatingText(score: number, reviews?: number): string {
+    const rounded = Math.min(5, Math.max(1, score || 5)).toFixed(1);
+    if (reviews && reviews > 0) {
+      return `${rounded} (${reviews} opiniones)`;
+    }
+    return `${rounded} de 5.0`;
+  }
+
+  function formatCapacityText(cap: number): string {
+    if (cap > 0) {
+      return `Máx. ${cap} personas`;
+    }
+    return "Consultar capacidad";
+  }
+
+  function formatAgeText(age: number): string {
+    if (!age || age <= 0) {
+      return "Todas las edades";
+    }
+    return `A partir de ${age} años`;
+  }
+
+  // Parse duration text into numbers if available
+  function parseDurationString(dur: any): { min: number; max: number; unit: string } {
+    const raw = Array.isArray(dur) ? dur.join(" ") : String(dur || "");
+    const numbers = raw.match(/\d+(\.\d+)?/g);
+    let unit = "horas";
+    if (raw.toLowerCase().includes("día") || raw.toLowerCase().includes("dia")) unit = "días";
+    if (raw.toLowerCase().includes("minut")) unit = "minutos";
+
+    if (numbers && numbers.length >= 2) {
+      return { min: Number(numbers[0]), max: Number(numbers[1]), unit };
+    } else if (numbers && numbers.length === 1) {
+      return { min: Number(numbers[0]), max: Number(numbers[0]), unit };
+    }
+    return { min: 2, max: 3, unit: "horas" };
+  }
+
+  function parseRatingScore(rate: any): number {
+    if (typeof rate === "number") return rate;
+    const str = String(rate || "");
+    const match = str.match(/(\d+(\.\d+)?)/);
+    return match ? Number(match[1]) : 4.9;
+  }
+
+  function parseReviewsCount(rate: any): number {
+    const str = String(rate || "");
+    const match = str.match(/\((\d+)/);
+    return match ? Number(match[1]) : 120;
+  }
+
+  function parseCapacityNumber(cap: any): number {
+    const match = String(cap || "").match(/\d+/);
+    return match ? Number(match[0]) : 10;
+  }
+
+  function parseAgeNumber(age: any): number {
+    const match = String(age || "").match(/\d+/);
+    return match ? Number(match[0]) : 0;
+  }
+
+  function parsePriceNumber(pr: any): number {
+    const digits = String(pr || "").replace(/[^\d]/g, "");
+    return digits ? Number(digits) : 1800;
+  }
+
+  // Subpage Label & Icon Helper
+  function getSubpageMeta(subpage: string) {
+    switch (subpage) {
+      case "nauticos": return { label: "Náuticos", icon: "sailing" };
+      case "ruinas": return { label: "Ruinas Mayas", icon: "temple_hindu" };
+      case "mahahual": return { label: "Mahahual", icon: "beach_access" };
+      case "belice": return { label: "Belice", icon: "flag" };
+      case "guatemala": return { label: "Guatemala", icon: "landscape" };
+      case "honduras": return { label: "Honduras", icon: "wb_sunny" };
+      default: return { label: subpage || "General", icon: "tour" };
+    }
+  }
+
+  // Update UI based on active tab
+  function updateTabUI() {
+    if (currentFilter === "all") {
+      addTourBtn.style.display = "none";
+      allTabNotice.style.display = "flex";
+    } else {
+      const meta = getSubpageMeta(currentFilter);
+      addBtnLabel.textContent = `Agregar Tour en ${meta.label}`;
+      addTourBtn.style.display = "inline-flex";
+      allTabNotice.style.display = "none";
+    }
+  }
+
+  // Fetch Tours from API
+  async function loadTours() {
+    try {
+      const res = await fetch("/api/tours");
+      const data = await res.json();
+      if (data.tours && Array.isArray(data.tours)) {
+        allTours = data.tours;
+        updateCounts();
+        renderToursGrid();
+      } else {
+        showToast("Error al obtener los tours", true);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("No se pudo conectar con el catálogo de tours", true);
+    }
+  }
+
+  // Update Counters in Sub-Bar
+  function updateCounts() {
+    countAll.textContent = String(allTours.length);
+    countNauticos.textContent = String(allTours.filter(t => t.subpage === "nauticos").length);
+    countRuinas.textContent = String(allTours.filter(t => t.subpage === "ruinas").length);
+    countMahahual.textContent = String(allTours.filter(t => t.subpage === "mahahual").length);
+    countBelice.textContent = String(allTours.filter(t => t.subpage === "belice").length);
+    countGuatemala.textContent = String(allTours.filter(t => t.subpage === "guatemala").length);
+    countHonduras.textContent = String(allTours.filter(t => t.subpage === "honduras").length);
+  }
+
+  // Filter and Search Tours
+  function getFilteredTours(): TourRecord[] {
+    return allTours.filter(tour => {
+      const matchesSubpage = currentFilter === "all" || tour.subpage === currentFilter;
+      if (!matchesSubpage) return false;
+
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      const nameMatch = (tour.name || "").toLowerCase().includes(q);
+      const descMatch = (tour.description || "").toLowerCase().includes(q);
+      const modalMatch = (tour.modalTitle || "").toLowerCase().includes(q) || (tour.text || "").toLowerCase().includes(q);
+      return nameMatch || descMatch || modalMatch;
+    });
+  }
+
+  // Render Tours Grid (Defensively safely parsed)
+  function renderToursGrid() {
+    try {
+      const list = getFilteredTours();
+
+      if (list.length === 0) {
+        toursGrid.innerHTML = `
+          <div class="tours-empty-state">
+            <span class="material-symbols-outlined notranslate" translate="no">travel_explore</span>
+            <p>No se encontraron tours con los filtros aplicados.</p>
+          </div>
+        `;
+        return;
+      }
+
+      toursGrid.innerHTML = list.map(tour => {
+        const meta = getSubpageMeta(tour.subpage);
+        const mainImg = tour.image || (tour.modalImages && tour.modalImages[0]) || "";
+        const priceText = tour.price || "Tarifa no definida";
+
+        // Defensive rating parsing
+        let ratingDisplay = "5.0";
+        if (typeof tour.rating === "number") {
+          ratingDisplay = tour.rating.toFixed(1);
+        } else if (typeof tour.rating === "string") {
+          const match = tour.rating.match(/(\d+(\.\d+)?)/);
+          if (match) ratingDisplay = match[1];
+        }
+
+        // Defensive duration parsing
+        let durationDisplay = "Consultar";
+        if (Array.isArray(tour.duration)) {
+          durationDisplay = tour.duration.join(" · ");
+        } else if (tour.duration) {
+          durationDisplay = String(tour.duration);
+        }
+
+        const scheduleText = tour.schedule || "Horario disponible";
+
+        return `
+          <article class="tour-card-admin" data-id="${tour.id}">
+            <div class="admin-card-img-wrap">
+              ${mainImg ? `
+                <img src="${mainImg}" alt="${tour.name}" class="admin-card-img" loading="lazy" onerror="this.onerror=null;this.src='/src/assets/photos_azulia_webp/upscale_azulia_2.webp';" />
+              ` : `
+                <div class="admin-card-placeholder">
+                  <span class="material-symbols-outlined notranslate" translate="no">landscape</span>
+                </div>
+              `}
+              <span class="admin-subpage-badge">
+                <span class="material-symbols-outlined notranslate" translate="no">${meta.icon}</span>
+                ${meta.label}
+              </span>
+              <span class="admin-rating-badge">
+                <span class="material-symbols-outlined notranslate" translate="no">star</span>
+                ${ratingDisplay}
+              </span>
+            </div>
+
+            <div class="admin-card-body">
+              <div class="admin-card-title-row">
+                <span class="material-symbols-outlined notranslate admin-card-icon" translate="no">${tour.icon || 'tour'}</span>
+                <h3 class="admin-card-name">${tour.name}</h3>
+              </div>
+              <p class="admin-card-desc">${tour.description || tour.text || ''}</p>
+
+              <div class="admin-card-meta-chips">
+                <span class="admin-meta-chip" title="Duración">
+                  <span class="material-symbols-outlined notranslate" translate="no">schedule</span>
+                  ${durationDisplay}
+                </span>
+                <span class="admin-meta-chip" title="Horario">
+                  <span class="material-symbols-outlined notranslate" translate="no">event</span>
+                  ${scheduleText}
+                </span>
+              </div>
+
+              <div class="admin-card-footer">
+                <span class="admin-card-price">${priceText}</span>
+                <div class="admin-card-actions">
+                  <button type="button" class="admin-action-btn btn-view-modal" data-action="view-modal" data-id="${tour.id}" title="Ver vista previa de la ventana completa">
+                    <span class="material-symbols-outlined notranslate" translate="no">visibility</span>
+                    Ver
+                  </button>
+                  <button type="button" class="admin-action-btn btn-edit" data-action="edit" data-id="${tour.id}" title="Editar información del tour">
+                    <span class="material-symbols-outlined notranslate" translate="no">edit</span>
+                    Editar
+                  </button>
+                  <button type="button" class="admin-action-btn btn-delete" data-action="delete" data-id="${tour.id}" title="Mover a papelera">
+                    <span class="material-symbols-outlined notranslate" translate="no">delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    } catch (err) {
+      console.error("[renderToursGrid]", err);
+    }
+  }
+
+  // Filter Subpage Tabs Event
+  subpageNavBar.addEventListener("click", (e) => {
+    const target = (e.target as HTMLElement).closest(".subpage-pill") as HTMLElement;
+    if (!target) return;
+    const filter = target.dataset.filter || "all";
+    currentFilter = filter;
+
+    subpageNavBar.querySelectorAll(".subpage-pill").forEach(p => p.classList.remove("active"));
+    target.classList.add("active");
+
+    updateTabUI();
+    renderToursGrid();
+  });
+
+  // Search Input Event
+  toursSearchInput.addEventListener("input", () => {
+    searchQuery = toursSearchInput.value;
+    renderToursGrid();
+  });
+
+  // Grid Action Delegation
+  toursGrid.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest("[data-action]") as HTMLElement;
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const tourId = btn.dataset.id;
+    const tour = allTours.find(t => t.id === tourId);
+    if (!tour) return;
+
+    if (action === "view-modal") {
+      openDestinationModalPreview(tour);
+    } else if (action === "edit") {
+      openEditModal(tour);
+    } else if (action === "delete") {
+      openDeleteConfirmModal(tour);
+    }
+  });
+
+  // Open Edit Form Modal
+  function openEditModal(tour?: TourRecord) {
+    tourForm.reset();
+    currentIncludes = [];
+    currentNearby = [];
+    currentModalImages = [];
+
+    const targetSubpage = tour ? tour.subpage : (currentFilter !== "all" ? currentFilter : "nauticos");
+    tourSubpageHidden.value = targetSubpage;
+
+    const subpageMeta = getSubpageMeta(targetSubpage);
+    modalCategoryBadge.textContent = subpageMeta.label;
+
+    if (tour) {
+      modalTitle.textContent = "Editar Tour: " + tour.name;
+      tourIdInput.value = tour.id;
+      tourNameInput.value = tour.name;
+      tourDescInput.value = tour.description;
+      tourImageHidden.value = tour.image || "";
+
+      activeSelectedIcon = tour.icon || "sailing";
+      tourIconHidden.value = activeSelectedIcon;
+
+      // Numeric parsing
+      priceNumInput.value = String(parsePriceNumber(tour.price));
+      ratingInput.value = String(parseRatingScore(tour.rating));
+
+      const durParsed = parseDurationString(tour.duration);
+      durationMinInput.value = String(durParsed.min);
+      durationMaxInput.value = String(durParsed.max);
+      durationUnitSelect.value = durParsed.unit;
+
+      capacityNumInput.value = String(parseCapacityNumber(tour.capacity));
+      ageMinNumInput.value = String(parseAgeNumber(tour.ageRange));
+
+      modalScheduleInput.value = tour.schedule || "10:00 AM - 1:00 PM";
+      modalFullTextInput.value = tour.text || tour.description;
+
+      currentIncludes = Array.isArray(tour.includes) ? [...tour.includes] : [];
+      currentNearby = Array.isArray(tour.nearby) ? [...tour.nearby] : [];
+      currentModalImages = Array.isArray(tour.modalImages) ? [...tour.modalImages] : (tour.image ? [tour.image] : []);
+    } else {
+      modalTitle.textContent = `Agregar Tour en ${subpageMeta.label}`;
+      tourIdInput.value = "";
+      tourNameInput.value = "";
+      tourDescInput.value = "";
+      tourImageHidden.value = "";
+
+      activeSelectedIcon = "sailing";
+      tourIconHidden.value = activeSelectedIcon;
+
+      priceNumInput.value = "1800";
+      ratingInput.value = "4.9";
+
+      durationMinInput.value = "2";
+      durationMaxInput.value = "3";
+      durationUnitSelect.value = "horas";
+
+      capacityNumInput.value = "10";
+      ageMinNumInput.value = "0";
+
+      modalScheduleInput.value = "10:00 AM - 1:00 PM";
+      modalFullTextInput.value = "";
+
+      currentIncludes = ["Guía bilingüe certificado", "Equipo de seguridad", "Bebidas refrescantes"];
+      currentNearby = ["Laguna de Bacalar"];
+      currentModalImages = [];
+    }
+
+    renderIconSelector();
+    renderTagBuilders();
+    updateLiveCardPreview();
+    tourModal.hidden = false;
+  }
+
+  // Tag Builders Renderer
+  function renderTagBuilders() {
+    // Includes
+    includesTags.innerHTML = currentIncludes.map((item, idx) => `
+      <span class="admin-tag">
+        ✓ ${item}
+        <button type="button" data-idx="${idx}" class="remove-inc" title="Eliminar">&times;</button>
+      </span>
+    `).join("");
+
+    // Nearby
+    nearbyTags.innerHTML = currentNearby.map((item, idx) => `
+      <span class="admin-tag">
+        📍 ${item}
+        <button type="button" data-idx="${idx}" class="remove-near" title="Eliminar">&times;</button>
+      </span>
+    `).join("");
+
+    // Modal Photos Gallery
+    galleryChips.innerHTML = currentModalImages.map((src, idx) => `
+      <div class="gallery-thumb-tag">
+        <img src="${src}" alt="Foto ${idx + 1}" onerror="this.onerror=null;this.src='/src/assets/photos_azulia_webp/upscale_azulia_2.webp';" />
+        <button type="button" class="gallery-thumb-remove" data-idx="${idx}" title="Eliminar foto">&times;</button>
+      </div>
+    `).join("");
+
+    // Update tags count in preview
+    prevInclusionsCount.textContent = `${currentIncludes.length} ítems`;
+    prevPhotosCount.textContent = `${currentModalImages.length} fotos`;
+  }
+
+  // Tag Add / Remove Listeners
+  addIncludeBtn.addEventListener("click", () => {
+    const val = includeInput.value.trim();
+    if (val) {
+      currentIncludes.push(val);
+      includeInput.value = "";
+      renderTagBuilders();
+    }
+  });
+  includeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addIncludeBtn.click();
+    }
+  });
+  includesTags.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".remove-inc") as HTMLElement;
+    if (btn) {
+      const idx = Number(btn.dataset.idx);
+      currentIncludes.splice(idx, 1);
+      renderTagBuilders();
+    }
+  });
+
+  addNearbyBtn.addEventListener("click", () => {
+    const val = nearbyInput.value.trim();
+    if (val) {
+      currentNearby.push(val);
+      nearbyInput.value = "";
+      renderTagBuilders();
+    }
+  });
+  nearbyInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addNearbyBtn.click();
+    }
+  });
+  nearbyTags.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".remove-near") as HTMLElement;
+    if (btn) {
+      const idx = Number(btn.dataset.idx);
+      currentNearby.splice(idx, 1);
+      renderTagBuilders();
+    }
+  });
+
+  // Gallery Remove Photo
+  galleryChips.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".gallery-thumb-remove") as HTMLElement;
+    if (btn) {
+      const idx = Number(btn.dataset.idx);
+      currentModalImages.splice(idx, 1);
+      renderTagBuilders();
+      updateLiveCardPreview();
+    }
+  });
+
+  // Live Card Preview Updater
+  function updateLiveCardPreview() {
+    const name = tourNameInput.value.trim() || "Nombre de la experiencia";
+    const desc = tourDescInput.value.trim() || "La descripción del tour se actualizará en tiempo real conforme vayas escribiendo...";
+    const subpage = tourSubpageHidden.value || "nauticos";
+    const meta = getSubpageMeta(subpage);
+    const imgUrl = tourImageHidden.value || (currentModalImages[0] || "");
+
+    // Live card elements
+    prevTitle.textContent = name;
+    prevIcon.textContent = activeSelectedIcon;
+    prevDesc.textContent = desc;
+    prevSubpageChip.textContent = meta.label;
+
+    if (imgUrl) {
+      prevImg.src = imgUrl;
+      prevImg.style.display = "block";
+      prevImgPlaceholder.style.display = "none";
+      mainPhotoImg.src = imgUrl;
+      mainPhotoImg.style.display = "block";
+      mainPhotoEmpty.style.display = "none";
+    } else {
+      prevImg.style.display = "none";
+      prevImgPlaceholder.style.display = "flex";
+      mainPhotoImg.style.display = "none";
+      mainPhotoEmpty.style.display = "flex";
+    }
+
+    // Live specs tags
+    const priceVal = formatPriceText(priceNumInput.value);
+    const minDur = Number(durationMinInput.value) || 1;
+    const maxDur = Number(durationMaxInput.value) || minDur;
+    const durUnit = durationUnitSelect.value;
+    const durationVal = formatDurationText(minDur, maxDur, durUnit);
+
+    prevPriceTag.textContent = priceVal;
+    prevDurationTag.textContent = durationVal;
+    prevPhotosCount.textContent = `${currentModalImages.length} fotos`;
+    prevInclusionsCount.textContent = `${currentIncludes.length} ítems`;
+  }
+
+  // Bind input listeners for live real-time updating
+  [
+    tourNameInput,
+    tourDescInput,
+    priceNumInput,
+    ratingInput,
+    durationMinInput,
+    durationMaxInput,
+    durationUnitSelect,
+    capacityNumInput,
+    ageMinNumInput
+  ].forEach(input => {
+    input.addEventListener("input", updateLiveCardPreview);
+    input.addEventListener("change", updateLiveCardPreview);
+  });
+
+  // Main Photo Upload Handler (Local file)
+  uploadMainPhotoBtn.addEventListener("click", () => mainPhotoFileInput.click());
+  mainPhotoFileInput.addEventListener("change", async () => {
+    const file = mainPhotoFileInput.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Por favor selecciona una imagen válida (JPG, PNG, etc.)", true);
+      return;
+    }
+
+    mainUploadStatus.textContent = "Procesando foto...";
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : "";
+
+      const res = await fetch("/api/tours/upload", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        tourImageHidden.value = data.url;
+        if (!currentModalImages.includes(data.url)) {
+          currentModalImages.unshift(data.url);
+        }
+        mainUploadStatus.textContent = "¡Foto guardada con éxito!";
+        renderTagBuilders();
+        updateLiveCardPreview();
+        setTimeout(() => mainUploadStatus.textContent = "", 2500);
+      } else {
+        mainUploadStatus.textContent = "";
+        showToast(data.error || "No se pudo procesar la foto", true);
+      }
+    } catch (err) {
+      console.error(err);
+      mainUploadStatus.textContent = "";
+      showToast("Error de conexión al subir la foto", true);
+    }
+  });
+
+  // Gallery Photos Upload Handler (Multiple local files)
+  uploadGalleryPhotoBtn.addEventListener("click", () => galleryPhotoFileInput.click());
+  galleryPhotoFileInput.addEventListener("change", async () => {
+    const files = galleryPhotoFileInput.files;
+    if (!files || files.length === 0) return;
+
+    showToast(`Procesando ${files.length} foto(s)...`);
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) {
+        showToast(`El archivo ${file.name} no es una imagen válida`, true);
+        continue;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const user = auth.currentUser;
+        const token = user ? await user.getIdToken() : "";
+
+        const res = await fetch("/api/tours/upload", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + token },
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          currentModalImages.push(data.url);
+        } else {
+          showToast(data.error || `Error al procesar ${file.name}`, true);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Error de conexión al procesar fotos", true);
+      }
+    }
+
+    renderTagBuilders();
+    updateLiveCardPreview();
+    showToast("Fotos añadidas a la galería");
+  });
+
+  // Form Submit Handler (Create or Update)
+  tourForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const tourId = tourIdInput.value.trim();
+    const isEdit = Boolean(tourId);
+    const subpage = tourSubpageHidden.value || "nauticos";
+
+    // Format all properties into clean representations
+    const priceVal = formatPriceText(priceNumInput.value);
+    const ratingScore = Number(ratingInput.value) || 5;
+    const ratingVal = formatRatingText(ratingScore, 0);
+
+    const minDur = Number(durationMinInput.value) || 1;
+    const maxDur = Number(durationMaxInput.value) || minDur;
+    const durUnit = durationUnitSelect.value;
+    const durationVal = formatDurationText(minDur, maxDur, durUnit);
+
+    const capacityVal = formatCapacityText(Number(capacityNumInput.value) || 10);
+    const ageRangeVal = formatAgeText(Number(ageMinNumInput.value) || 0);
+
+    const mainImg = tourImageHidden.value || (currentModalImages[0] || "");
+
+    // Calculate display order: for new tours, automatically put at the end
+    let orderNum = 10;
+    if (isEdit) {
+      const existing = allTours.find(t => t.id === tourId);
+      orderNum = existing?.order ?? 10;
+    } else {
+      const toursInThisSubpage = allTours.filter(t => t.subpage === subpage);
+      orderNum = (toursInThisSubpage.length + 1) * 10;
+    }
+
+    const payload: Partial<TourRecord> = {
+      subpage,
+      name: tourNameInput.value.trim(),
+      icon: tourIconHidden.value || "sailing",
+      description: tourDescInput.value.trim(),
+      image: mainImg,
+      order: orderNum,
+      modalTitle: tourNameInput.value.trim(),
+      schedule: modalScheduleInput.value.trim(),
+      price: priceVal,
+      rating: ratingVal,
+      duration: durationVal,
+      capacity: capacityVal,
+      ageRange: ageRangeVal,
+      text: modalFullTextInput.value.trim() || tourDescInput.value.trim(),
+      modalImages: currentModalImages.length > 0 ? currentModalImages : [mainImg].filter(Boolean),
+      includes: currentIncludes,
+      nearby: currentNearby
+    };
+
+    if (isEdit) {
+      payload.id = tourId;
+    }
+
+    try {
+      showToast(isEdit ? "Guardando cambios..." : "Creando tour...");
+      const method = isEdit ? "PUT" : "POST";
+      
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : "";
+
+      const res = await fetch("/api/tours", {
+        method,
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.tour) {
+        showToast(isEdit ? "¡Tour actualizado exitosamente!" : "¡Tour agregado exitosamente!");
+        tourModal.hidden = true;
+        await loadTours();
+      } else {
+        showToast(data.error || "No se pudo guardar el tour", true);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error de conexión al guardar", true);
+    }
+  });
+
+  // Resulting Destination Modal Preview
+  btnPreviewResultingModal.addEventListener("click", () => {
+    const minDur = Number(durationMinInput.value) || 1;
+    const maxDur = Number(durationMaxInput.value) || minDur;
+    const durUnit = durationUnitSelect.value;
+    const durationVal = formatDurationText(minDur, maxDur, durUnit);
+
+    const priceVal = formatPriceText(priceNumInput.value);
+    const ratingScore = Number(ratingInput.value) || 5;
+    const ratingVal = formatRatingText(ratingScore, 0);
+    const capacityVal = formatCapacityText(Number(capacityNumInput.value) || 10);
+    const ageRangeVal = formatAgeText(Number(ageMinNumInput.value) || 0);
+
+    const mainImg = tourImageHidden.value || (currentModalImages[0] || "");
+
+    const currentFormData: TourRecord = {
+      id: tourIdInput.value.trim() || "preview-id",
+      subpage: tourSubpageHidden.value,
+      name: tourNameInput.value.trim() || "Nombre del Tour",
+      icon: tourIconHidden.value || "sailing",
+      description: tourDescInput.value.trim(),
+      image: mainImg,
+      modalTitle: tourNameInput.value.trim() || "Nombre del Tour",
+      schedule: modalScheduleInput.value.trim() || "Horario disponible",
+      price: priceVal,
+      rating: ratingVal,
+      duration: durationVal,
+      capacity: capacityVal,
+      ageRange: ageRangeVal,
+      text: modalFullTextInput.value.trim() || tourDescInput.value.trim() || "Descripción completa de la experiencia...",
+      modalImages: currentModalImages.length > 0 ? currentModalImages : [mainImg].filter(Boolean),
+      includes: currentIncludes,
+      nearby: currentNearby,
+      order: 0
+    };
+
+    openDestinationModalPreview(currentFormData);
+  });
+
+  function openDestinationModalPreview(tour: TourRecord) {
+    previewCarouselList = tour.modalImages && tour.modalImages.length > 0
+      ? tour.modalImages
+      : (tour.image ? [tour.image] : ["/src/assets/photos_azulia_webp/upscale_azulia_2.webp"]);
+    previewCarouselIndex = 0;
+
+    // Carousel Image Renderer
+    renderPreviewCarousel();
+
+    // Headers & Text
+    destModalTitle.textContent = tour.modalTitle || tour.name;
+    destModalDesc.textContent = tour.text || tour.description || "";
+
+    // Rating
+    destModalRating.textContent = String(tour.rating || "5.0");
+
+    // Price
+    destPriceVal.textContent = String(tour.price || "$0 MXN");
+
+    // Specs
+    destDurationVal.textContent = Array.isArray(tour.duration) ? tour.duration.join(" · ") : String(tour.duration || "Consultar");
+    destAgeVal.textContent = String(tour.ageRange || "Todas las edades");
+    destCapacityVal.textContent = String(tour.capacity || "Consultar capacidad");
+    destScheduleVal.textContent = String(tour.schedule || "Horario disponible");
+
+    // Inclusions List
+    const incs = tour.includes || [];
+    if (incs.length > 0) {
+      destIncludesWrap.style.display = "block";
+      destIncludesList.innerHTML = incs.map(i => `
+        <li class="include-item">
+          <span class="include-icon">✓</span>
+          ${i}
+        </li>
+      `).join("");
+    } else {
+      destIncludesWrap.style.display = "none";
+    }
+
+    // Nearby List
+    const nears = tour.nearby || [];
+    if (nears.length > 0) {
+      destNearbyWrap.style.display = "block";
+      destNearbyList.innerHTML = nears.map(n => `
+        <div class="nearby-item">
+          <span class="location-icon">📍</span>
+          ${n}
+        </div>
+      `).join("");
+    } else {
+      destNearbyWrap.style.display = "none";
+    }
+
+    destinationPreviewOverlay.hidden = false;
+  }
+
+  function renderPreviewCarousel() {
+    destModalImgs.innerHTML = previewCarouselList.map((src, i) => `
+      <img src="${src}" alt="Foto ${i + 1}" class="dmodal-img ${i === previewCarouselIndex ? 'active' : ''}" onerror="this.onerror=null;this.src='/src/assets/photos_azulia_webp/upscale_azulia_2.webp';" />
+    `).join("");
+
+    destImgCounter.textContent = `${previewCarouselIndex + 1} / ${previewCarouselList.length}`;
+  }
+
+  destImgPrevBtn.addEventListener("click", () => {
+    previewCarouselIndex = previewCarouselIndex > 0 ? previewCarouselIndex - 1 : previewCarouselList.length - 1;
+    renderPreviewCarousel();
+  });
+  destImgNextBtn.addEventListener("click", () => {
+    previewCarouselIndex = previewCarouselIndex < previewCarouselList.length - 1 ? previewCarouselIndex + 1 : 0;
+    renderPreviewCarousel();
+  });
+
+  closeDestinationPreviewBtn.addEventListener("click", () => {
+    destinationPreviewOverlay.hidden = true;
+  });
+  destinationPreviewOverlay.addEventListener("click", (e) => {
+    if (e.target === destinationPreviewOverlay) {
+      destinationPreviewOverlay.hidden = true;
+    }
+  });
+
+  destReservePreviewBtn.addEventListener("click", () => {
+    showToast("En el sitio web, este botón abre el formulario directo de reserva para el cliente.");
+  });
+
+  // Delete Confirm Modal
+  function openDeleteConfirmModal(tour: TourRecord) {
+    tourToDelete = tour;
+    const meta = getSubpageMeta(tour.subpage);
+    confirmText.textContent = `¿Seguro que deseas eliminar "${tour.name}" de la categoría "${meta.label}"? Podrás restaurarlo en cualquier momento desde la papelera.`;
+    confirmModal.hidden = false;
+  }
+
+  confirmDelete.addEventListener("click", async () => {
+    if (!tourToDelete) return;
+    try {
+      showToast("Moviendo tour a papelera...");
+      const user = auth.currentUser;
+      const token = user ? await user.getIdToken() : "";
+
+      const res = await fetch(`/api/tours?id=${encodeURIComponent(tourToDelete.id)}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("¡Tour movido a la papelera con éxito!");
+        confirmModal.hidden = true;
+        tourToDelete = null;
+        await loadTours();
+      } else {
+        showToast(data.error || "No se pudo eliminar el tour", true);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error de conexión al eliminar tour", true);
+    }
+  });
+
+  confirmCancel.addEventListener("click", () => {
+    confirmModal.hidden = true;
+    tourToDelete = null;
+  });
+  confirmClose.addEventListener("click", () => {
+    confirmModal.hidden = true;
+    tourToDelete = null;
+  });
+
+  // Modal open/close listeners
+  addTourBtn.addEventListener("click", () => openEditModal());
+  modalClose.addEventListener("click", () => tourModal.hidden = true);
+  cancelBtn.addEventListener("click", () => tourModal.hidden = true);
+  tourModal.addEventListener("click", (e) => {
+    if (e.target === tourModal) tourModal.hidden = true;
+  });
+
+  // Initial load
+  updateTabUI();
+  renderIconSelector();
+  loadTours();
+</script>

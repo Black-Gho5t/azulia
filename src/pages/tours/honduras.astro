@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { hondurasTours, modalData } from "../../components/data/tours/honduras_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("honduras");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/velero/velero_9.webp", alt: "Islas del Caribe hondureño" },
@@ -42,8 +44,8 @@ const galleryImages = [
             carouselSubtitle="Honduras"
             carouselDescription="Bucea en los arrecifes de Roatán y descubre la majestuosidad de las ruinas de Copán. Honduras en una sola aventura."
             sectionTitle="Tours a Honduras Disponibles"
-            tours={hondurasTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

@@ -3,7 +3,9 @@ import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
 import TourListingSection from "../../components/tours_section.astro";
-import { mahahualTours, modalData } from "../../components/data/tours/mahahual_data";
+import { getToursForSubpage } from "../../lib/tours";
+
+const { tours, modals } = await getToursForSubpage("mahahual");
 
 const carouselImages = [
     { src: "/src/assets/photos_azulia_webp/Mahahual/mahahual (2).webp", alt: "Playa de Mahahual" },
@@ -41,8 +43,8 @@ const galleryImages = [
             carouselSubtitle="Mahahual"
             carouselDescription="Descubre el último paraíso virgen del Caribe mexicano. Snorkel, kayak y aventuras náuticas en las aguas más cristalinas de México."
             sectionTitle="Tours en Mahahual Disponibles"
-            tours={mahahualTours}
-            modals={modalData}
+            tours={tours}
+            modals={modals}
             pageIntro={pageIntro}
             galleryImages={galleryImages}
         />

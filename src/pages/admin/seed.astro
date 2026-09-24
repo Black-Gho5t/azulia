@@ -15,6 +15,15 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   <script>
     import { collection, addDoc, Timestamp } from 'firebase/firestore';
     import { db } from '../../lib/firebase';
+    import { getAuthState } from '../../components/admin/auth.ts';
+
+    (async () => {
+      const auth = await getAuthState();
+      if (!auth.isAuthenticated) {
+        window.location.href = '/admin/login';
+        return;
+      }
+    })();
 
     const samples = [
       { name: 'María Fernández', contact: 'maria@ejemplo.com', interests: ['Tours náuticos', 'Hoteles'], message: 'Hola, me interesa conocer los paquetes de tours en velero para 4 personas. ¿Tienen disponibilidad para la próxima semana? Me gustaría recibir información sobre precios y horarios.', status: 'nuevo' },
