@@ -2556,7 +2556,7 @@ import "../../assets/styles/modal.css";
       });
       const data = await res.json();
 
-      if (res.ok && data.tour) {
+      if (res.ok && data.ok) {
         showToast(isEdit ? "¡Tour actualizado exitosamente!" : "¡Tour agregado exitosamente!");
         tourModal.hidden = true;
         await loadTours();
@@ -2714,7 +2714,7 @@ import "../../assets/styles/modal.css";
         headers: { "Authorization": "Bearer " + token }
       });
       const data = await res.json();
-      if (res.ok && data.success) {
+      if (res.ok && data.ok) {
         showToast("¡Tour movido a la papelera con éxito!");
         confirmModal.hidden = true;
         tourToDelete = null;
