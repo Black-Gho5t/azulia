@@ -25,3 +25,19 @@ pnpm-debug.log*
 
 # Uploads
 uploads/
+
+# Python virtual environment
+venv/
+python/
+__pycache__/
+*.pyc
+
+# Development scripts & temp files
+convertir_fotos.py
+componente pa guardar.astro
+*.docx
+*.tmp
+~$*
+
+# scripts (dev-only utilities)
+scripts/
