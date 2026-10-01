@@ -2,9 +2,12 @@
   "name": "azulia",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm rebuild sharp && astro build",
     "preview": "astro preview",
     "start": "node dist/server/entry.mjs",
     "astro": "astro"
