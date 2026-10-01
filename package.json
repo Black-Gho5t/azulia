@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "npm rebuild sharp && astro build",
     "preview": "astro preview",
-    "start": "node dist/server/entry.mjs",
+    "start": "node start.mjs",
     "astro": "astro"
   },
   "dependencies": {
