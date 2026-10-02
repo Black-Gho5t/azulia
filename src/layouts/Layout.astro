@@ -11,10 +11,20 @@ import ContactModal from "../components/contact_modal.astro";
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
 			rel="stylesheet"
+			media="print"
+			onload="this.media='all'"
 		/>
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+				rel="stylesheet"
+			/>
+		</noscript>
 		<title>Azulia: Servicios marítimos</title>
 	</head>
 	<body>
@@ -25,6 +35,13 @@ import ContactModal from "../components/contact_modal.astro";
 </html>
 
 <style is:global>
+	/* Force swap for bundled icon fonts to prevent render blocking */
+	@font-face {
+		font-family: 'bootstrap-icons';
+		font-display: swap;
+		src: local('bootstrap-icons');
+	}
+
 	html,
 	body {
 		margin: 0;

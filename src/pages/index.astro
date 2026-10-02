@@ -76,14 +76,46 @@ const sections = [
 ];
 
 const galleryImages = [
-    { src: "/src/assets/photos_azulia_webp/upscale_azulia_2.webp",            alt: "Navegando en Bacalar",         span: "wide" as const },
-    { src: "/src/assets/photos_azulia_webp/velero/velero_3.webp",             alt: "Velero en el agua",            span: "tall" as const },
-    { src: "/src/assets/photos_azulia_webp/upscale_azulia_1.webp",            alt: "Playa y cielo hermoso",        span: "normal" as const },
-    { src: "/src/assets/photos_azulia_webp/ponton/pontom_5.webp",             alt: "Pontón en la laguna",          span: "normal" as const },
-    { src: "/src/assets/photos_azulia_webp/velero/velero_4.webp",             alt: "Navegación al atardecer",      span: "wide" as const },
-    { src: "/src/assets/photos_azulia_webp/ponton/pontom_8.webp",             alt: "Tour de pontón",               span: "normal" as const },
-    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",   alt: "Paisaje en Corozal, Belice",  span: "tall" as const },
-    { src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",   alt: "Atardecer en Belice",         span: "normal" as const },
+    {
+        src: "/src/assets/photos_azulia_webp/upscale_azulia_2.webp",
+        alt: "Navegando en Bacalar",
+        span: "wide" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/velero/velero_3.webp",
+        alt: "Velero en el agua",
+        span: "tall" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/upscale_azulia_1.webp",
+        alt: "Playa y cielo hermoso",
+        span: "normal" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/ponton/pontom_5.webp",
+        alt: "Pontón en la laguna",
+        span: "normal" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/velero/velero_4.webp",
+        alt: "Navegación al atardecer",
+        span: "wide" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/ponton/pontom_8.webp",
+        alt: "Tour de pontón",
+        span: "normal" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__3.webp",
+        alt: "Paisaje en Corozal, Belice",
+        span: "tall" as const,
+    },
+    {
+        src: "/src/assets/photos_azulia_webp/Belize/Corozal/corozal__5.webp",
+        alt: "Atardecer en Belice",
+        span: "normal" as const,
+    },
 ];
 ---
 
@@ -100,7 +132,7 @@ const galleryImages = [
         <div class="hero-inner">
             <div class="hero-text-block">
                 <div class="hero-logo">
-                    <img src="/src/assets/Designer.png" alt="Logo Azulia" />
+                    <img src="/src/assets/Designer.webp" alt="Logo Azulia" />
                 </div>
                 <span class="hero-label">Turismo náutico en Bacalar</span>
                 <h1>Descubre las maravillas de Bacalar y el Caribe.</h1>
@@ -188,8 +220,6 @@ const galleryImages = [
             </div>
         </section>
 
-        
-
         <section class="feature-tree">
             <div class="container">
                 <div class="section-heading split">
@@ -199,7 +229,7 @@ const galleryImages = [
                 <!-- ! componente de cards de la pagina principal -->
                 <CardsComponent />
             </div>
-            <br><br>
+            <br /><br />
 
             <PosterCarousel
                 eyebrow="Posters destacados"
