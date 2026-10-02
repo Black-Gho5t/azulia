@@ -17,9 +17,12 @@
     "@fontsource/material-icons": "^5.2.7",
     "astro": "^7.3.5",
     "bootstrap-icons": "^1.13.1",
-    "firebase": "^12.16.0",
-    "firebase-admin": "^14.2.0",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "pdfjs-dist": "^6.2.108",
-    "sharp": "^0.34.5"
+    "sharp": "^0.35.5"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.5"
   }
 }
