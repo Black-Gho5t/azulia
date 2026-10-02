@@ -7,9 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm rebuild sharp && astro build",
+    "build": "npm rebuild sharp && astro build && node postbuild.mjs",
     "preview": "astro preview",
-    "start": "node start.mjs",
+    "start": "node dist/start.mjs",
     "astro": "astro"
   },
   "dependencies": {
