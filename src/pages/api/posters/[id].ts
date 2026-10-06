@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -27,12 +27,12 @@ export const PUT: APIRoute = async ({ params, request }) => {
 
     const db = getAdminDb();
     const docRef = db.collection('posters').doc(id);
-    const doc = await docRef.get();
+    const doc = await withFirestoreRetry(async () => docRef.get());
     if (!doc.exists) {
       return new Response(JSON.stringify({ error: 'Poster no encontrado' }), { status: 404 });
     }
 
-    await docRef.update({ name: name.trim() });
+    await withFirestoreRetry(async () => docRef.update({ name: name.trim() }));
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 
   } catch (err: any) {
@@ -53,7 +53,7 @@ export const DELETE: APIRoute = async ({ params, request }) => {
 
     const db = getAdminDb();
     const docRef = db.collection('posters').doc(id);
-    const doc = await docRef.get();
+    const doc = await withFirestoreRetry(async () => docRef.get());
     if (!doc.exists) {
       return new Response(JSON.stringify({ error: 'Poster no encontrado' }), { status: 404 });
     }
@@ -72,15 +72,17 @@ export const DELETE: APIRoute = async ({ params, request }) => {
     }
 
     const now = Date.now();
-    await db.collection('trash').add({
-      type: 'poster',
-      originalId: id,
-      data: { name: data.name, filename },
-      deletedAt: new Date().toISOString(),
-      expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
-    });
+    await withFirestoreRetry(async (d) => {
+      await d.collection('trash').add({
+        type: 'poster',
+        originalId: id,
+        data: { name: data.name, filename },
+        deletedAt: new Date().toISOString(),
+        expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
+      });
 
-    await docRef.delete();
+      await docRef.delete();
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 

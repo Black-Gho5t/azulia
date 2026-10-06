@@ -38,20 +38,25 @@ function generateConfirmToken(): string {
 }
 
 async function buildAuthState(email: string): Promise<AuthState> {
-  const docSnap = await getDoc(doc(db, 'admins', email));
-  if (!docSnap.exists() || docSnap.data().status !== 'active') {
+  try {
+    const docSnap = await getDoc(doc(db, 'admins', email));
+    if (!docSnap.exists() || docSnap.data().status !== 'active') {
+      return { user: null, isAuthenticated: false };
+    }
+    const data = docSnap.data();
+    return {
+      user: {
+        email,
+        name: data.name,
+        role: data.role,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
+      },
+      isAuthenticated: true,
+    };
+  } catch (err) {
+    console.warn('[buildAuthState] Error al consultar perfil de admin:', err);
     return { user: null, isAuthenticated: false };
   }
-  const data = docSnap.data();
-  return {
-    user: {
-      email,
-      name: data.name,
-      role: data.role,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-    },
-    isAuthenticated: true,
-  };
 }
 
 export function getAuthState(): Promise<AuthState> {
@@ -77,8 +82,13 @@ export function getAuthState(): Promise<AuthState> {
 
 export function onAuthChange(cb: (state: AuthState) => void): () => void {
   return onAuthStateChanged(auth, async (user) => {
-    if (!user?.email) return cb({ user: null, isAuthenticated: false });
-    cb(await buildAuthState(user.email.toLowerCase()));
+    try {
+      if (!user?.email) return cb({ user: null, isAuthenticated: false });
+      cb(await buildAuthState(user.email.toLowerCase()));
+    } catch (err) {
+      console.warn('[onAuthChange] Error:', err);
+      cb({ user: null, isAuthenticated: false });
+    }
   });
 }
 

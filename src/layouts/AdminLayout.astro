@@ -100,9 +100,13 @@ const { title, hideNav } = Astro.props;
           window.location.href = '/admin/login';
         }
         if (user && user.email && isPublic && !currentPath.includes('/confirm')) {
-          const snap = await getDoc(doc(db, 'admins', user.email.toLowerCase()));
-          if (snap.exists() && snap.data().status === 'active') {
-            window.location.href = '/admin';
+          try {
+            const snap = await getDoc(doc(db, 'admins', user.email.toLowerCase()));
+            if (snap.exists() && snap.data().status === 'active') {
+              window.location.href = '/admin';
+            }
+          } catch (err) {
+            console.warn('[AdminLayout] Error verificando estado de admin:', err);
           }
         }
       });

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../../lib/firebase-admin';
 import { rename } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     const db = getAdminDb();
 
-    const trashDoc = await db.collection('trash').doc(id).get();
+    const trashDoc = await withFirestoreRetry(async () => db.collection('trash').doc(id).get());
     if (!trashDoc.exists) {
       return new Response(JSON.stringify({ error: 'Elemento no encontrado en papelera' }), { status: 404 });
     }
@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ params, request }) => {
       return new Response(JSON.stringify({ error: 'Este elemento no es un poster' }), { status: 400 });
     }
 
-    const countSnap = await db.collection('posters').count().get();
+    const countSnap = await withFirestoreRetry(async () => db.collection('posters').count().get());
     if (countSnap.data().count >= MAX_POSTERS) {
       return new Response(JSON.stringify({ error: `No se puede restaurar: ya hay ${MAX_POSTERS} posters activos. Elimina uno primero.` }), { status: 400 });
     }
@@ -47,13 +47,15 @@ export const POST: APIRoute = async ({ params, request }) => {
       return new Response(JSON.stringify({ error: 'Archivo no encontrado en papelera' }), { status: 404 });
     }
 
-    await db.collection('posters').doc(trashData.originalId).set({
-      name: trashData.data.name,
-      filename,
-      createdAt: new Date().toISOString(),
-    });
+    await withFirestoreRetry(async () => {
+      await db.collection('posters').doc(trashData.originalId).set({
+        name: trashData.data.name,
+        filename,
+        createdAt: new Date().toISOString(),
+      });
 
-    await db.collection('trash').doc(id).delete();
+      await db.collection('trash').doc(id).delete();
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 

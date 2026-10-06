@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db, withRetry } from './firebase';
 import {
   collection,
   doc,
@@ -9,7 +9,6 @@ import {
   updateDoc,
   deleteDoc,
   query,
-  where,
   orderBy,
   Timestamp,
   serverTimestamp,
@@ -43,7 +42,7 @@ export interface PosterData {
 
 export interface TrashItem {
   id?: string;
-  type: 'message' | 'admin' | 'poster';
+  type: 'message' | 'admin' | 'poster' | 'hotel' | 'car' | 'tour';
   originalId: string;
   data: Record<string, unknown>;
   deletedAt: Date | null;
@@ -51,93 +50,113 @@ export interface TrashItem {
 }
 
 export async function getMessages(): Promise<MessageData[]> {
-  const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as MessageData));
+  return withRetry(async () => {
+    const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as MessageData));
+  });
 }
 
 export async function updateMessageStatus(id: string, status: 'nuevo' | 'pendiente' | 'leido'): Promise<void> {
-  await updateDoc(doc(db, 'messages', id), { status });
+  return withRetry(async () => {
+    await updateDoc(doc(db, 'messages', id), { status });
+  });
 }
 
 export async function trashMessage(id: string): Promise<void> {
-  const ref = doc(db, 'messages', id);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
-  const data = snap.data();
-  const now = Date.now();
-  await addDoc(collection(db, 'trash'), {
-    type: 'message',
-    originalId: id,
-    data,
-    deletedAt: serverTimestamp(),
-    expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
-  });
-  await deleteDoc(ref);
-}
-
-export async function getAdmins(): Promise<AdminProfile[]> {
-  const q = query(collection(db, 'admins'), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ email: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as AdminProfile));
-}
-
-export async function toggleAdminStatus(email: string, currentStatus: string): Promise<void> {
-  const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
-  await updateDoc(doc(db, 'admins', email), { status: newStatus });
-  if (newStatus === 'disabled') {
+  return withRetry(async () => {
+    const ref = doc(db, 'messages', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+    const data = snap.data();
     const now = Date.now();
     await addDoc(collection(db, 'trash'), {
-      type: 'admin',
-      originalId: email,
-      data: { email, previousStatus: currentStatus },
+      type: 'message',
+      originalId: id,
+      data,
       deletedAt: serverTimestamp(),
       expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
     });
-  }
+    await deleteDoc(ref);
+  });
+}
+
+export async function getAdmins(): Promise<AdminProfile[]> {
+  return withRetry(async () => {
+    const q = query(collection(db, 'admins'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ email: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as AdminProfile));
+  });
+}
+
+export async function toggleAdminStatus(email: string, currentStatus: string): Promise<void> {
+  return withRetry(async () => {
+    const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
+    await updateDoc(doc(db, 'admins', email), { status: newStatus });
+    if (newStatus === 'disabled') {
+      const now = Date.now();
+      await addDoc(collection(db, 'trash'), {
+        type: 'admin',
+        originalId: email,
+        data: { email, previousStatus: currentStatus },
+        deletedAt: serverTimestamp(),
+        expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
+      });
+    }
+  });
 }
 
 export async function getPosters(): Promise<PosterData[]> {
-  const q = query(collection(db, 'posters'), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as PosterData));
+  return withRetry(async () => {
+    const q = query(collection(db, 'posters'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() ?? null } as PosterData));
+  });
 }
 
 export async function trashPoster(id: string): Promise<void> {
-  const ref = doc(db, 'posters', id);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
-  const data = snap.data();
-  const now = Date.now();
-  await addDoc(collection(db, 'trash'), {
-    type: 'poster',
-    originalId: id,
-    data,
-    deletedAt: serverTimestamp(),
-    expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
+  return withRetry(async () => {
+    const ref = doc(db, 'posters', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const now = Date.now();
+    await addDoc(collection(db, 'trash'), {
+      type: 'poster',
+      originalId: id,
+      data,
+      deletedAt: serverTimestamp(),
+      expiresAt: new Timestamp(Math.floor(now / 1000) + 30 * 86400, 0),
+    });
+    await deleteDoc(ref);
   });
-  await deleteDoc(ref);
 }
 
 export async function getTrashItems(): Promise<TrashItem[]> {
-  const snap = await getDocs(collection(db, 'trash'));
-  return snap.docs
-    .map((d) => ({ id: d.id, ...d.data(), deletedAt: d.data().deletedAt?.toDate() ?? null, expiresAt: d.data().expiresAt?.toDate() ?? null } as TrashItem))
-    .filter((item) => !item.expiresAt || item.expiresAt.getTime() > Date.now())
-    .sort((a, b) => (b.deletedAt?.getTime() ?? 0) - (a.deletedAt?.getTime() ?? 0));
+  return withRetry(async () => {
+    const snap = await getDocs(collection(db, 'trash'));
+    return snap.docs
+      .map((d) => ({ id: d.id, ...d.data(), deletedAt: d.data().deletedAt?.toDate() ?? null, expiresAt: d.data().expiresAt?.toDate() ?? null } as TrashItem))
+      .filter((item) => !item.expiresAt || item.expiresAt.getTime() > Date.now())
+      .sort((a, b) => (b.deletedAt?.getTime() ?? 0) - (a.deletedAt?.getTime() ?? 0));
+  });
 }
 
 export async function restoreFromTrash(id: string, type: string, originalId: string, data: Record<string, unknown>): Promise<void> {
-  if (type === 'message') {
-    await setDoc(doc(db, 'messages', originalId), { ...data, status: 'nuevo' });
-  } else if (type === 'admin') {
-    await updateDoc(doc(db, 'admins', originalId), { status: 'active' });
-  } else if (type === 'poster') {
-    await setDoc(doc(db, 'posters', originalId), data);
-  } else if (type === 'tour') {
-    await setDoc(doc(db, 'tours', originalId), data);
-  }
-  await deleteDoc(doc(db, 'trash', id));
+  return withRetry(async () => {
+    if (type === 'message') {
+      await setDoc(doc(db, 'messages', originalId), { ...data, status: 'nuevo' });
+    } else if (type === 'admin') {
+      await updateDoc(doc(db, 'admins', originalId), { status: 'active' });
+    } else if (type === 'poster') {
+      await setDoc(doc(db, 'posters', originalId), data);
+    } else if (type === 'tour') {
+      await setDoc(doc(db, 'tours', originalId), data);
+    } else if (type === 'car') {
+      await setDoc(doc(db, 'cars', originalId), data);
+    }
+    await deleteDoc(doc(db, 'trash', id));
+  });
 }
 
 

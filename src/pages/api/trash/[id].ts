@@ -1,11 +1,12 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
 import { unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const POSTERS_TRASH_DIR = path.resolve('uploads/posters-trash');
 const HOTELS_TRASH_DIR = path.resolve('uploads/hotels-trash');
+const CARS_TRASH_DIR = path.resolve('uploads/cars-trash');
 
 export const prerender = false;
 
@@ -21,7 +22,7 @@ export const DELETE: APIRoute = async ({ params, request }) => {
 
     const db = getAdminDb();
     const docRef = db.collection('trash').doc(id);
-    const doc = await docRef.get();
+    const doc = await withFirestoreRetry(async () => docRef.get());
 
     if (!doc.exists) {
       return new Response(JSON.stringify({ error: 'Elemento no encontrado' }), { status: 404 });
@@ -32,7 +33,7 @@ export const DELETE: APIRoute = async ({ params, request }) => {
     if (data.type === 'poster' && data.data?.filename) {
       const filePath = path.join(POSTERS_TRASH_DIR, data.data.filename);
       if (existsSync(filePath)) {
-        await unlink(filePath);
+        await unlink(filePath).catch(() => {});
       }
     }
 
@@ -40,12 +41,21 @@ export const DELETE: APIRoute = async ({ params, request }) => {
       for (const filename of data.data.movedFilenames) {
         const filePath = path.join(HOTELS_TRASH_DIR, filename);
         if (existsSync(filePath)) {
-          await unlink(filePath);
+          await unlink(filePath).catch(() => {});
         }
       }
     }
 
-    await docRef.delete();
+    if (data.type === 'car' && Array.isArray(data.data?.movedFilenames)) {
+      for (const filename of data.data.movedFilenames) {
+        const filePath = path.join(CARS_TRASH_DIR, filename);
+        if (existsSync(filePath)) {
+          await unlink(filePath).catch(() => {});
+        }
+      }
+    }
+
+    await withFirestoreRetry(async () => docRef.delete());
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 

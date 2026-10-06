@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -34,9 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }), { status: 400 });
     }
 
-    const db = getAdminDb();
-
-    const countSnap = await db.collection('posters').count().get();
+    const countSnap = await withFirestoreRetry(async (db) => db.collection('posters').count().get());
     if (countSnap.data().count >= MAX_POSTERS) {
       return new Response(JSON.stringify({ error: `Límite de ${MAX_POSTERS} posters alcanzado. Elimina uno primero.` }), { status: 400 });
     }
@@ -61,10 +59,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     await writeFile(filePath, webpBuffer);
 
-    const docRef = await db.collection('posters').add({
-      name: name || 'Poster',
-      filename,
-      createdAt: new Date().toISOString(),
+    const docRef = await withFirestoreRetry(async (db) => {
+      return db.collection('posters').add({
+        name: name || 'Poster',
+        filename,
+        createdAt: new Date().toISOString(),
+      });
     });
 
     return new Response(JSON.stringify({

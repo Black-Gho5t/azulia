@@ -1,0 +1,30 @@
+# Auto-detect text files and normalize line endings to LF across OSes
+* text=auto eol=lf
+
+# Explicit text files
+*.ts text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.astro text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.env* text eol=lf
+
+# Binary files - preserve exact bytes, never normalize line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.svg text
+*.pdf binary
+*.docx binary
+*.doc binary
+*.HEIC binary
+*.JPG binary

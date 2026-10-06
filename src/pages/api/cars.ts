@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../lib/firebase-admin';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -11,9 +11,10 @@ export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
-    const db = getAdminDb();
-    const snap = await db.collection('cars').orderBy('model').get();
-    const cars = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const cars = await withFirestoreRetry(async (db) => {
+      const snap = await db.collection('cars').orderBy('model').get();
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    });
     return new Response(JSON.stringify({ ok: true, cars }), { status: 200 });
   } catch (err: any) {
     console.error('[api/cars GET]', err);
@@ -39,31 +40,33 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Faltan campos requeridos' }), { status: 400 });
     }
 
-    const db = getAdminDb();
-    const docRef = await db.collection('cars').add({
-      model,
-      year: Number(year),
-      type,
-      transmission: transmission || 'Automatica',
-      seats: Number(seats) || 5,
-      doors: Number(doors) || 4,
-      engine: engine || '',
-      fuel: fuel || 'Gasolina',
-      consumption: consumption || '',
-      luggage: luggage || '',
-      drivetrain: drivetrain || 'FWD',
-      topSpeed: topSpeed || '',
-      pricePerDay: Number(pricePerDay),
-      rating: Number(rating) || 0,
-      shortDescription: shortDescription || '',
-      highlight: highlight || '',
-      features: Array.isArray(features) ? features : [],
-      images: Array.isArray(images) ? images : [],
-      imageFiles: Array.isArray(imageFiles) ? imageFiles : [],
-      createdAt: new Date(),
+    const docId = await withFirestoreRetry(async (db) => {
+      const docRef = await db.collection('cars').add({
+        model,
+        year: Number(year),
+        type,
+        transmission: transmission || 'Automatica',
+        seats: Number(seats) || 5,
+        doors: Number(doors) || 4,
+        engine: engine || '',
+        fuel: fuel || 'Gasolina',
+        consumption: consumption || '',
+        luggage: luggage || '',
+        drivetrain: drivetrain || 'FWD',
+        topSpeed: topSpeed || '',
+        pricePerDay: Number(pricePerDay),
+        rating: Number(rating) || 0,
+        shortDescription: shortDescription || '',
+        highlight: highlight || '',
+        features: Array.isArray(features) ? features : [],
+        images: Array.isArray(images) ? images : [],
+        imageFiles: Array.isArray(imageFiles) ? imageFiles : [],
+        createdAt: new Date(),
+      });
+      return docRef.id;
     });
 
-    return new Response(JSON.stringify({ ok: true, id: docRef.id }), { status: 201 });
+    return new Response(JSON.stringify({ ok: true, id: docId }), { status: 201 });
   } catch (err: any) {
     console.error('[api/cars POST]', err);
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500 });
@@ -90,8 +93,9 @@ export const PUT: APIRoute = async ({ request }) => {
     if (data.seats != null) data.seats = Number(data.seats);
     if (data.doors != null) data.doors = Number(data.doors);
 
-    const db = getAdminDb();
-    await db.collection('cars').doc(id).update(data);
+    await withFirestoreRetry(async (db) => {
+      await db.collection('cars').doc(id).update(data);
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {
@@ -114,8 +118,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Falta el id' }), { status: 400 });
     }
 
-    const db = getAdminDb();
-    const doc = await db.collection('cars').doc(id).get();
+    const doc = await withFirestoreRetry(async (db) => db.collection('cars').doc(id).get());
 
     if (!doc.exists) {
       return new Response(JSON.stringify({ ok: false, error: 'Auto no encontrado' }), { status: 404 });
@@ -142,36 +145,38 @@ export const DELETE: APIRoute = async ({ request }) => {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    await db.collection('trash').add({
-      type: 'car',
-      originalId: id,
-      data: {
-        model: carData.model || '',
-        year: carData.year || 0,
-        type: carData.type || '',
-        transmission: carData.transmission || '',
-        seats: carData.seats || 5,
-        doors: carData.doors || 4,
-        engine: carData.engine || '',
-        fuel: carData.fuel || '',
-        consumption: carData.consumption || '',
-        luggage: carData.luggage || '',
-        drivetrain: carData.drivetrain || '',
-        topSpeed: carData.topSpeed || '',
-        pricePerDay: carData.pricePerDay || 0,
-        rating: carData.rating || 0,
-        shortDescription: carData.shortDescription || '',
-        highlight: carData.highlight || '',
-        features: carData.features || [],
-        images,
-        imageFiles,
-        movedFilenames,
-      },
-      deletedAt: now.toISOString(),
-      expiresAt: expiresAt.toISOString(),
-    });
+    await withFirestoreRetry(async (db) => {
+      await db.collection('trash').add({
+        type: 'car',
+        originalId: id,
+        data: {
+          model: carData.model || '',
+          year: carData.year || 0,
+          type: carData.type || '',
+          transmission: carData.transmission || '',
+          seats: carData.seats || 5,
+          doors: carData.doors || 4,
+          engine: carData.engine || '',
+          fuel: carData.fuel || '',
+          consumption: carData.consumption || '',
+          luggage: carData.luggage || '',
+          drivetrain: carData.drivetrain || '',
+          topSpeed: carData.topSpeed || '',
+          pricePerDay: carData.pricePerDay || 0,
+          rating: carData.rating || 0,
+          shortDescription: carData.shortDescription || '',
+          highlight: carData.highlight || '',
+          features: carData.features || [],
+          images,
+          imageFiles,
+          movedFilenames,
+        },
+        deletedAt: now.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+      });
 
-    await db.collection('cars').doc(id).delete();
+      await db.collection('cars').doc(id).delete();
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export const prerender = false;
@@ -11,48 +11,48 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
-    const db = getAdminDb();
+    const items = await withFirestoreRetry(async (db) => {
+      const snap = await db.collection('trash').get();
+      const now = Date.now();
 
-    const snap = await db.collection('trash').get();
-    const now = Date.now();
-
-    const items = snap.docs
-      .map((d) => {
-        const data = d.data();
-        let expiresAt: string | null = null;
-        if (data.expiresAt) {
-          if (data.expiresAt instanceof Timestamp) {
-            expiresAt = data.expiresAt.toDate().toISOString();
-          } else if (typeof data.expiresAt === 'string') {
-            expiresAt = data.expiresAt;
+      return snap.docs
+        .map((d) => {
+          const data = d.data();
+          let expiresAt: string | null = null;
+          if (data.expiresAt) {
+            if (data.expiresAt instanceof Timestamp) {
+              expiresAt = data.expiresAt.toDate().toISOString();
+            } else if (typeof data.expiresAt === 'string') {
+              expiresAt = data.expiresAt;
+            }
           }
-        }
-        let deletedAt: string | null = null;
-        if (data.deletedAt) {
-          if (data.deletedAt instanceof Timestamp) {
-            deletedAt = data.deletedAt.toDate().toISOString();
-          } else if (typeof data.deletedAt === 'string') {
-            deletedAt = data.deletedAt;
+          let deletedAt: string | null = null;
+          if (data.deletedAt) {
+            if (data.deletedAt instanceof Timestamp) {
+              deletedAt = data.deletedAt.toDate().toISOString();
+            } else if (typeof data.deletedAt === 'string') {
+              deletedAt = data.deletedAt;
+            }
           }
-        }
-        return {
-          id: d.id,
-          type: data.type || 'unknown',
-          originalId: data.originalId || '',
-          data: data.data || {},
-          deletedAt,
-          expiresAt,
-        };
-      })
-      .filter((item) => {
-        if (!item.expiresAt) return true;
-        return new Date(item.expiresAt).getTime() > now;
-      })
-      .sort((a, b) => {
-        const da = a.deletedAt ? new Date(a.deletedAt).getTime() : 0;
-        const db2 = b.deletedAt ? new Date(b.deletedAt).getTime() : 0;
-        return db2 - da;
-      });
+          return {
+            id: d.id,
+            type: data.type || 'unknown',
+            originalId: data.originalId || '',
+            data: data.data || {},
+            deletedAt,
+            expiresAt,
+          };
+        })
+        .filter((item) => {
+          if (!item.expiresAt) return true;
+          return new Date(item.expiresAt).getTime() > now;
+        })
+        .sort((a, b) => {
+          const da = a.deletedAt ? new Date(a.deletedAt).getTime() : 0;
+          const db2 = b.deletedAt ? new Date(b.deletedAt).getTime() : 0;
+          return db2 - da;
+        });
+    });
 
     return new Response(JSON.stringify({ ok: true, items }), { status: 200 });
 

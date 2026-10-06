@@ -16,28 +16,46 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
+.env.*.local
 
 # macOS-specific files
 .DS_Store
 
-# jetbrains setting folder
-.idea/
+# Windows-specific and Office temporary files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+~$*
+*.tmp
+mso*.tmp
 
-# Uploads
-uploads/
+# Linux backup files
+*~
+.directory
 
-# Python virtual environment
-venv/
-python/
+# Python caches and virtualenvs
 __pycache__/
 *.pyc
+*.py[cod]
+*$py.class
+venv/
+.venv/
+python/
 
 # Development scripts & temp files
 convertir_fotos.py
 componente pa guardar.astro
 *.docx
-*.tmp
-~$*
+
+# IDE and editor settings
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Uploads
+uploads/
 
 # scripts (dev-only utilities)
 scripts/

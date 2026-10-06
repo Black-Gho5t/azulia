@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
 import { hotelsData } from '../../../components/data/hotels/hotels_data';
 
 export const prerender = false;
@@ -11,25 +11,25 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const db = getAdminDb();
-
-    const snap = await db.collection('hotels').get();
+    const snap = await withFirestoreRetry(async (db) => db.collection('hotels').get());
     const existingIds = new Set(snap.docs.map(d => d.id));
 
     let seeded = 0;
     for (const hotel of hotelsData) {
       if (existingIds.has(hotel.id)) continue;
-      await db.collection('hotels').doc(hotel.id).set({
-        name: hotel.name,
-        zone: hotel.zone,
-        price: hotel.price,
-        score: hotel.score,
-        description: hotel.description,
-        images: hotel.images,
-        imageFiles: [],
-        coverIndex: hotel.coverIndex,
-        perks: hotel.perks,
-        createdAt: new Date(),
+      await withFirestoreRetry(async (db) => {
+        await db.collection('hotels').doc(hotel.id).set({
+          name: hotel.name,
+          zone: hotel.zone,
+          price: hotel.price,
+          score: hotel.score,
+          description: hotel.description,
+          images: hotel.images,
+          imageFiles: [],
+          coverIndex: hotel.coverIndex,
+          perks: hotel.perks,
+          createdAt: new Date(),
+        });
       });
       seeded++;
     }

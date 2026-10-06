@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../lib/firebase-admin';
 
 export const prerender = false;
 
@@ -10,12 +10,13 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
-    const db = getAdminDb();
-    const snap = await db.collection('messages').orderBy('createdAt', 'desc').get();
-    const messages = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
+    const messages = await withFirestoreRetry(async (db) => {
+      const snap = await db.collection('messages').orderBy('createdAt', 'desc').get();
+      return snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+    });
     return new Response(JSON.stringify({ ok: true, messages }), { status: 200 });
   } catch (err: any) {
     console.error('[api/messages GET]', err);
@@ -32,19 +33,19 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Nombre requerido' }), { status: 400 });
     }
 
-    const db = getAdminDb();
-
-    await db.collection('messages').add({
-      name: name.trim(),
-      services: Array.isArray(services) ? services : [],
-      date: date || null,
-      people: people ? Number(people) : null,
-      contactType: contactType || null,
-      contactInfo: (contactInfo || '').trim() || null,
-      message: (message || '').trim(),
-      createdAt: new Date().toISOString(),
-      status: 'unread',
-      source: 'web',
+    await withFirestoreRetry(async (db) => {
+      await db.collection('messages').add({
+        name: name.trim(),
+        services: Array.isArray(services) ? services : [],
+        date: date || null,
+        people: people ? Number(people) : null,
+        contactType: contactType || null,
+        contactInfo: (contactInfo || '').trim() || null,
+        message: (message || '').trim(),
+        createdAt: new Date().toISOString(),
+        status: 'unread',
+        source: 'web',
+      });
     });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });

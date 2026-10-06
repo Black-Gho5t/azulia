@@ -25,6 +25,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       <button class="trash-filter" data-filter="hotel">
         <span class="material-symbols-outlined">apartment</span> Hoteles
       </button>
+      <button class="trash-filter" data-filter="car">
+        <span class="material-symbols-outlined">directions_car</span> Autos
+      </button>
       <button class="trash-filter" data-filter="tour">
         <span class="material-symbols-outlined">tour</span> Tours
       </button>
@@ -72,7 +75,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       admin: { label: 'Perfil', icon: 'badge', color: '#7c3aed', bg: '#f5f3ff' },
       poster: { label: 'Poster', icon: 'wallpaper', color: '#059669', bg: '#ecfdf5' },
       hotel: { label: 'Hotel', icon: 'apartment', color: '#d97706', bg: '#fffbeb' },
-      tour: { label: 'Tour', icon: 'tour', color: '#0284c7', bg: '#e0f2fe' },
+      car: { label: 'Auto', icon: 'directions_car', color: '#0284c7', bg: '#e0f2fe' },
+      tour: { label: 'Tour', icon: 'tour', color: '#7c3aed', bg: '#f5f3ff' },
     };
 
     interface TrashItemClient {
@@ -172,6 +176,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         else if (item.type === 'admin') summary = (item.data as any)?.email || item.originalId;
         else if (item.type === 'poster') summary = (item.data as any)?.name || 'Poster';
         else if (item.type === 'hotel') summary = (item.data as any)?.name || 'Hotel';
+        else if (item.type === 'car') summary = (item.data as any)?.model || 'Auto';
         else if (item.type === 'tour') summary = (item.data as any)?.name || 'Tour';
 
         const isUrgent = daysRemaining(item.expiresAt).includes('Hoy');
@@ -215,6 +220,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               `¿Restaurar ${cfg.label}?`,
               type === 'poster' ? 'El poster volverá a la galería si hay espacio disponible.' :
               type === 'hotel' ? 'El hotel volverá a la lista de hoteles.' :
+              type === 'car' ? 'El auto volverá al catálogo de autos.' :
               'El elemento volverá a su ubicación original.',
               'Restaurar',
               'modal-btn-primary'
@@ -240,6 +246,16 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 }
               } catch (err) {
                 alert('Error al restaurar hotel');
+              }
+            } else if (type === 'car') {
+              try {
+                const resp = await adminFetch(`/api/cars/restore/${id}`, { method: 'POST' });
+                if (!resp.ok) {
+                  const result = await resp.json();
+                  alert(result.error || 'No se pudo restaurar');
+                }
+              } catch (err) {
+                alert('Error al restaurar auto');
               }
             } else {
               await restoreFromTrash(id, type, originalId, data);

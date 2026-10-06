@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
+import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../lib/firebase-admin';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -11,9 +11,10 @@ export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
-    const db = getAdminDb();
-    const snap = await db.collection('hotels').orderBy('name').get();
-    const hotels = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const hotels = await withFirestoreRetry(async (db) => {
+      const snap = await db.collection('hotels').orderBy('name').get();
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    });
     return new Response(JSON.stringify({ ok: true, hotels }), { status: 200 });
   } catch (err: any) {
     console.error('[api/hotels GET]', err);
@@ -35,21 +36,23 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Faltan campos requeridos' }), { status: 400 });
     }
 
-    const db = getAdminDb();
-    const docRef = await db.collection('hotels').add({
-      name,
-      zone,
-      price: Number(price),
-      score: Number(score) || 0,
-      description,
-      images: Array.isArray(images) ? images : [],
-      imageFiles: Array.isArray(imageFiles) ? imageFiles : [],
-      coverIndex: Number(coverIndex) || 0,
-      perks: Array.isArray(perks) ? perks : [],
-      createdAt: new Date(),
+    const docId = await withFirestoreRetry(async (db) => {
+      const docRef = await db.collection('hotels').add({
+        name,
+        zone,
+        price: Number(price),
+        score: Number(score) || 0,
+        description,
+        images: Array.isArray(images) ? images : [],
+        imageFiles: Array.isArray(imageFiles) ? imageFiles : [],
+        coverIndex: Number(coverIndex) || 0,
+        perks: Array.isArray(perks) ? perks : [],
+        createdAt: new Date(),
+      });
+      return docRef.id;
     });
 
-    return new Response(JSON.stringify({ ok: true, id: docRef.id }), { status: 201 });
+    return new Response(JSON.stringify({ ok: true, id: docId }), { status: 201 });
   } catch (err: any) {
     console.error('[api/hotels POST]', err);
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500 });
@@ -73,8 +76,9 @@ export const PUT: APIRoute = async ({ request }) => {
     if (data.price != null) data.price = Number(data.price);
     if (data.score != null) data.score = Number(data.score);
 
-    const db = getAdminDb();
-    await db.collection('hotels').doc(id).update(data);
+    await withFirestoreRetry(async (db) => {
+      await db.collection('hotels').doc(id).update(data);
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {
@@ -97,8 +101,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ ok: false, error: 'Falta el id' }), { status: 400 });
     }
 
-    const db = getAdminDb();
-    const doc = await db.collection('hotels').doc(id).get();
+    const doc = await withFirestoreRetry(async (d) => d.collection('hotels').doc(id).get());
 
     if (!doc.exists) {
       return new Response(JSON.stringify({ ok: false, error: 'Hotel no encontrado' }), { status: 404 });
@@ -125,26 +128,28 @@ export const DELETE: APIRoute = async ({ request }) => {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    await db.collection('trash').add({
-      type: 'hotel',
-      originalId: id,
-      data: {
-        name: hotelData.name || '',
-        zone: hotelData.zone || '',
-        price: hotelData.price || 0,
-        score: hotelData.score || 0,
-        description: hotelData.description || '',
-        images: images,
-        imageFiles: imageFiles,
-        coverIndex: hotelData.coverIndex || 0,
-        perks: hotelData.perks || [],
-        movedFilenames,
-      },
-      deletedAt: now.toISOString(),
-      expiresAt: expiresAt.toISOString(),
-    });
+    await withFirestoreRetry(async (d) => {
+      await d.collection('trash').add({
+        type: 'hotel',
+        originalId: id,
+        data: {
+          name: hotelData.name || '',
+          zone: hotelData.zone || '',
+          price: hotelData.price || 0,
+          score: hotelData.score || 0,
+          description: hotelData.description || '',
+          images: images,
+          imageFiles: imageFiles,
+          coverIndex: hotelData.coverIndex || 0,
+          perks: hotelData.perks || [],
+          movedFilenames,
+        },
+        deletedAt: now.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+      });
 
-    await db.collection('hotels').doc(id).delete();
+      await d.collection('hotels').doc(id).delete();
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {
