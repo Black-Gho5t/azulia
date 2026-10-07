@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../lib/firebase-admin';
+import { serverCache } from '../../lib/server-cache';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -11,11 +12,33 @@ export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
+    const cachedCars = serverCache.get<any[]>('cars:all');
+    if (cachedCars) {
+      return new Response(JSON.stringify({ ok: true, cars: cachedCars }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+          'X-Cache': 'HIT',
+        },
+      });
+    }
+
     const cars = await withFirestoreRetry(async (db) => {
       const snap = await db.collection('cars').orderBy('model').get();
       return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     });
-    return new Response(JSON.stringify({ ok: true, cars }), { status: 200 });
+
+    serverCache.set('cars:all', cars, 120);
+
+    return new Response(JSON.stringify({ ok: true, cars }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+        'X-Cache': 'MISS',
+      },
+    });
   } catch (err: any) {
     console.error('[api/cars GET]', err);
     return new Response(JSON.stringify({ ok: false, error: err.message, cars: [] }), { status: 500 });
@@ -66,6 +89,8 @@ export const POST: APIRoute = async ({ request }) => {
       return docRef.id;
     });
 
+    serverCache.invalidate('cars');
+
     return new Response(JSON.stringify({ ok: true, id: docId }), { status: 201 });
   } catch (err: any) {
     console.error('[api/cars POST]', err);
@@ -96,6 +121,8 @@ export const PUT: APIRoute = async ({ request }) => {
     await withFirestoreRetry(async (db) => {
       await db.collection('cars').doc(id).update(data);
     });
+
+    serverCache.invalidate('cars');
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {
@@ -177,6 +204,8 @@ export const DELETE: APIRoute = async ({ request }) => {
 
       await db.collection('cars').doc(id).delete();
     });
+
+    serverCache.invalidate('cars');
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {

@@ -42,7 +42,7 @@ const {
                     aria-label={`Ver foto: ${img.alt}`}
                 >
                     <div class="collage-loader"></div>
-                    <img src={img.src} alt={img.alt} loading="lazy" class="collage-img" onload="this.classList.add('loaded')" />
+                    <img src={img.src} alt={img.alt} loading="lazy" decoding="async" class="collage-img" onload="this.classList.add('loaded')" />
                     <div class="collage-overlay">
                         <span class="collage-icon material-symbols-outlined" aria-hidden="true">zoom_in</span>
                         <span class="collage-caption">{img.alt}</span>
@@ -261,7 +261,7 @@ const {
                 </svg>
             </button>
             <div class="lb-content">
-                <img class="lb-img" src="" alt="" />
+                <img class="lb-img" src="" alt="" decoding="async" />
                 <div class="lb-info">
                     <p class="lb-caption"></p>
                     <span class="lb-counter"></span>

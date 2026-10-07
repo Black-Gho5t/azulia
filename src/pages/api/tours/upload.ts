@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { verifyAdminRequest } from '../../../lib/firebase-admin';
+import { serverCache } from '../../../lib/server-cache';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -37,7 +38,9 @@ export const POST: APIRoute = async ({ request }) => {
     const inputBuffer = Buffer.from(arrayBuffer);
 
     const webpBuffer = await sharp(inputBuffer)
-      .webp({ quality: 90 })
+      .rotate()
+      .resize({ width: 2000, height: 2000, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 85, effort: 5 })
       .toBuffer();
 
     if (!existsSync(UPLOADS_DIR)) {
@@ -52,6 +55,8 @@ export const POST: APIRoute = async ({ request }) => {
     const filePath = path.join(UPLOADS_DIR, filename);
 
     await writeFile(filePath, webpBuffer);
+
+    serverCache.invalidate('tours');
 
     return new Response(JSON.stringify({
       ok: true,

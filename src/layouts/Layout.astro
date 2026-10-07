@@ -2,15 +2,174 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
 import WhatsAppButton from "../components/functions/wha/redirection_button.astro";
 import ContactModal from "../components/contact_modal.astro";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	canonicalUrl?: string;
+	type?: string;
+	keywords?: string;
+	noindex?: boolean;
+}
+
+const {
+	title = "Azulia | Tours en Bacalar, Hoteles y Transportación",
+	description = "Descubre Bacalar con Azulia. Especialistas en turismo náutico, tours en velero y pontón por la Laguna de los Siete Colores, hoteles boutique, renta de autos y transportación privada.",
+	image = "/Designer.png",
+	canonicalUrl,
+	type = "website",
+	keywords = "Azulia, Azulia Bacalar, tours bacalar, laguna de bacalar, velero bacalar, ponton bacalar, hoteles bacalar, transportacion bacalar, renta de autos bacalar, turismo nautico",
+	noindex = false,
+} = Astro.props;
+
+const siteUrl = "https://azulia.com";
+const pathname = Astro.url.pathname;
+const canonical = canonicalUrl || `${siteUrl}${pathname.endsWith('/') || pathname === '' ? pathname : pathname + '/'}`;
+const ogImageUrl = image.startsWith('http') ? image : `${siteUrl}${image.startsWith('/') ? image : '/' + image}`;
+
+// Estructura JSON-LD para motores de búsqueda (Google Sitelinks y ficha de marca Azulia)
+const schemaOrganization = {
+	"@context": "https://schema.org",
+	"@type": "TravelAgency",
+	"@id": `${siteUrl}/#organization`,
+	"name": "Azulia",
+	"alternateName": ["Azulia Bacalar", "Azulia Servicios Marítimos", "Azulia Turismo Náutico"],
+	"url": siteUrl,
+	"logo": `${siteUrl}/Designer.png`,
+	"image": `${siteUrl}/Designer.png`,
+	"description": "Servicios náuticos y turísticos sustentables en Bacalar: tours en velero y pontón, hoteles boutique, renta de autos y transportación privada nacional e internacional.",
+	"telephone": "+529831779754",
+	"email": "azulia.bacalar@gmail.com",
+	"address": {
+		"@type": "PostalAddress",
+		"addressLocality": "Bacalar",
+		"addressRegion": "Quintana Roo",
+		"addressCountry": "MX"
+	},
+	"geo": {
+		"@type": "GeoCoordinates",
+		"latitude": 18.6783,
+		"longitude": -88.3933
+	},
+	"sameAs": [
+		"https://www.facebook.com/share/19GQZ365Ek/",
+		"https://www.instagram.com/azuliabacalar",
+		"https://wa.me/529831779754"
+	],
+	"priceRange": "$$",
+	"currenciesAccepted": "MXN, USD"
+};
+
+const schemaWebSite = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"@id": `${siteUrl}/#website`,
+	"url": siteUrl,
+	"name": "Azulia",
+	"alternateName": "Azulia Bacalar",
+	"description": "Plataforma oficial de Azulia para tours, hoteles, autos y traslados en Bacalar.",
+	"publisher": {
+		"@id": `${siteUrl}/#organization`
+	},
+	"potentialAction": {
+		"@type": "SearchAction",
+		"target": `${siteUrl}/buscar?q={search_term_string}`,
+		"query-input": "required name=search_term_string"
+	}
+};
+
+const schemaSiteNavigation = {
+	"@context": "https://schema.org",
+	"@type": "ItemList",
+	"itemListElement": [
+		{
+			"@type": "SiteNavigationElement",
+			"position": 1,
+			"name": "Tours en Bacalar",
+			"description": "Excursiones en velero, pontón, visitas a cenotes, ruinas arqueológicas y Mahahual.",
+			"url": `${siteUrl}/tours/tours_index`
+		},
+		{
+			"@type": "SiteNavigationElement",
+			"position": 2,
+			"name": "Hoteles en Bacalar",
+			"description": "Hospedajes boutique y resorts frente a la Laguna de los Siete Colores en Bacalar.",
+			"url": `${siteUrl}/hotels/hoteles_index`
+		},
+		{
+			"@type": "SiteNavigationElement",
+			"position": 3,
+			"name": "Transportación Nacional y Traslados",
+			"description": "Traslados seguros y cómodos desde aeropuertos de Cancún, Chetumal y Tulum.",
+			"url": `${siteUrl}/transportation/nacional`
+		},
+		{
+			"@type": "SiteNavigationElement",
+			"position": 4,
+			"name": "Renta de Autos",
+			"description": "Flota de autos modernos con asistencia en carretera para recorrer Bacalar y la Riviera Maya.",
+			"url": `${siteUrl}/transportation/renta-autos`
+		},
+		{
+			"@type": "SiteNavigationElement",
+			"position": 5,
+			"name": "Transportación Internacional",
+			"description": "Traslados y conexión directa hacia Belice, Guatemala y destinos de Centroamérica.",
+			"url": `${siteUrl}/transportation/international`
+		},
+		{
+			"@type": "SiteNavigationElement",
+			"position": 6,
+			"name": "Tours Náuticos",
+			"description": "Navegación en la laguna de Bacalar con veleros y pontones privados o compartidos.",
+			"url": `${siteUrl}/tours/nauticos`
+		}
+	]
+};
 ---
 
 <!doctype html>
 <html lang="es">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#0a1628" />
+
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta name="keywords" content={keywords} />
+		<meta name="author" content="Azulia" />
+		<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+		<link rel="canonical" href={canonical} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content={type} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:alt" content="Azulia Bacalar - Servicios Marítimos y Turísticos" />
+		<meta property="og:site_name" content="Azulia" />
+		<meta property="og:locale" content="es_MX" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageUrl} />
+
+		<!-- Datos Estructurados JSON-LD (Google Sitelinks, Knowledge Graph, Navigation) -->
+		<script type="application/ld+json" set:html={JSON.stringify(schemaOrganization)} />
+		<script type="application/ld+json" set:html={JSON.stringify(schemaWebSite)} />
+		<script type="application/ld+json" set:html={JSON.stringify(schemaSiteNavigation)} />
+
+		<!-- Fuentes y recursos -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -25,7 +184,6 @@ import ContactModal from "../components/contact_modal.astro";
 				rel="stylesheet"
 			/>
 		</noscript>
-		<title>Azulia: Servicios marítimos</title>
 	</head>
 	<body>
 		<slot />

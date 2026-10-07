@@ -2,11 +2,32 @@
 import Layout from "../../layouts/Layout.astro";
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
-import { carRentalBenefits, carRentalHeroImages } from "../../components/data/transportation/car_rental_data";
+import { carRentalBenefits, carRentalHeroImages, carRentalFleet } from "../../components/data/transportation/car_rental_data";
 import "../../assets/styles/car_rental.css";
+import { withFirestoreRetry } from "../../lib/firebase-admin";
+import { serverCache } from "../../lib/server-cache";
+
+let initialCars: any[] = [];
+try {
+    initialCars = await serverCache.getOrSet<any[]>('cars:all', async () => {
+        return await withFirestoreRetry(async (db) => {
+            const snap = await db.collection('cars').orderBy('model').get();
+            const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            return docs.length > 0 ? docs : carRentalFleet;
+        });
+    }, 180);
+} catch {
+    initialCars = carRentalFleet;
+}
+if (!initialCars || initialCars.length === 0) {
+    initialCars = carRentalFleet;
+}
 ---
 
-<Layout>
+<Layout
+    title="Renta de Autos en Bacalar | Azulia Flota Moderna y Económica"
+    description="Renta de autos en Bacalar con Azulia. Vehículos modernos, seguros y económicos para recorrer Bacalar, Chetumal, Tulum y Mahahual con asistencia y reserva inmediata."
+>
     <Navbar />
 
     <main class="car-rental-page">
@@ -77,6 +98,7 @@ import "../../assets/styles/car_rental.css";
         </section>
 
         <div id="carModalsContainer"></div>
+        <script id="initialCarsData" type="application/json" set:html={JSON.stringify(initialCars)} />
     </main>
 
     <Footer />
@@ -133,7 +155,7 @@ import "../../assets/styles/car_rental.css";
             return `<article class="car-card" data-car-id="${car.id}" role="button" tabindex="0">
                 <div class="car-card-top">
                     <span class="car-chip">${escHtml(car.highlight || "")}</span>
-                    ${img ? `<img src="${escHtml(img)}" alt="${escHtml(car.model)} ${car.year || ""}" class="car-image" loading="lazy" referrerpolicy="no-referrer" />` : `<div class="car-image car-image-placeholder"><span class="material-symbols-outlined">directions_car</span></div>`}
+                    ${img ? `<img src="${escHtml(img)}" alt="${escHtml(car.model)} ${car.year || ""}" class="car-image" loading="lazy" decoding="async" referrerpolicy="no-referrer" />` : `<div class="car-image car-image-placeholder"><span class="material-symbols-outlined">directions_car</span></div>`}
                 </div>
                 <div class="car-card-body">
                     <h3>${escHtml(car.model)}</h3>
@@ -164,7 +186,7 @@ import "../../assets/styles/car_rental.css";
             const features = (car.features || []).map((f: string) => `<span>${escHtml(f)}</span>`).join("");
             const validImages = Array.isArray(car.images) ? car.images.filter(isValidImageUrl) : [];
             const images = validImages.map((img: string, i: number) =>
-                `<img src="${escHtml(img)}" alt="${escHtml(car.model)} ${i + 1}" class="car-modal-img${i === 0 ? ' active' : ''}" loading="lazy" referrerpolicy="no-referrer" />`
+                `<img src="${escHtml(img)}" alt="${escHtml(car.model)} ${i + 1}" class="car-modal-img${i === 0 ? ' active' : ''}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
             ).join("");
             const hasNav = validImages.length > 1;
             return `<div id="car-modal-${car.id}" class="car-modal-overlay" role="dialog" aria-modal="true">
@@ -330,5 +352,20 @@ import "../../assets/styles/car_rental.css";
         updateVisibleCards();
     }
 
-    loadFleet();
+    const initialDataEl = document.getElementById("initialCarsData");
+    if (initialDataEl && initialDataEl.textContent) {
+        try {
+            allCars = JSON.parse(initialDataEl.textContent);
+        } catch {
+            allCars = [];
+        }
+    }
+
+    if (allCars.length > 0) {
+        renderCards();
+        renderModals();
+        updateVisibleCards();
+    } else {
+        loadFleet();
+    }
 </script>

@@ -26,6 +26,7 @@ function photosAssetBridge() {
 }
 
 export default defineConfig({
+	site: 'https://azulia.com',
 	output: 'server',
 	adapter: node({
 		mode: 'standalone',

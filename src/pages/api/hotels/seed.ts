@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
+import { serverCache } from '../../../lib/server-cache';
 import { hotelsData } from '../../../components/data/hotels/hotels_data';
 
 export const prerender = false;
@@ -32,6 +33,10 @@ export const POST: APIRoute = async ({ request }) => {
         });
       });
       seeded++;
+    }
+
+    if (seeded > 0) {
+      serverCache.invalidate('hotels');
     }
 
     return new Response(JSON.stringify({ ok: true, seeded, total: hotelsData.length }), { status: 200 });

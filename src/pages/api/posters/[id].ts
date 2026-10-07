@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
+import { serverCache } from '../../../lib/server-cache';
 import { Timestamp } from 'firebase-admin/firestore';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -33,6 +34,7 @@ export const PUT: APIRoute = async ({ params, request }) => {
     }
 
     await withFirestoreRetry(async () => docRef.update({ name: name.trim() }));
+    serverCache.invalidate('posters');
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 
   } catch (err: any) {
@@ -84,6 +86,7 @@ export const DELETE: APIRoute = async ({ params, request }) => {
       await docRef.delete();
     });
 
+    serverCache.invalidate('posters');
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
 
   } catch (err: any) {

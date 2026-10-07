@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../../lib/firebase-admin';
+import { serverCache } from '../../../../lib/server-cache';
 import { rename, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -66,6 +67,8 @@ export const POST: APIRoute = async ({ params, request }) => {
 
       await db.collection('trash').doc(trashId).delete();
     });
+
+    serverCache.invalidate('hotels');
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err: any) {

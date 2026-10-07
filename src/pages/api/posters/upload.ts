@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest, withFirestoreRetry } from '../../../lib/firebase-admin';
+import { serverCache } from '../../../lib/server-cache';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -43,7 +44,9 @@ export const POST: APIRoute = async ({ request }) => {
     const inputBuffer = Buffer.from(arrayBuffer);
 
     const webpBuffer = await sharp(inputBuffer)
-      .webp({ lossless: true, quality: 100 })
+      .rotate()
+      .resize({ width: 2000, height: 2000, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 85, effort: 5 })
       .toBuffer();
 
     if (!existsSync(UPLOADS_DIR)) {
@@ -66,6 +69,8 @@ export const POST: APIRoute = async ({ request }) => {
         createdAt: new Date().toISOString(),
       });
     });
+
+    serverCache.invalidate('posters');
 
     return new Response(JSON.stringify({
       ok: true,

@@ -13,7 +13,10 @@ import {
 } from "../../components/data/transportation/form_data";
 ---
 
-<Layout>
+<Layout
+    title="Transportación Internacional | Azulia Traslados a Belice y Guatemala"
+    description="Viaja seguro entre México, Belice y Guatemala con el servicio de transportación internacional de Azulia desde Bacalar y Chetumal."
+>
     <Navbar />
 
     <main class="transport-international-page">
@@ -24,6 +27,9 @@ import {
                         src={src}
                         alt={`Transporte internacional ${i + 1}`}
                         class:list={["hero-img", { active: i === 0 }]}
+                        decoding="async"
+                        loading={i === 0 ? "eager" : "lazy"}
+                        fetchpriority={i === 0 ? "high" : "auto"}
                     />
                 ))}
             </div>
@@ -57,7 +63,7 @@ import {
                     {internationalDestinations.map((destination) => (
                         <article class="destination-card" data-id={destination.id} role="button" tabindex="0">
                             <div class="card-image-wrap">
-                                <img src={destination.image} alt={destination.name} loading="lazy" />
+                                <img src={destination.image} alt={destination.name} loading="lazy" decoding="async" />
                                 <span class="card-region">{destination.region}</span>
                             </div>
                             <div class="card-body">

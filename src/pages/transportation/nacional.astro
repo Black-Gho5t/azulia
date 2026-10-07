@@ -13,14 +13,17 @@ import {
 } from "../../components/data/transportation/form_data";
 ---
 
-<Layout>
+<Layout
+	title="Transportación Nacional y Privada en Bacalar | Azulia"
+	description="Servicio de transporte privado, cómodo y seguro desde aeropuertos de Cancún, Chetumal, Tulum hacia Bacalar y Mahahual con Azulia."
+>
 	<Navbar />
 
 	<main class="transport-national-page">
 		<section class="national-hero">
 			<div class="hero-images" data-hero-track>
 				{nationalHeroImages.map((src, i) => (
-					<img src={src} alt={`Transporte nacional ${i + 1}`} class:list={["hero-img", { active: i === 0 }]} />
+					<img src={src} alt={`Transporte nacional ${i + 1}`} class:list={["hero-img", { active: i === 0 }]} decoding="async" loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : "auto"} />
 				))}
 			</div>
 			<div class="hero-overlay" />
@@ -53,7 +56,7 @@ import {
 					{nationalDestinations.map((destination) => (
 						<article class="destination-card" data-id={destination.id} role="button" tabindex="0">
 							<div class="card-image-wrap">
-								<img src={destination.image} alt={destination.name} loading="lazy" />
+								<img src={destination.image} alt={destination.name} loading="lazy" decoding="async" />
 								<span class="card-region">{destination.region}</span>
 							</div>
 							<div class="card-body">

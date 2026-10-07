@@ -2,9 +2,27 @@
 import Navbar from "../../components/navigation.astro";
 import Footer from "../../components/footer.astro";
 import Layout from "../../layouts/Layout.astro";
+import { withFirestoreRetry } from "../../lib/firebase-admin";
+import { serverCache } from "../../lib/server-cache";
+
+let initialHotels: any[] = [];
+try {
+    initialHotels = await serverCache.getOrSet<any[]>('hotels:all', async () => {
+        return await withFirestoreRetry(async (db) => {
+            const snap = await db.collection('hotels').orderBy('name').get();
+            return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        });
+    }, 180);
+} catch (err) {
+    console.warn('[hoteles_index SSR] Fallback hotels:', err);
+    initialHotels = [];
+}
 ---
 
-<Layout>
+<Layout
+    title="Hoteles en Bacalar | Azulia Hospedaje Boutique y Eco Resorts"
+    description="Descubre los mejores hoteles en Bacalar frente a la Laguna de los Siete Colores. Opciones boutique, ecológicas y de lujo seleccionadas por Azulia con tarifas claras."
+>
     <Navbar />
     <main>
         <div class="hotels-carousel">
@@ -57,7 +75,66 @@ import Layout from "../../layouts/Layout.astro";
                 </div>
 
                 <div class="hoteles-grid" id="hotelsGrid">
-                    <div class="hotels-loading">Cargando hoteles...</div>
+                    {initialHotels.length === 0 ? (
+                        <div class="hotels-loading">Cargando hoteles...</div>
+                    ) : (
+                        initialHotels.map((hotel: any) => {
+                            const coverImg = Array.isArray(hotel.images) && hotel.images.length > 0
+                                ? hotel.images[Number(hotel.coverIndex) || 0] || hotel.images[0] || ''
+                                : hotel.image || '';
+                            const price = Number(hotel.price) || 0;
+                            const score = Number(hotel.score) || 0;
+                            const perks = Array.isArray(hotel.perks) ? hotel.perks : [];
+
+                            return (
+                                <article class="hotel-card">
+                                    <div class="hotel-card-image">
+                                        {coverImg ? (
+                                            <img
+                                                src={coverImg}
+                                                alt={hotel.name}
+                                                loading="lazy"
+                                                decoding="async"
+                                            />
+                                        ) : null}
+                                        <div class="hotel-rating">
+                                            <span class="material-symbols-outlined" aria-hidden="true">star</span>
+                                            {score}
+                                        </div>
+                                    </div>
+                                    <div class="hotel-card-content">
+                                        <div class="hotel-meta-top">
+                                            <h3>{hotel.name}</h3>
+                                            <span class="hotel-zone">
+                                                <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                                                {hotel.zone}
+                                            </span>
+                                        </div>
+                                        <p>{hotel.description || ''}</p>
+                                        <ul class="hotel-perks">
+                                            {perks.map((p: any) => (
+                                                <li>
+                                                    <span class="material-symbols-outlined" aria-hidden="true">{p.icon}</span>
+                                                    {p.label}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <div class="hotel-footer">
+                                            <div class="hotel-price-block">
+                                                <span class="label">Desde</span>
+                                                <span class="hotel-price">${price.toLocaleString("es-MX")} MXN</span>
+                                                <span class="note">por noche</span>
+                                            </div>
+                                            <button type="button" class="hotel-cta" data-contact="Hotel">
+                                                Cotizar
+                                                <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </section>
@@ -511,7 +588,7 @@ import Layout from "../../layouts/Layout.astro";
                     <article class="hotel-card">
                         <div class="hotel-card-image">
                             ${coverImg
-                                ? `<img src="${coverImg}" alt="${hotel.name}" loading="lazy" onerror="this.style.display='none'" />`
+                                ? `<img src="${coverImg}" alt="${hotel.name}" loading="lazy" decoding="async" onerror="this.style.display='none'" />`
                                 : ''}
                             <div class="hotel-rating">
                                 <span class="material-symbols-outlined" aria-hidden="true">star</span>
@@ -555,7 +632,10 @@ import Layout from "../../layouts/Layout.astro";
         }
     }
 
-    loadHotels();
+    const hasRenderedCards = hotelsGrid.querySelectorAll('.hotel-card').length > 0;
+    if (!hasRenderedCards) {
+        loadHotels();
+    }
 
     document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;

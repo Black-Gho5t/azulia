@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAdminDb, verifyAdminRequest } from '../../lib/firebase-admin';
+import { serverCache } from '../../lib/server-cache';
 import { initialToursCatalog } from '../../components/data/tours/all_tours_catalog';
 
 export const prerender = false;
@@ -8,6 +9,25 @@ export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
     const subpageParam = url.searchParams.get('subpage')?.toLowerCase()?.trim();
+
+    const cachedAll = serverCache.get<any[]>('tours:all');
+    if (cachedAll) {
+      let filtered = cachedAll;
+      if (subpageParam && subpageParam !== 'todos') {
+        filtered = filtered.filter((t) => t.subpage === subpageParam);
+      }
+      return new Response(
+        JSON.stringify({ ok: true, tours: filtered, count: filtered.length }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+            'X-Cache': 'HIT',
+          },
+        }
+      );
+    }
 
     const db = getAdminDb();
     const snap = await db.collection('tours').get();
@@ -39,26 +59,46 @@ export const GET: APIRoute = async ({ request }) => {
       let allDocs = freshSnap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
       allDocs.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 
+      serverCache.set('tours:all', allDocs, 120);
+
+      let resultDocs = allDocs;
       if (subpageParam && subpageParam !== 'todos') {
-        allDocs = allDocs.filter((t) => t.subpage === subpageParam);
+        resultDocs = resultDocs.filter((t) => t.subpage === subpageParam);
       }
 
       return new Response(
-        JSON.stringify({ ok: true, tours: allDocs, count: allDocs.length, seeded: seededCount }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ ok: true, tours: resultDocs, count: resultDocs.length, seeded: seededCount }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+            'X-Cache': 'MISS',
+          },
+        }
       );
     }
 
     let tours = snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
     tours.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 
+    serverCache.set('tours:all', tours, 120);
+
+    let filtered = tours;
     if (subpageParam && subpageParam !== 'todos') {
-      tours = tours.filter((t) => t.subpage === subpageParam);
+      filtered = filtered.filter((t) => t.subpage === subpageParam);
     }
 
     return new Response(
-      JSON.stringify({ ok: true, tours, count: tours.length }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ ok: true, tours: filtered, count: filtered.length }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+          'X-Cache': 'MISS',
+        },
+      }
     );
   } catch (err: any) {
     console.error('[api/tours GET]', err);
@@ -138,6 +178,8 @@ export const POST: APIRoute = async ({ request }) => {
       updatedAt: new Date().toISOString(),
     });
 
+    serverCache.invalidate('tours');
+
     return new Response(JSON.stringify({ ok: true, id: docRef.id }), { status: 201 });
   } catch (err: any) {
     console.error('[api/tours POST]', err);
@@ -173,6 +215,8 @@ export const PUT: APIRoute = async ({ request }) => {
       },
       { merge: true }
     );
+
+    serverCache.invalidate('tours');
 
     return new Response(JSON.stringify({ ok: true, id }), { status: 200 });
   } catch (err: any) {
@@ -219,6 +263,8 @@ export const DELETE: APIRoute = async ({ request }) => {
     });
 
     await docRef.delete();
+
+    serverCache.invalidate('tours');
 
     return new Response(JSON.stringify({ ok: true, deleted: id }), { status: 200 });
   } catch (err: any) {

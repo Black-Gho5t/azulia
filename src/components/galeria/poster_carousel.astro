@@ -1,4 +1,7 @@
 ---
+import { withFirestoreRetry } from '../../lib/firebase-admin';
+import { serverCache } from '../../lib/server-cache';
+
 interface Props {
     eyebrow?: string;
     title?: string;
@@ -10,6 +13,39 @@ const {
     title = "Paquetes y promociones",
     subtitle = "Descubre los paquetes promocionales de nuestros tours y experiencias en Bacalar.",
 } = Astro.props;
+
+interface PosterItem {
+    id: string;
+    name: string;
+    filename: string;
+    url: string;
+    createdAt?: string | null;
+}
+
+let initialPosters: PosterItem[] = [];
+try {
+    const cached = serverCache.get<PosterItem[]>('posters:all');
+    if (cached) {
+        initialPosters = cached;
+    } else {
+        initialPosters = await withFirestoreRetry(async (db) => {
+            const snap = await db.collection('posters').orderBy('createdAt', 'desc').get();
+            return snap.docs.map((d) => {
+                const data = d.data();
+                return {
+                    id: d.id,
+                    name: data.name || 'Poster',
+                    filename: data.filename || '',
+                    url: `/api/posters/image/${data.filename}`,
+                    createdAt: data.createdAt || null,
+                };
+            });
+        });
+        serverCache.set('posters:all', initialPosters, 120);
+    }
+} catch {
+    initialPosters = [];
+}
 ---
 
 <section class="poster-carousel-section" id="posters">
@@ -22,23 +58,50 @@ const {
 
         <div class="poster-viewport" id="posterViewport">
             <div class="poster-stage" id="posterStage">
-                <div class="poster-carousel-loading" id="posterLoading">
-                    <span class="material-symbols-outlined poster-loading-icon">hourglass_empty</span>
-                    <span>Cargando posters...</span>
-                </div>
+                {initialPosters.length === 0 ? (
+                    <div class="poster-carousel-loading" id="posterLoading">
+                        <span class="material-symbols-outlined poster-loading-icon">hourglass_empty</span>
+                        <span>Cargando posters...</span>
+                    </div>
+                ) : (
+                    initialPosters.map((p, i) => (
+                        <article class={`poster-slide${i === 0 ? ' is-center' : ''}`} data-index={i}>
+                            <div class="poster-slide-img">
+                                <div class="poster-loader"></div>
+                                <img
+                                    src={p.url}
+                                    alt={p.name}
+                                    loading={i === 0 ? "eager" : "lazy"}
+                                    fetchpriority={i === 0 ? "high" : "auto"}
+                                    decoding="async"
+                                    class={i === 0 ? "loaded" : ""}
+                                    onload="this.classList.add('loaded')"
+                                    onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"
+                                />
+                            </div>
+                            <div class="poster-slide-name">{p.name}</div>
+                        </article>
+                    ))
+                )}
             </div>
         </div>
 
         <div class="poster-nav-row">
-            <button class="poster-nav" id="posterPrev" aria-label="Anterior">
+            <button class="poster-nav" id="posterPrev" aria-label="Anterior" style={initialPosters.length === 0 ? "display: none;" : ""}>
                 <span class="material-symbols-outlined">chevron_left</span>
             </button>
-            <div class="poster-dots" id="posterDots"></div>
-            <button class="poster-nav" id="posterNext" aria-label="Siguiente">
+            <div class="poster-dots" id="posterDots">
+                {initialPosters.map((_, i) => (
+                    <button class={`poster-dot${i === 0 ? ' is-active' : ''}`} data-dot={i} aria-label={`Poster ${i + 1}`}></button>
+                ))}
+            </div>
+            <button class="poster-nav" id="posterNext" aria-label="Siguiente" style={initialPosters.length === 0 ? "display: none;" : ""}>
                 <span class="material-symbols-outlined">chevron_right</span>
             </button>
         </div>
     </div>
+
+    <script id="initialPostersData" type="application/json" set:html={JSON.stringify(initialPosters)} />
 
     <div class="poster-lightbox" id="posterLightbox">
         <div class="poster-lightbox-backdrop" id="posterLightboxBackdrop"></div>
@@ -532,7 +595,6 @@ const {
     const prevBtn = document.getElementById('posterPrev')!;
     const nextBtn = document.getElementById('posterNext')!;
     const dotsContainer = document.getElementById('posterDots')!;
-    const loadingEl = document.getElementById('posterLoading')!;
     const lightbox = document.getElementById('posterLightbox')!;
     const lightboxBackdrop = document.getElementById('posterLightboxBackdrop')!;
     const lightboxClose = document.getElementById('posterLightboxClose')!;
@@ -572,36 +634,7 @@ const {
         if (e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
     });
 
-    function renderPosters() {
-        if (posters.length === 0) {
-            loadingEl.outerHTML = `
-                <div class="poster-carousel-empty">
-                    <span class="material-symbols-outlined">image</span>
-                    <span>No hay posters disponibles</span>
-                </div>`;
-            prevBtn.style.display = 'none';
-            nextBtn.style.display = 'none';
-            dotsContainer.style.display = 'none';
-            return;
-        }
-
-        loadingEl.remove();
-
-        stage.innerHTML = posters.map((p, i) => `
-            <article class="poster-slide" data-index="${i}">
-                <div class="poster-slide-img">
-                    <div class="poster-loader"></div>
-                    <img src="${p.url}" alt="${p.name}" loading="lazy" onload="this.classList.add('loaded')"
-                         onerror="this.parentElement.style.background='#1a2744';this.style.display='none'" />
-                </div>
-                <div class="poster-slide-name">${p.name}</div>
-            </article>
-        `).join('');
-
-        dotsContainer.innerHTML = posters.map((_, i) => `
-            <button class="poster-dot${i === 0 ? ' is-active' : ''}" data-dot="${i}" aria-label="Poster ${i + 1}"></button>
-        `).join('');
-
+    function attachPosterEvents() {
         dotsContainer.querySelectorAll('.poster-dot').forEach(dot => {
             dot.addEventListener('click', () => {
                 const idx = Number(dot.getAttribute('data-dot'));
@@ -632,7 +665,52 @@ const {
                 layout();
             });
         });
+    }
 
+    function renderPosters() {
+        const curLoading = document.getElementById('posterLoading');
+        if (posters.length === 0) {
+            if (curLoading) {
+                curLoading.outerHTML = `
+                    <div class="poster-carousel-empty">
+                        <span class="material-symbols-outlined">image</span>
+                        <span>No hay posters disponibles</span>
+                    </div>`;
+            } else {
+                stage.innerHTML = `
+                    <div class="poster-carousel-empty">
+                        <span class="material-symbols-outlined">image</span>
+                        <span>No hay posters disponibles</span>
+                    </div>`;
+            }
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            dotsContainer.style.display = 'none';
+            return;
+        }
+
+        if (curLoading) curLoading.remove();
+
+        stage.innerHTML = posters.map((p, i) => `
+            <article class="poster-slide${i === 0 ? ' is-center' : ''}" data-index="${i}">
+                <div class="poster-slide-img">
+                    <div class="poster-loader"></div>
+                    <img src="${p.url}" alt="${p.name}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" onload="this.classList.add('loaded')"
+                         onerror="this.parentElement.style.background='#1a2744';this.style.display='none'" />
+                </div>
+                <div class="poster-slide-name">${p.name}</div>
+            </article>
+        `).join('');
+
+        dotsContainer.innerHTML = posters.map((_, i) => `
+            <button class="poster-dot${i === 0 ? ' is-active' : ''}" data-dot="${i}" aria-label="Poster ${i + 1}"></button>
+        `).join('');
+
+        prevBtn.style.display = '';
+        nextBtn.style.display = '';
+        dotsContainer.style.display = '';
+
+        attachPosterEvents();
         layout();
         startAuto();
     }
@@ -751,5 +829,20 @@ const {
         renderPosters();
     }
 
-    loadPosters();
+    const initialDataEl = document.getElementById('initialPostersData');
+    if (initialDataEl && initialDataEl.textContent) {
+        try {
+            posters = JSON.parse(initialDataEl.textContent);
+        } catch {
+            posters = [];
+        }
+    }
+
+    if (posters.length > 0) {
+        attachPosterEvents();
+        layout();
+        startAuto();
+    } else {
+        loadPosters();
+    }
 </script>

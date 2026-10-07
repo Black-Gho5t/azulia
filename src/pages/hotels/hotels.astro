@@ -23,17 +23,17 @@ import Layout from "../../layouts/Layout.astro";
                 <img
                     src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
                     alt="Hotel Playa Paraíso"
-                    class="carousel-img active"
+                    class="carousel-img active" fetchpriority="high" decoding="async" loading="eager"
                 />
                 <img
                     src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80"
                     alt="Eco Beach Resort"
-                    class="carousel-img"
+                    class="carousel-img" decoding="async" loading="lazy"
                 />
                 <img
                     src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
                     alt="Luxury Oceanfront"
-                    class="carousel-img"
+                    class="carousel-img" decoding="async" loading="lazy"
                 />
             </div>
             <div class="carousel-overlay"></div>
@@ -50,7 +50,7 @@ import Layout from "../../layouts/Layout.astro";
                 <div class="hoteles_index-grid">
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80"
                                 alt="Beachfront Luxury"
                             />
@@ -66,7 +66,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80"
                                 alt="Eco Lodge"
                             />
@@ -82,7 +82,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80"
                                 alt="Boutique Hotel"
                             />
@@ -98,7 +98,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80"
                                 alt="Family Beach Resort"
                             />
@@ -114,7 +114,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
                                 alt="Luxury Oceanfront"
                             />
@@ -130,7 +130,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80"
                                 alt="Eco Beach Resort"
                             />
@@ -146,7 +146,7 @@ import Layout from "../../layouts/Layout.astro";
                     </div>
                     <div class="hotel-card">
                         <div class="hotel-card-image">
-                            <img
+                            <img loading="lazy" decoding="async"
                                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
                                 alt="Beach Club Hotel"
                             />
